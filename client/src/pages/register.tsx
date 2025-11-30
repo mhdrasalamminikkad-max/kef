@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -21,13 +21,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import qrCodeImage from "@assets/qrm_1764493655676.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { markRegistered, isRegistered } = useRegistrationStatus();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [addingAnother, setAddingAnother] = useState(false);
+  const [registrationCount, setRegistrationCount] = useState(0);
+  const [justRegistered, setJustRegistered] = useState(false);
+
+  useEffect(() => {
+    const count = parseInt(localStorage.getItem(REGISTRATIONS_COUNT_KEY) || "0", 10);
+    setRegistrationCount(count);
+  }, []);
 
   const form = useForm<InsertBootcamp>({
     resolver: zodResolver(insertBootcampSchema),
@@ -74,11 +84,17 @@ export default function Register() {
     },
     onSuccess: () => {
       markRegistered();
+      const newCount = registrationCount + 1;
+      localStorage.setItem(REGISTRATIONS_COUNT_KEY, newCount.toString());
+      setRegistrationCount(newCount);
+      setJustRegistered(true);
+      setAddingAnother(false);
+      form.reset();
+      setUploadedFile(null);
       toast({
         title: "Registration Successful!",
-        description: "You have been registered for the Startup Boot Camp. We will contact you soon with more details.",
+        description: "Registration complete. You can add more people or go back to home.",
       });
-      setLocation("/");
     },
     onError: (error: Error) => {
       toast({
@@ -93,62 +109,141 @@ export default function Register() {
     mutation.mutate(data);
   };
 
-  if (isRegistered) {
+  const handleAddAnother = () => {
+    setAddingAnother(true);
+    setJustRegistered(false);
+  };
+
+  if ((isRegistered && !addingAnother) || justRegistered) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="max-w-md mx-auto text-center">
-            <CardContent className="pt-8 pb-8">
-              <div className="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
-                <Check className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Already Registered!</h2>
-              <p className="text-muted-foreground mb-6">
-                You have already registered for the Startup Boot Camp. We will contact you soon with more details.
-              </p>
-              <Link href="/">
-                <Button className="btn-angular" data-testid="button-go-home">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Go to Home
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-12 px-4">
+        <div className="max-w-lg mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="text-center backdrop-blur-sm bg-white/95">
+              <CardContent className="pt-8 pb-8">
+                <div className="w-20 h-20 mx-auto mb-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <Check className="w-10 h-10 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-foreground mb-2" data-testid="text-registration-success">
+                  {justRegistered ? "Registration Successful!" : "You're Registered!"}
+                </h2>
+                <p className="text-muted-foreground mb-4">
+                  {registrationCount > 1 
+                    ? `You have registered ${registrationCount} people for the Startup Boot Camp.`
+                    : "You have registered for the Startup Boot Camp."
+                  }
+                </p>
+                <p className="text-sm text-muted-foreground mb-6">
+                  We will contact you soon with more details.
+                </p>
+
+                <div className="space-y-3">
+                  <Button 
+                    onClick={handleAddAnother}
+                    className="w-full btn-angular bg-blue-600 hover:bg-blue-700" 
+                    data-testid="button-add-another"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Register Another Person
+                  </Button>
+                  
+                  <Link href="/">
+                    <Button variant="outline" className="w-full btn-angular" data-testid="button-go-home">
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      Go to Home
+                    </Button>
+                  </Link>
+                </div>
+
+                {registrationCount > 0 && (
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center justify-center gap-2 text-blue-800">
+                      <Users className="w-5 h-5" />
+                      <span className="font-semibold">{registrationCount} Registration{registrationCount > 1 ? 's' : ''}</span>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1">
+                      from this device
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Payment Section for those who just registered */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-6"
+          >
+            <Card className="backdrop-blur-sm bg-white/95">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <CreditCard className="w-5 h-5 text-green-600" />
+                  Complete Payment
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center text-center pt-0">
+                <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
+                  <img 
+                    src={qrCodeImage}
+                    alt="Payment QR Code"
+                    className="w-48 h-48 object-contain"
+                    data-testid="img-payment-qr-success"
+                  />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Scan to pay the registration fee
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-8 md:py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-8"
+          className="text-center mb-6 md:mb-8"
         >
-          <Link href="/">
-            <Button variant="ghost" className="text-white mb-4" data-testid="button-back-home">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
+          <div className="flex items-center justify-between mb-4">
+            <Link href="/">
+              <Button variant="ghost" className="text-white" data-testid="button-back-home">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Back to Home</span>
+                <span className="sm:hidden">Back</span>
+              </Button>
+            </Link>
+            
+            {registrationCount > 0 && (
+              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5">
+                <Users className="w-4 h-4 text-white" />
+                <span className="text-white text-sm font-medium">{registrationCount} registered</span>
+              </div>
+            )}
+          </div>
           
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
             <Sparkles className="w-4 h-4 text-yellow-400" />
             <span className="text-white text-sm font-medium">3-Day Residential Experience</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             STARTUP <span className="text-yellow-400">BOOT CAMP</span>
           </h1>
           
-          <div className="flex flex-wrap justify-center gap-6 text-white/80 text-sm">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-white/80 text-sm">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               <span>December 26-28, 2025</span>
@@ -159,9 +254,16 @@ export default function Register() {
             </div>
           </div>
           
-          <p className="text-white/70 mt-4 max-w-2xl mx-auto">
+          <p className="text-white/70 mt-4 max-w-2xl mx-auto text-sm md:text-base">
             Open to ages 15-29. Build an entrepreneurial mindset and turn ideas into real startups.
           </p>
+
+          {addingAnother && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-green-500/20 backdrop-blur-sm rounded-full px-4 py-2">
+              <Plus className="w-4 h-4 text-green-400" />
+              <span className="text-green-100 text-sm font-medium">Adding another registration</span>
+            </div>
+          )}
         </motion.div>
 
         <motion.div
@@ -170,19 +272,19 @@ export default function Register() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Card className="backdrop-blur-sm bg-white/95">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-4 md:pb-6">
+              <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
                 <UserPlus className="w-5 h-5 text-blue-600" />
-                Register for Startup Boot Camp
+                {addingAnother ? "Register Another Person" : "Register for Startup Boot Camp"}
               </CardTitle>
-              <CardDescription>
-                Fill in your details below to secure your spot at the camp.
+              <CardDescription className="text-sm">
+                Fill in the details below to secure a spot at the camp.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     <FormField
                       control={form.control}
                       name="fullName"
@@ -190,7 +292,7 @@ export default function Register() {
                         <FormItem>
                           <FormLabel>Full Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter your full name" {...field} data-testid="input-fullname" />
+                            <Input placeholder="Enter full name" {...field} data-testid="input-fullname" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -204,7 +306,7 @@ export default function Register() {
                         <FormItem>
                           <FormLabel>Email *</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="your@email.com" {...field} data-testid="input-email" />
+                            <Input type="email" placeholder="email@example.com" {...field} data-testid="input-email" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -232,7 +334,7 @@ export default function Register() {
                         <FormItem>
                           <FormLabel>Age *</FormLabel>
                           <FormControl>
-                            <Input type="text" placeholder="Your age (15-29)" {...field} data-testid="input-age" />
+                            <Input type="text" placeholder="Age (15-29)" {...field} data-testid="input-age" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -243,10 +345,10 @@ export default function Register() {
                       control={form.control}
                       name="organization"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="md:col-span-2">
                           <FormLabel>Organization / College</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your school/college/company" {...field} value={field.value ?? ""} data-testid="input-organization" />
+                            <Input placeholder="School/college/company (optional)" {...field} value={field.value ?? ""} data-testid="input-organization" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -257,10 +359,10 @@ export default function Register() {
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Upload className="w-4 h-4" />
-                      Upload Supporting Document (Screenshot/PDF)
+                      Upload Document (Optional)
                     </FormLabel>
                     <FormControl>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer" data-testid="upload-document-area">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center hover:border-blue-500 transition-colors cursor-pointer" data-testid="upload-document-area">
                         <input
                           type="file"
                           accept="image/jpeg,image/png,image/gif,application/pdf"
@@ -281,16 +383,14 @@ export default function Register() {
                           ) : (
                             <div className="text-sm">
                               <p className="font-semibold text-gray-700 mb-1">Click to upload</p>
-                              <p className="text-gray-500">or drag and drop</p>
-                              <p className="text-xs text-gray-400 mt-2">
-                                Supported: JPEG, PNG, GIF, PDF (Max 5MB)
+                              <p className="text-xs text-gray-400">
+                                JPEG, PNG, GIF, PDF (Max 5MB)
                               </p>
                             </div>
                           )}
                         </label>
                       </div>
                     </FormControl>
-                    <p className="text-xs text-gray-500 mt-2">Optional: Upload a screenshot of payment proof, ID, or any supporting document</p>
                   </FormItem>
 
                   <Button 
@@ -304,10 +404,22 @@ export default function Register() {
                     ) : (
                       <>
                         <UserPlus className="w-4 h-4 mr-2" />
-                        Register Now
+                        {addingAnother ? "Register This Person" : "Register Now"}
                       </>
                     )}
                   </Button>
+
+                  {addingAnother && (
+                    <Button 
+                      type="button"
+                      variant="ghost"
+                      className="w-full"
+                      onClick={() => setAddingAnother(false)}
+                      data-testid="button-cancel-add"
+                    >
+                      Cancel
+                    </Button>
+                  )}
                 </form>
               </Form>
             </CardContent>
@@ -319,36 +431,36 @@ export default function Register() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8"
+          className="mt-6 md:mt-8"
         >
           <Card className="backdrop-blur-sm bg-white/95">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <CreditCard className="w-5 h-5 text-green-600" />
                 Complete Your Registration
               </CardTitle>
-              <CardDescription>
-                Scan the QR code below to complete your payment and confirm your spot.
+              <CardDescription className="text-sm">
+                Scan the QR code to pay and confirm your spot.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center text-center">
-              <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200">
+              <div className="mb-4 md:mb-6 p-4 md:p-6 bg-white rounded-lg border border-gray-200">
                 <img 
                   src={qrCodeImage}
                   alt="Payment QR Code"
-                  className="w-64 h-64 object-contain"
+                  className="w-48 md:w-64 h-48 md:h-64 object-contain"
                   data-testid="img-payment-qr"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2" data-testid="text-qr-title">
+              <h3 className="text-base md:text-lg font-semibold text-foreground mb-2" data-testid="text-qr-title">
                 UPI Payment
               </h3>
-              <p className="text-sm text-muted-foreground mb-4" data-testid="text-qr-description">
-                Scan this QR code with any UPI app to complete your Boot Camp registration fee payment.
+              <p className="text-xs md:text-sm text-muted-foreground mb-4" data-testid="text-qr-description">
+                Scan with any UPI app to pay the registration fee.
               </p>
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4 w-full">
-                <p className="text-sm text-blue-900" data-testid="text-qr-note">
-                  <strong>Note:</strong> After scanning and paying, you'll receive a confirmation. Please keep it safe for camp registration.
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-3 md:p-4 w-full">
+                <p className="text-xs md:text-sm text-blue-900" data-testid="text-qr-note">
+                  <strong>Note:</strong> Keep your payment confirmation safe for camp registration.
                 </p>
               </div>
             </CardContent>
