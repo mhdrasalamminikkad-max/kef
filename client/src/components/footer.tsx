@@ -1,43 +1,27 @@
 import { Link } from "wouter";
 import { 
-  Facebook, 
-  Twitter, 
-  Linkedin, 
   Instagram, 
+  Linkedin, 
   Youtube, 
   Mail, 
   Phone, 
-  MapPin,
-  ArrowRight
+  MapPin
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 const footerLinks = {
-  about: [
+  pages: [
+    { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
-    { label: "Our Team", href: "/about#team" },
-    { label: "Our Vision", href: "/about#vision" },
-    { label: "Partners", href: "/partners" },
-  ],
-  programs: [
-    { label: "All Programs", href: "/programs" },
-    { label: "Startup Support", href: "/startup-support" },
-    { label: "Campus Initiatives", href: "/campus-initiatives" },
-    { label: "Events", href: "/events" },
-  ],
-  resources: [
-    { label: "Resources", href: "/resources" },
+    { label: "Programs", href: "/programs" },
     { label: "Membership", href: "/membership" },
-    { label: "Contact Us", href: "/contact" },
+    { label: "Partners", href: "/partners" },
+    { label: "Contact", href: "/contact" },
   ],
 };
 
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
   { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Linkedin, href: "#", label: "LinkedIn" },
   { icon: Youtube, href: "#", label: "YouTube" },
 ];
 
@@ -45,7 +29,7 @@ export function Footer() {
   return (
     <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <img src="/logo.png" alt="KEF Logo" className="w-10 h-10 rounded-lg" />
@@ -59,23 +43,22 @@ export function Footer() {
               </div>
             </div>
             <p className="text-sm text-slate-400 mb-6 max-w-sm">
-              Kerala Economic Forum (KEF) is a dynamic platform dedicated to fostering 
-              entrepreneurship, supporting startups, and driving sustainable economic 
-              growth across Kerala.
+              A statewide non-profit movement empowering entrepreneurs, startups, students, 
+              institutions, and innovators to build, grow, and transform Kerala's economic future.
             </p>
             
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="w-4 h-4 text-cyan-400" />
-                <span>info@keralaeconomicforum.org</span>
+                <span>inquiry@keralaeconomicforum.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="w-4 h-4 text-cyan-400" />
-                <span>+91 471 123 4567</span>
+                <span>+91 XXXXX XXXXX</span>
               </div>
-              <div className="flex items-center gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-cyan-400" />
-                <span>Thiruvananthapuram, Kerala, India</span>
+              <div className="flex items-start gap-3 text-sm">
+                <MapPin className="w-4 h-4 text-cyan-400 mt-0.5" />
+                <span>Level 3, Venture Arcade, Mavoor Rd, above Croma, Thondayad, Kozhikode, Kerala 673016</span>
               </div>
             </div>
 
@@ -95,9 +78,9 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">About</h3>
+            <h3 className="font-semibold text-white mb-4">Pages</h3>
             <ul className="space-y-2">
-              {footerLinks.about.map((link) => (
+              {footerLinks.pages.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
                     <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -110,49 +93,31 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Programs</h3>
+            <h3 className="font-semibold text-white mb-4">Connect</h3>
             <ul className="space-y-2">
-              {footerLinks.programs.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}>
-                    <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
-                      {link.label}
-                    </span>
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors">
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors">
+                  LinkedIn
+                </a>
+              </li>
+              <li>
+                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors">
+                  YouTube
+                </a>
+              </li>
             </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-white mb-4">Stay Updated</h3>
-            <p className="text-sm text-slate-400 mb-4">
-              Subscribe to our newsletter for the latest updates.
-            </p>
-            <div className="flex gap-2">
-              <Input
-                type="email"
-                placeholder="Your email"
-                className="bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500"
-                data-testid="input-newsletter-email"
-              />
-              <Button size="icon" data-testid="button-newsletter-submit">
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-slate-500">
-              &copy; {new Date().getFullYear()} Kerala Economic Forum. All rights reserved.
-            </p>
-            <div className="flex gap-6 text-sm text-slate-500">
-              <a href="#" className="hover:text-purple-400 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-purple-400 transition-colors">Terms of Service</a>
-            </div>
-          </div>
+        <div className="mt-12 pt-8 border-t border-slate-800">
+          <p className="text-center text-sm text-slate-500">
+            © {new Date().getFullYear()} Kerala Economic Forum. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

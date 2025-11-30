@@ -9,11 +9,7 @@ import { Layout } from "@/components/layout";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import Programs from "@/pages/programs";
-import StartupSupport from "@/pages/startup-support";
-import CampusInitiatives from "@/pages/campus-initiatives";
-import Events from "@/pages/events";
 import Membership from "@/pages/membership";
-import Resources from "@/pages/resources";
 import Partners from "@/pages/partners";
 import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
@@ -25,11 +21,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/programs" component={Programs} />
-        <Route path="/startup-support" component={StartupSupport} />
-        <Route path="/campus-initiatives" component={CampusInitiatives} />
-        <Route path="/events" component={Events} />
         <Route path="/membership" component={Membership} />
-        <Route path="/resources" component={Resources} />
         <Route path="/partners" component={Partners} />
         <Route path="/contact" component={Contact} />
         <Route component={NotFound} />

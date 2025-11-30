@@ -1,430 +1,221 @@
 import { motion } from "framer-motion";
-import { Link } from "wouter";
-import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { 
+  Users, 
+  GraduationCap, 
+  Building2,
+  TrendingUp,
   Award,
   CheckCircle2,
-  Users,
-  GraduationCap,
-  Building2,
-  Building,
-  ArrowRight,
-  Loader2
+  Briefcase
 } from "lucide-react";
-import { Hero } from "@/components/hero";
-import { Section, SectionHeader, itemVariants } from "@/components/section";
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
+import { Section, SectionHeader } from "@/components/section";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { insertMembershipSchema, type InsertMembership } from "@shared/schema";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const membershipTiers = [
+const membershipBenefits = [
+  "Access to all events",
+  "Mentorship & advisory",
+  "Funding support",
+  "Networking circles",
+  "Startup resources",
+  "Campus opportunities",
+  "Recognition badges"
+];
+
+const membershipTypes = [
   {
-    icon: Users,
-    name: "Individual",
-    price: "Free",
-    description: "For aspiring entrepreneurs and ecosystem enthusiasts",
-    features: [
-      "Access to community events",
-      "Newsletter subscription",
-      "Member directory access",
-      "Online resources library",
-    ],
-    popular: false,
+    icon: Briefcase,
+    title: "Entrepreneur Membership",
+    description: "For startup founders, business owners, and aspiring entrepreneurs looking to connect, learn, and grow within Kerala's entrepreneurial ecosystem.",
+    gradient: "red"
   },
   {
     icon: GraduationCap,
-    name: "Student",
-    price: "Free",
-    description: "For students passionate about entrepreneurship",
-    features: [
-      "All Individual benefits",
-      "Campus Ambassador eligibility",
-      "Internship opportunities",
-      "Student-only events access",
-      "Mentorship connections",
-    ],
-    popular: true,
+    title: "Student Membership",
+    description: "For students passionate about entrepreneurship, looking for mentorship, networking, and opportunities to start their entrepreneurial journey.",
+    gradient: "cyan"
   },
   {
     icon: Building2,
-    name: "Corporate",
-    price: "Contact Us",
-    description: "For companies supporting the startup ecosystem",
-    features: [
-      "All Individual benefits",
-      "Startup talent access",
-      "Event sponsorship opportunities",
-      "Innovation partnership programs",
-      "Brand visibility across events",
-      "CSR collaboration options",
-    ],
-    popular: false,
+    title: "Business Membership",
+    description: "For established businesses wanting to connect with startups, support the ecosystem, and find collaboration opportunities.",
+    gradient: "yellow"
   },
   {
-    icon: Building,
-    name: "Institutional",
-    price: "Contact Us",
-    description: "For educational and research institutions",
-    features: [
-      "All Individual benefits",
-      "Campus partnership programs",
-      "Student engagement initiatives",
-      "Faculty development programs",
-      "Research collaboration",
-      "Incubation setup support",
-    ],
-    popular: false,
+    icon: TrendingUp,
+    title: "Investor Membership",
+    description: "For angel investors, VCs, and investment professionals looking to discover and support promising startups in Kerala.",
+    gradient: "red"
   },
-];
-
-const memberBenefits = [
-  "Access to exclusive networking events and workshops",
-  "Connection to mentors and industry experts",
-  "Priority registration for KEF programs",
-  "Access to resource library and tools",
-  "Member directory for networking",
-  "Regular newsletter with ecosystem updates",
-  "Volunteer and leadership opportunities",
-  "Discounts on partner services",
+  {
+    icon: Award,
+    title: "Institutional Membership",
+    description: "For colleges, universities, incubators, and organizations wanting to partner with KEF for campus programs and ecosystem building.",
+    gradient: "cyan"
+  }
 ];
 
 export default function Membership() {
-  const { toast } = useToast();
-  
-  const form = useForm<InsertMembership>({
-    resolver: zodResolver(insertMembershipSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-      organization: "",
-      designation: "",
-      membershipType: "individual",
-      interests: "",
-      message: "",
-    },
-  });
-
-  const membershipMutation = useMutation({
-    mutationFn: async (data: InsertMembership) => {
-      const response = await apiRequest("POST", "/api/membership", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Application Submitted",
-        description: "Thank you for your interest! We'll review your application and get back to you soon.",
-      });
-      form.reset();
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Submission Failed",
-        description: error.message || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmit = (data: InsertMembership) => {
-    membershipMutation.mutate(data);
-  };
-
-  const scrollToForm = (type: string) => {
-    form.setValue("membershipType", type as InsertMembership["membershipType"]);
-    document.getElementById('membership-form')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <>
-      <Hero
-        title="Join Kerala Economic Forum"
-        description="Become part of Kerala's most vibrant entrepreneurship community and unlock opportunities for growth and success."
-        size="small"
-        gradient="teal"
-      />
+      {/* HERO */}
+      <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-cyan-400 to-yellow-300 opacity-95" />
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4"
+            data-testid="text-membership-title"
+          >
+            Become a Member of Kerala Economic Forum
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-lg text-white/90 max-w-2xl mx-auto"
+            data-testid="text-membership-subtitle"
+          >
+            Join the movement and become part of Kerala's most vibrant entrepreneurial network.
+          </motion.p>
+        </div>
+      </section>
 
+      {/* MEMBERSHIP BENEFITS */}
       <Section>
-        <SectionHeader
-          subtitle="Membership Options"
-          title="Choose Your Membership"
-          description="Select the membership tier that best fits your needs and goals."
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {membershipTiers.map((tier) => (
-            <motion.div key={tier.name} variants={itemVariants}>
-              <Card className={`h-full relative ${tier.popular ? 'border-primary shadow-lg' : ''}`}>
-                {tier.popular && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-blue-600">
-                    Most Popular
-                  </Badge>
-                )}
-                <CardHeader className="text-center pb-4">
-                  <div className={`w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br ${
-                    tier.popular ? 'from-purple-500 to-blue-500' : 'from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30'
-                  } flex items-center justify-center`}>
-                    <tier.icon className={`w-7 h-7 ${tier.popular ? 'text-white' : 'text-purple-600'}`} />
+        <SectionHeader title="Membership Benefits" />
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {membershipBenefits.map((benefit, index) => (
+              <motion.div
+                key={benefit}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="h-full hover-elevate">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0" />
+                    <span className="text-foreground font-medium" data-testid={`text-benefit-${index}`}>{benefit}</span>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* MEMBERSHIP TYPES */}
+      <Section background="muted">
+        <SectionHeader title="Membership Types" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {membershipTypes.map((type, index) => (
+            <motion.div
+              key={type.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="h-full hover-elevate">
+                <CardContent className="p-6">
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
+                    type.gradient === 'red' ? 'bg-gradient-to-br from-red-500 to-red-600' :
+                    type.gradient === 'yellow' ? 'bg-gradient-to-br from-yellow-300 to-yellow-400' :
+                    'bg-gradient-to-br from-cyan-400 to-cyan-500'
+                  }`}>
+                    <type.icon className={`w-7 h-7 ${type.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground">{tier.name}</h3>
-                  <div className="mt-2">
-                    <span className="text-2xl font-bold text-foreground">{tier.price}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">{tier.description}</p>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {tier.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                        <span className="text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-type-title-${index}`}>
+                    {type.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground" data-testid={`text-type-desc-${index}`}>
+                    {type.description}
+                  </p>
                 </CardContent>
-                <CardFooter>
-                  <Button 
-                    className="w-full" 
-                    variant={tier.popular ? "default" : "outline"}
-                    onClick={() => scrollToForm(tier.name.toLowerCase())}
-                    data-testid={`button-select-${tier.name.toLowerCase()}`}
-                  >
-                    {tier.price === "Contact Us" ? "Contact Us" : "Join Now"}
-                  </Button>
-                </CardFooter>
               </Card>
             </motion.div>
           ))}
         </div>
       </Section>
 
-      <Section background="muted">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <motion.div variants={itemVariants}>
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary mb-4">
-              Member Benefits
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-6">
-              Why Join KEF?
-            </h2>
-            <p className="text-muted-foreground leading-relaxed mb-8">
-              As a KEF member, you gain access to a comprehensive support ecosystem designed 
-              to help you succeed in your entrepreneurial journey.
-            </p>
-            <ul className="space-y-3">
-              {memberBenefits.map((benefit, index) => (
-                <motion.li 
-                  key={index}
-                  variants={itemVariants}
-                  className="flex items-start gap-3"
-                >
-                  <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
-                  <span className="text-foreground">{benefit}</span>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-          
-          <motion.div variants={itemVariants} id="membership-form">
+      {/* SIGNUP FORM */}
+      <Section>
+        <SectionHeader title="Join Now" />
+        <div className="max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <Card>
-              <CardHeader>
-                <h3 className="text-xl font-bold text-foreground">Membership Application</h3>
-                <p className="text-muted-foreground">Fill in your details to join the KEF community</p>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="fullName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Full Name *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Your full name" {...field} data-testid="input-full-name" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email *</FormLabel>
-                            <FormControl>
-                              <Input type="email" placeholder="your@email.com" {...field} data-testid="input-email" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+              <CardContent className="p-8">
+                <form className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name</Label>
+                      <Input id="name" placeholder="Your full name" data-testid="input-name" />
                     </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Phone *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="+91 XXXXX XXXXX" {...field} data-testid="input-phone" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="organization"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Organization</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Company/Institution name" {...field} data-testid="input-organization" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" placeholder="your@email.com" data-testid="input-email" />
                     </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="membershipType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Membership Type *</FormLabel>
-                          <FormControl>
-                            <RadioGroup 
-                              onValueChange={field.onChange} 
-                              value={field.value}
-                              className="grid grid-cols-2 gap-4"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="individual" id="individual" data-testid="radio-individual" />
-                                <label htmlFor="individual" className="cursor-pointer text-sm">Individual</label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="student" id="student" data-testid="radio-student" />
-                                <label htmlFor="student" className="cursor-pointer text-sm">Student</label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="corporate" id="corporate" data-testid="radio-corporate" />
-                                <label htmlFor="corporate" className="cursor-pointer text-sm">Corporate</label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="institutional" id="institutional" data-testid="radio-institutional" />
-                                <label htmlFor="institutional" className="cursor-pointer text-sm">Institutional</label>
-                              </div>
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="interests"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Areas of Interest *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., Tech Startups, Social Enterprise, Funding" {...field} data-testid="input-interests" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tell us about yourself</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Brief introduction and what you hope to gain from KEF membership"
-                              className="min-h-[100px]"
-                              {...field}
-                              data-testid="input-message"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full" 
-                      size="lg" 
-                      disabled={membershipMutation.isPending}
-                      data-testid="button-submit-membership"
-                    >
-                      {membershipMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <Award className="mr-2 w-4 h-4" />
-                          Submit Application
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </Form>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input id="phone" placeholder="+91 XXXXX XXXXX" data-testid="input-phone" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="role">Role</Label>
+                      <Select>
+                        <SelectTrigger data-testid="select-role">
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
+                          <SelectItem value="student">Student</SelectItem>
+                          <SelectItem value="business">Business</SelectItem>
+                          <SelectItem value="investor">Investor</SelectItem>
+                          <SelectItem value="institution">Institution</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startup">Startup Name</Label>
+                      <Input id="startup" placeholder="Your startup/business name" data-testid="input-startup" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="city">City</Label>
+                      <Input id="city" placeholder="Your city" data-testid="input-city" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea id="message" placeholder="Tell us about yourself and your goals..." rows={4} data-testid="input-message" />
+                  </div>
+                  <Button type="submit" className="w-full bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" data-testid="button-submit-membership">
+                    Submit Application
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </motion.div>
         </div>
-      </Section>
-
-      <Section>
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-purple-600 to-blue-600 border-0 overflow-hidden relative">
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
-            </div>
-            <CardContent className="relative z-10 py-12 px-6 lg:px-12 text-center">
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-                Have Questions About Membership?
-              </h2>
-              <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-                Our team is happy to answer any questions you have about joining KEF.
-              </p>
-              <Link href="/contact">
-                <Button size="lg" className="bg-white text-purple-700 hover:bg-white/90 font-semibold" data-testid="button-membership-contact">
-                  Contact Us
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
       </Section>
     </>
   );

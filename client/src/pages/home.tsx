@@ -8,309 +8,345 @@ import {
   Lightbulb, 
   Building2,
   HandshakeIcon,
-  Award,
+  Briefcase,
   ArrowRight,
-  Calendar
+  Calendar,
+  MapPin,
+  Clock
 } from "lucide-react";
 import { Hero } from "@/components/hero";
 import { Section, SectionHeader, itemVariants } from "@/components/section";
 import { IconCard } from "@/components/icon-card";
-import { ProgramCard } from "@/components/program-card";
-import { EventCard } from "@/components/event-card";
 import { AnimatedCounter } from "@/components/animated-counter";
-import { PartnerLogo } from "@/components/partner-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const whatWeDo = [
   {
     icon: Rocket,
-    title: "Startup Incubation",
-    description: "Nurturing innovative ideas into successful ventures with mentorship and resources.",
-    gradient: "purple" as const,
-  },
-  {
-    icon: Users,
-    title: "Networking Events",
-    description: "Connecting entrepreneurs, investors, and industry leaders for collaborative growth.",
-    gradient: "blue" as const,
-  },
-  {
-    icon: GraduationCap,
-    title: "Skill Development",
-    description: "Comprehensive training programs to build entrepreneurial capabilities.",
-    gradient: "teal" as const,
+    title: "Startup Support & Mentoring",
+    gradient: "red" as const,
   },
   {
     icon: TrendingUp,
-    title: "Market Access",
-    description: "Facilitating market linkages and business opportunities for startups.",
-    gradient: "orange" as const,
+    title: "Funding & Investor Connect",
+    gradient: "yellow" as const,
+  },
+  {
+    icon: GraduationCap,
+    title: "Campus Entrepreneurship Programs",
+    gradient: "cyan" as const,
+  },
+  {
+    icon: Building2,
+    title: "Business Conclaves & Networking Summits",
+    gradient: "red" as const,
+  },
+  {
+    icon: Briefcase,
+    title: "Advisory & Skill Development",
+    gradient: "yellow" as const,
+  },
+  {
+    icon: Users,
+    title: "Local Entrepreneur Development",
+    gradient: "cyan" as const,
   },
 ];
 
 const signaturePrograms = [
   {
-    icon: Lightbulb,
-    title: "Kerala Startup Mission Partnership",
-    description: "Collaborative initiatives with KSUM to accelerate startup ecosystem development across the state.",
-    features: ["Mentorship Programs", "Funding Access", "Infrastructure Support"],
-    href: "/programs",
-    gradient: "purple" as const,
+    title: "Startup Boot Camp",
+    description: "Residential and day camps where participants learn to think like entrepreneurs through workshops, business model creation, and pitching sessions.",
   },
   {
-    icon: Building2,
-    title: "District Innovation Hubs",
-    description: "Establishing innovation centers across all 14 districts to democratize entrepreneurship.",
-    features: ["Local Incubation", "Community Building", "Resource Centers"],
-    href: "/programs",
-    gradient: "blue" as const,
+    title: "Business Conclaves",
+    description: "Large-scale gatherings where founders, investors, mentors, thought leaders, and students connect and collaborate.",
   },
   {
-    icon: GraduationCap,
-    title: "Campus Ambassador Program",
-    description: "Empowering students to become change agents and foster innovation in educational institutions.",
-    features: ["Leadership Training", "Event Organization", "Network Building"],
-    href: "/campus-initiatives",
-    gradient: "teal" as const,
+    title: "Founder Circle Meets",
+    description: "Exclusive curated networking dinners and tea sessions bringing entrepreneurs and experts for honest conversations.",
+  },
+  {
+    title: "Startup Advisory Clinics",
+    description: "One-on-one mentoring and business advisory sessions in finance, branding, HR, legal, marketing, and operations.",
+  },
+  {
+    title: "Campus Innovation Labs",
+    description: "Building entrepreneurship clubs, innovation cells, startup labs, and student incubators in colleges across Kerala.",
   },
 ];
 
 const impactMetrics = [
-  { end: 500, suffix: "+", label: "Startups Supported" },
-  { end: 50, suffix: "+", label: "Events Annually" },
-  { end: 10000, suffix: "+", label: "Community Members" },
-  { end: 100, suffix: "+", label: "Industry Partners" },
+  { end: 1000, suffix: "+", label: "Startups to be supported" },
+  { end: 1000, suffix: "+", label: "Entrepreneurs in our network" },
+  { end: 100, suffix: "+", label: "Campus partnerships" },
+  { end: 100, prefix: "₹", suffix: "+ Cr", label: "Funding enablement target" },
 ];
 
 const upcomingEvents = [
   {
-    title: "Startup Kerala Summit 2024",
-    date: "Dec 15, 2024",
-    time: "9:00 AM - 6:00 PM",
-    location: "Technopark, Thiruvananthapuram",
-    description: "Annual flagship event bringing together the startup ecosystem for networking, learning, and collaboration.",
-    category: "Summit",
+    title: "Kerala Startup Fest – January",
+    description: "Two-day power-packed festival with 1000+ student entrepreneurs, investors, experts, workshops, and real-time pitch battles.",
   },
   {
-    title: "Investor Connect Program",
-    date: "Dec 20, 2024",
-    time: "2:00 PM - 5:00 PM",
-    location: "Kochi Startup Village",
-    description: "Exclusive pitch session connecting promising startups with angel investors and venture capitalists.",
-    category: "Networking",
+    title: "KEF Founder Roundtable",
+    description: "Closed-door networking session for selected founders and business leaders.",
   },
   {
-    title: "Entrepreneurship Bootcamp",
-    date: "Jan 5, 2025",
-    time: "10:00 AM - 4:00 PM",
-    location: "Virtual Event",
-    description: "Intensive workshop covering business model development, market validation, and growth strategies.",
-    category: "Workshop",
+    title: "Startup Boot Camp",
+    description: "Residential Startup Camp for aspiring entrepreneurs.",
   },
-];
-
-const partners = [
-  "Kerala Startup Mission",
-  "KINFRA",
-  "SIDBI",
-  "IIM Kozhikode",
-  "NASSCOM",
-  "TiE Kerala",
-  "CII Kerala",
-  "KSIDC",
 ];
 
 export default function Home() {
   return (
     <>
-      <Hero
-        subtitle="Welcome to Kerala Economic Forum"
-        title="Empowering Entrepreneurs, Driving Economic Growth"
-        description="Kerala Economic Forum (KEF) is a dynamic platform dedicated to fostering entrepreneurship, supporting startups, and driving sustainable economic growth across Kerala."
-        primaryCta={{ label: "Join Our Community", href: "/membership" }}
-        secondaryCta={{ label: "Watch Video", href: "/about" }}
-      />
-
-      <Section background="gradient">
-        <SectionHeader
-          subtitle="Who We Are"
-          title="Building Kerala's Future Together"
-          description="We are a community-driven organization committed to creating a vibrant entrepreneurial ecosystem that empowers innovators, nurtures talent, and accelerates economic development."
-        />
+      {/* SECTION 1 — HERO / TOP BANNER */}
+      <section className="relative overflow-hidden min-h-[600px] lg:min-h-[700px] flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-500 to-cyan-400 opacity-95" />
         
-        <motion.div variants={itemVariants} className="max-w-3xl mx-auto text-center">
-          <p className="text-muted-foreground leading-relaxed mb-8">
-            Founded with a vision to transform Kerala into a global hub for innovation and entrepreneurship, 
-            KEF brings together entrepreneurs, investors, policymakers, and industry leaders to collaborate, 
-            share knowledge, and create impactful solutions for society.
-          </p>
-          <Link href="/about">
-            <Button size="lg" data-testid="button-learn-more-about">
-              Learn More About Us
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
-          </Link>
-        </motion.div>
-      </Section>
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-yellow-300/15 rounded-full blur-3xl" />
+        </div>
 
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="font-bold text-white leading-tight tracking-tight text-4xl sm:text-5xl lg:text-6xl"
+              data-testid="text-hero-headline"
+            >
+              Where Kerala's Entrepreneurs Rise Together
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="mt-6 text-lg sm:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto"
+              data-testid="text-hero-subheadline"
+            >
+              A statewide non-profit movement empowering entrepreneurs, startups, students, institutions, and innovators to build, grow, and transform Kerala's economic future.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Link href="/membership">
+                <Button size="lg" className="bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" data-testid="button-join-forum">
+                  Join the Forum
+                </Button>
+              </Link>
+              <Link href="/programs">
+                <Button size="lg" variant="outline" className="text-white border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20" data-testid="button-explore-programs">
+                  Explore Our Programs
+                </Button>
+              </Link>
+              <Link href="/partners">
+                <Button size="lg" variant="outline" className="text-white border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/20" data-testid="button-partner-with-us">
+                  Partner With Us
+                </Button>
+              </Link>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-8 text-sm text-white/70 italic"
+              data-testid="text-hero-tagline"
+            >
+              Where ideas grow. Where founders rise. Where Kerala transforms.
+            </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SECTION 2 — QUICK INTRO */}
       <Section>
-        <SectionHeader
-          subtitle="What We Do"
-          title="Comprehensive Support for Your Journey"
-          description="From ideation to scale-up, we provide end-to-end support to help entrepreneurs succeed at every stage of their journey."
-        />
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {whatWeDo.map((item, index) => (
-            <IconCard
-              key={item.title}
-              icon={item.icon}
-              title={item.title}
-              description={item.description}
-              gradient={item.gradient}
-              index={index}
-            />
-          ))}
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-6" data-testid="text-intro-title">
+              Welcome to Kerala Economic Forum
+            </h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-4" data-testid="text-intro-body-1">
+              We bring together entrepreneurs, students, institutions, experts, investors, and thought leaders to create opportunities, build networks, and support new ideas.
+            </p>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8" data-testid="text-intro-body-2">
+              Our mission is to help Kerala become a leading hub for startups, innovation, and economic development.
+            </p>
+            <Link href="/about">
+              <Button data-testid="button-learn-more">
+                Learn More About Us
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+          </motion.div>
         </div>
       </Section>
 
+      {/* SECTION 3 — WHAT WE FOCUS ON */}
       <Section background="muted">
         <SectionHeader
-          subtitle="Signature Programs"
-          title="Our Flagship Initiatives"
-          description="Discover our key programs designed to accelerate startup growth and foster innovation across Kerala."
+          title="What We Do"
+          description="We empower Kerala's entrepreneurial community through:"
         />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {signaturePrograms.map((program, index) => (
-            <ProgramCard
-              key={program.title}
-              icon={program.icon}
-              title={program.title}
-              description={program.description}
-              features={program.features}
-              href={program.href}
-              gradient={program.gradient}
-              index={index}
-            />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {whatWeDo.map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="h-full hover-elevate">
+                <CardContent className="p-6 text-center">
+                  <div className={`w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-4 ${
+                    item.gradient === 'red' ? 'bg-gradient-to-br from-red-500 to-red-600' :
+                    item.gradient === 'yellow' ? 'bg-gradient-to-br from-yellow-300 to-yellow-400' :
+                    'bg-gradient-to-br from-cyan-400 to-cyan-500'
+                  }`}>
+                    <item.icon className={`w-7 h-7 ${item.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
+                  </div>
+                  <h3 className="font-semibold text-foreground" data-testid={`text-whatwedo-${index}`}>
+                    {item.title}
+                  </h3>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
-        
-        <motion.div variants={itemVariants} className="text-center mt-12">
+      </Section>
+
+      {/* SECTION 4 — SIGNATURE PROGRAMS */}
+      <Section>
+        <SectionHeader
+          title="Our Signature Programs"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {signaturePrograms.map((program, index) => (
+            <motion.div
+              key={program.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="h-full hover-elevate">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-program-title-${index}`}>
+                    {program.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground" data-testid={`text-program-desc-${index}`}>
+                    {program.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
           <Link href="/programs">
-            <Button variant="outline" size="lg" data-testid="button-view-all-programs">
+            <Button data-testid="button-view-all-programs">
               View All Programs
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
-        </motion.div>
+        </div>
       </Section>
 
-      <Section>
+      {/* SECTION 5 — IMPACT HIGHLIGHTS */}
+      <Section background="muted">
         <SectionHeader
-          subtitle="Our Impact"
-          title="Making a Difference"
-          description="Numbers that reflect our commitment to building Kerala's entrepreneurial ecosystem."
+          title="Our Vision. Our Impact. Our Future."
         />
-        
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {impactMetrics.map((metric, index) => (
             <AnimatedCounter
               key={metric.label}
               end={metric.end}
               suffix={metric.suffix}
+              prefix={metric.prefix}
               label={metric.label}
             />
           ))}
         </div>
       </Section>
 
-      <Section background="gradient">
-        <SectionHeader
-          subtitle="Upcoming Events"
-          title="Join Our Events"
-          description="Stay connected with the latest happenings in Kerala's entrepreneurial ecosystem."
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {upcomingEvents.map((event, index) => (
-            <EventCard
-              key={event.title}
-              {...event}
-              index={index}
-            />
-          ))}
-        </div>
-        
-        <motion.div variants={itemVariants} className="text-center mt-12">
-          <Link href="/events">
-            <Button size="lg" data-testid="button-view-all-events">
-              <Calendar className="mr-2 w-4 h-4" />
-              View All Events
-            </Button>
-          </Link>
-        </motion.div>
-      </Section>
-
+      {/* SECTION 6 — UPCOMING EVENTS */}
       <Section>
         <SectionHeader
-          subtitle="Our Partners"
-          title="Collaborating for Impact"
-          description="We work with leading organizations to create opportunities and drive growth."
+          title="Upcoming Events"
         />
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-          {partners.map((partner, index) => (
-            <PartnerLogo
-              key={partner}
-              name={partner}
-              index={index}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {upcomingEvents.map((event, index) => (
+            <motion.div
+              key={event.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="h-full hover-elevate">
+                <CardContent className="p-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center mb-4">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-event-title-${index}`}>
+                    {event.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground" data-testid={`text-event-desc-${index}`}>
+                    {event.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
-        
-        <motion.div variants={itemVariants} className="text-center mt-12">
-          <Link href="/partners">
-            <Button variant="outline" size="lg" data-testid="button-view-all-partners">
-              <HandshakeIcon className="mr-2 w-4 h-4" />
-              View All Partners
+        <div className="mt-8 text-center">
+          <Link href="/programs">
+            <Button data-testid="button-explore-events">
+              Explore All Events
+              <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </Link>
-        </motion.div>
+        </div>
       </Section>
 
+      {/* SECTION 7 — PARTNERS */}
       <Section background="muted">
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-purple-600 to-blue-600 border-0 overflow-hidden relative">
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-400/20 rounded-full blur-3xl" />
-            </div>
-            <CardContent className="relative z-10 py-12 lg:py-16 px-6 lg:px-12 text-center">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
-                Ready to Start Your Entrepreneurial Journey?
-              </h2>
-              <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-                Join Kerala Economic Forum today and become part of a thriving community of innovators, 
-                entrepreneurs, and change-makers shaping the future of Kerala.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/membership">
-                  <Button size="lg" className="bg-white text-purple-700 hover:bg-white/90 font-semibold" data-testid="button-cta-become-member">
-                    <Award className="mr-2 w-4 h-4" />
-                    Become a Member
-                  </Button>
-                </Link>
-                <Link href="/contact">
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold" data-testid="button-cta-contact">
-                    Contact Us
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <SectionHeader
+          title="Our Partners & Collaborators"
+          description="We collaborate with institutions, corporates, incubators, accelerators, and industry leaders to build Kerala's entrepreneurial ecosystem."
+        />
+        <div className="text-center">
+          <Link href="/partners">
+            <Button data-testid="button-partner-cta">
+              Partner With Us
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
       </Section>
     </>
   );
