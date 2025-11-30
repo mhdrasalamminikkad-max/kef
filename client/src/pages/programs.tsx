@@ -119,10 +119,12 @@ export default function Programs() {
                   <Badge className="bg-yellow-400 text-black border-0">
                     Upcoming Camp: Dec 26-28, 2025
                   </Badge>
-                  <Button className="btn-angular" data-testid="button-register-bootcamp">
-                    Register Now
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
+                  <Link href="/register">
+                    <Button className="btn-angular" data-testid="button-register-bootcamp">
+                      Register Now
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
