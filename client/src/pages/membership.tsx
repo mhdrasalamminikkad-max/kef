@@ -212,9 +212,15 @@ export default function Membership() {
                 <h3 className="text-2xl font-bold text-foreground mb-4" data-testid="text-bootcamp-cta">
                   Startup Boot Camp - December 26-28, 2025
                 </h3>
-                <p className="text-muted-foreground max-w-2xl mx-auto" data-testid="text-bootcamp-cta-desc">
+                <p className="text-muted-foreground max-w-2xl mx-auto mb-6" data-testid="text-bootcamp-cta-desc">
                   A 3-day residential experience for ages 15-29 at Caliph Life School, Kozhikode. Transform your ideas into real startups with expert mentorship and hands-on workshops.
                 </p>
+                <Link href="/register">
+                  <Button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold" data-testid="button-bootcamp-register">
+                    <ArrowRight className="w-4 h-4 mr-2" />
+                    Register Now
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </motion.div>
