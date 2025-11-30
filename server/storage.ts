@@ -78,8 +78,8 @@ export class MemStorage implements IStorage {
       console.warn("WARNING: Using default admin credentials. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables for production.");
     }
     
-    const finalUsername = adminUsername || "admin";
-    const finalPassword = adminPassword || "admin123";
+    const finalUsername = adminUsername || "user";
+    const finalPassword = adminPassword || "caliph786786";
     
     const existingAdmin = await this.getAdminByUsername(finalUsername);
     if (existingAdmin) {
