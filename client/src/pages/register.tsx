@@ -971,7 +971,7 @@ export default function Register() {
                 </div>
 
                 {/* Bank Account Details */}
-                <div className="bg-gray-50 rounded-lg p-4 text-left">
+                <div className="bg-gray-50 rounded-lg p-4 text-left mb-4">
                   <p className="text-xs text-muted-foreground mb-3">Account Details</p>
                   <div className="space-y-2">
                     <div>
@@ -994,6 +994,17 @@ export default function Register() {
                       <span className="text-sm font-mono font-medium text-foreground" data-testid="text-ifsc">ICIC0002654</span>
                     </div>
                   </div>
+                </div>
+
+                {/* QR Code */}
+                <div className="bg-white rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+                  <p className="text-xs text-muted-foreground mb-3">Scan to Pay via UPI</p>
+                  <img 
+                    src="/IMG_3535_1764520833105.PNG"
+                    alt="UPI Payment QR Code" 
+                    className="w-32 h-32 md:w-40 md:h-40 rounded-lg"
+                    data-testid="img-qr-code"
+                  />
                 </div>
               </div>
 
