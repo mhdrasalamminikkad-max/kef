@@ -105,12 +105,12 @@ export default function Home() {
     <>
       {/* SECTION 1 — HERO / TOP BANNER */}
       <section className="relative overflow-hidden min-h-[600px] lg:min-h-[700px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-500 to-cyan-400 opacity-95" />
+        <div className="absolute inset-0 bg-red-500" />
         
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-yellow-300/15 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
@@ -222,9 +222,9 @@ export default function Home() {
               <Card className="h-full hover-elevate">
                 <CardContent className="p-6 text-center">
                   <div className={`w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-4 ${
-                    item.gradient === 'red' ? 'bg-gradient-to-br from-red-500 to-red-600' :
-                    item.gradient === 'yellow' ? 'bg-gradient-to-br from-yellow-300 to-yellow-400' :
-                    'bg-gradient-to-br from-cyan-400 to-cyan-500'
+                    item.gradient === 'red' ? 'bg-red-500' :
+                    item.gradient === 'yellow' ? 'bg-yellow-400' :
+                    'bg-cyan-500'
                   }`}>
                     <item.icon className={`w-7 h-7 ${item.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
                   </div>
@@ -309,7 +309,7 @@ export default function Home() {
             >
               <Card className="h-full hover-elevate">
                 <CardContent className="p-6">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500 flex items-center justify-center mb-4">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-event-title-${index}`}>

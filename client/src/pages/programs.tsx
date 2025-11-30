@@ -41,10 +41,10 @@ export default function Programs() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-500 to-cyan-400 opacity-95" />
+        <div className="absolute inset-0 bg-red-500" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
           <motion.h1
@@ -80,7 +80,7 @@ export default function Programs() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-red-500 flex items-center justify-center">
                     <Rocket className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-bootcamp-title">
@@ -127,7 +127,7 @@ export default function Programs() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-500 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
                     <Building2 className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-conclave-title">
@@ -190,7 +190,7 @@ export default function Programs() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-300 to-yellow-400 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-yellow-400 flex items-center justify-center">
                     <Users className="w-7 h-7 text-black" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-founder-title">
@@ -218,7 +218,7 @@ export default function Programs() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
                     <Briefcase className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-advisory-title">
@@ -256,7 +256,7 @@ export default function Programs() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-500 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
                     <Lightbulb className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-labs-title">
@@ -284,7 +284,7 @@ export default function Programs() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-300 to-yellow-400 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-yellow-400 flex items-center justify-center">
                     <GraduationCap className="w-7 h-7 text-black" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-sef-title">

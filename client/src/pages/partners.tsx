@@ -14,10 +14,10 @@ export default function Partners() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-red-500 to-cyan-400 opacity-95" />
+        <div className="absolute inset-0 bg-red-500" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
           <motion.h1
@@ -52,7 +52,7 @@ export default function Partners() {
           >
             <Card>
               <CardContent className="p-12">
-                <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center mb-6">
+                <div className="w-20 h-20 mx-auto rounded-2xl bg-cyan-500 flex items-center justify-center mb-6">
                   <Handshake className="w-10 h-10 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground mb-4" data-testid="text-partners-cta-title">

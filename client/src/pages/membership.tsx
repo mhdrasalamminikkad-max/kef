@@ -64,10 +64,10 @@ export default function Membership() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-cyan-400 to-yellow-300 opacity-95" />
+        <div className="absolute inset-0 bg-red-500" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
           <motion.h1
@@ -131,9 +131,9 @@ export default function Membership() {
               <Card className="h-full hover-elevate">
                 <CardContent className="p-6">
                   <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
-                    type.gradient === 'red' ? 'bg-gradient-to-br from-red-500 to-red-600' :
-                    type.gradient === 'yellow' ? 'bg-gradient-to-br from-yellow-300 to-yellow-400' :
-                    'bg-gradient-to-br from-cyan-400 to-cyan-500'
+                    type.gradient === 'red' ? 'bg-red-500' :
+                    type.gradient === 'yellow' ? 'bg-yellow-400' :
+                    'bg-cyan-500'
                   }`}>
                     <type.icon className={`w-7 h-7 ${type.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
                   </div>

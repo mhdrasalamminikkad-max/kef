@@ -28,7 +28,7 @@ export function Header() {
             <div className="flex items-center gap-2 cursor-pointer">
               <img src="/logo.png" alt="KEF Logo" className="w-10 h-10 rounded-lg" />
               <div className="flex flex-col">
-                <span className="font-bold text-lg leading-tight bg-gradient-to-r from-red-500 to-cyan-400 bg-clip-text text-transparent">
+                <span className="font-bold text-lg leading-tight text-red-500">
                   KEF
                 </span>
                 <span className="text-xs text-muted-foreground leading-tight hidden sm:block">

@@ -124,10 +124,10 @@ export default function About() {
     <>
       {/* SECTION 1 — WHO WE ARE */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-cyan-400 to-yellow-300 opacity-95" />
+        <div className="absolute inset-0 bg-red-500" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
           <motion.h1
@@ -173,7 +173,7 @@ export default function About() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-red-500 flex items-center justify-center">
                     <Eye className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-vision-title">Our Vision</h2>
@@ -199,7 +199,7 @@ export default function About() {
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-500 flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
                     <Target className="w-7 h-7 text-white" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-mission-title">Our Mission</h2>
@@ -239,7 +239,7 @@ export default function About() {
               <Card className="h-full">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center flex-shrink-0">
                       <span className="text-white font-bold text-sm">{objective.number}</span>
                     </div>
                     <div>
@@ -302,7 +302,7 @@ export default function About() {
             >
               <Card className="h-full hover-elevate">
                 <CardContent className="p-6 text-center">
-                  <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center mb-4">
+                  <div className="w-20 h-20 mx-auto rounded-full bg-cyan-500 flex items-center justify-center mb-4">
                     <Users className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="font-semibold text-lg text-foreground mb-1" data-testid={`text-leader-name-${index}`}>

@@ -26,10 +26,10 @@ export default function Contact() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500 via-cyan-400 to-yellow-300 opacity-95" />
+        <div className="absolute inset-0 bg-red-500" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
           <motion.h1
@@ -119,7 +119,7 @@ export default function Contact() {
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-cyan-400 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0">
                       <MapPin className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -130,7 +130,7 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-cyan-500 flex items-center justify-center flex-shrink-0">
                       <Mail className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -141,7 +141,7 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-300 to-yellow-400 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-yellow-400 flex items-center justify-center flex-shrink-0">
                       <Phone className="w-5 h-5 text-black" />
                     </div>
                     <div>
@@ -165,7 +165,7 @@ export default function Contact() {
                     <a
                       key={social.label}
                       href={social.href}
-                      className="w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 to-cyan-400 hover:opacity-80 flex items-center justify-center transition-opacity"
+                      className="w-12 h-12 rounded-lg bg-cyan-500 hover:opacity-80 flex items-center justify-center transition-opacity"
                       aria-label={social.label}
                       data-testid={`social-${social.label.toLowerCase()}`}
                     >
