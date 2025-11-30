@@ -326,42 +326,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* QUICK INTRO SECTION */}
-      <Section className="mobile-section">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-4 md:mb-6" data-testid="text-intro-title">
-              Welcome to Kerala Economic Forum
-            </h2>
-            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed mb-4" data-testid="text-intro-body-1">
-              We bring together entrepreneurs, students, institutions, experts, investors, and thought leaders to create opportunities and support new ideas.
-            </p>
-            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed mb-6 md:mb-8 hidden sm:block" data-testid="text-intro-body-2">
-              Our mission is to help Kerala become a leading hub for startups, innovation, and economic development.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-              <Link href="/about">
-                <Button className="w-full sm:w-auto btn-angular text-sm md:text-base" data-testid="button-learn-more">
-                  Learn More About Us
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/membership">
-                <Button variant="outline" className="w-full sm:w-auto btn-angular text-sm md:text-base" data-testid="button-join-now">
-                  <UserPlus className="mr-2 w-4 h-4" />
-                  Join Now
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </Section>
-
       {/* WHAT WE DO - Mobile Grid */}
       <Section background="muted" className="mobile-section">
         <SectionHeader
