@@ -412,7 +412,7 @@ export default function Register() {
                         <FormItem>
                           <FormLabel>Age *</FormLabel>
                           <FormControl>
-                            <Input type="text" placeholder="Age (15-29)" {...field} data-testid="input-age" />
+                            <Input type="text" placeholder="Age (15-39)" {...field} data-testid="input-age" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
