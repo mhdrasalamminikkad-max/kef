@@ -303,6 +303,15 @@ export default function Register() {
               <span>Caliph Life School, Kozhikode</span>
             </div>
           </div>
+
+          <div className="mt-6 md:mt-8 p-4 md:p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+            <p className="text-white/90 text-sm md:text-base mb-2">
+              <span className="font-semibold">Camp Fee:</span> <span className="text-lg md:text-xl font-bold text-yellow-300">₹6999/-</span>
+            </p>
+            <p className="text-green-300 font-semibold text-base md:text-lg">
+              Early Bird offer: <span className="text-yellow-300">₹4999</span> only (till Dec 10, 2025)
+            </p>
+          </div>
           
           <p className="text-white/70 mt-4 max-w-2xl mx-auto text-sm md:text-base">
             Open to ages 15-29. Build an entrepreneurial mindset and turn ideas into real startups.
