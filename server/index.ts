@@ -47,7 +47,9 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 
 // Serve static assets from attached_assets folder
-app.use(express.static(path.resolve(import.meta.dirname, "..", "attached_assets")));
+// Use process.cwd() which works reliably in both dev and production environments
+const assetsPath = path.resolve(process.cwd(), "attached_assets");
+app.use(express.static(assetsPath));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
