@@ -212,9 +212,44 @@ export default function Register() {
                     Pay ₹200 Instantly (UPI) - Event Entry
                   </Button>
                 </a>
-                <p className="text-sm text-muted-foreground mt-4">
+                <p className="text-sm text-muted-foreground mt-4 mb-6">
                   Opens Google Pay, PhonePe, Paytm or any UPI app
                 </p>
+
+                {/* Manual Payment Details */}
+                <div className="w-full border-t border-gray-200 pt-6">
+                  <h4 className="text-sm font-semibold text-foreground mb-4">Or Pay Manually</h4>
+                  
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+                    <p className="text-xs text-muted-foreground mb-1">UPI ID</p>
+                    <p className="text-sm font-mono font-medium text-foreground break-all">
+                      caliphworldfoundation.9605399676.ibz@icici
+                    </p>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4 text-left">
+                    <p className="text-xs text-muted-foreground mb-3">Account Details</p>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-foreground">CALIPH WORLD FOUNDATION</p>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-muted-foreground">Bank</span>
+                        <span className="text-sm text-foreground">ICICI BANK</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-muted-foreground">Branch</span>
+                        <span className="text-sm text-foreground">MUKKAM BRANCH</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-muted-foreground">A/C No</span>
+                        <span className="text-sm font-mono font-medium text-foreground">265405000474</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs text-muted-foreground">IFSC</span>
+                        <span className="text-sm font-mono font-medium text-foreground">ICIC0002654</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
@@ -479,9 +514,49 @@ export default function Register() {
                   Pay ₹200 Instantly (UPI) - Event Entry
                 </Button>
               </a>
-              <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-4" data-testid="text-upi-description">
+              <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-6" data-testid="text-upi-description">
                 Opens Google Pay, PhonePe, Paytm or any UPI app
               </p>
+
+              {/* Manual Payment Details */}
+              <div className="w-full border-t border-gray-200 pt-6 mb-6">
+                <h4 className="text-sm font-semibold text-foreground mb-4">Or Pay Manually</h4>
+                
+                {/* UPI ID */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+                  <p className="text-xs text-muted-foreground mb-1">UPI ID</p>
+                  <p className="text-sm font-mono font-medium text-foreground break-all" data-testid="text-upi-id">
+                    caliphworldfoundation.9605399676.ibz@icici
+                  </p>
+                </div>
+
+                {/* Bank Account Details */}
+                <div className="bg-gray-50 rounded-lg p-4 text-left">
+                  <p className="text-xs text-muted-foreground mb-3">Account Details</p>
+                  <div className="space-y-2">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground" data-testid="text-account-name">CALIPH WORLD FOUNDATION</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-muted-foreground">Bank</span>
+                      <span className="text-sm text-foreground" data-testid="text-bank-name">ICICI BANK</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-muted-foreground">Branch</span>
+                      <span className="text-sm text-foreground" data-testid="text-branch">MUKKAM BRANCH</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-muted-foreground">A/C No</span>
+                      <span className="text-sm font-mono font-medium text-foreground" data-testid="text-account-number">265405000474</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-muted-foreground">IFSC</span>
+                      <span className="text-sm font-mono font-medium text-foreground" data-testid="text-ifsc">ICIC0002654</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="bg-blue-50 border border-blue-200 rounded-md p-3 md:p-4 w-full">
                 <p className="text-xs md:text-sm text-blue-900" data-testid="text-payment-note">
                   <strong>Note:</strong> Keep your payment confirmation safe for camp registration.
