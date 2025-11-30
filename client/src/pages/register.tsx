@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Wallet } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import qrCodeImage from "@assets/qrm_1764493655676.png";
 import { useState, useEffect } from "react";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
@@ -200,16 +199,21 @@ export default function Register() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center pt-0">
-                <div className="mb-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <img 
-                    src={qrCodeImage}
-                    alt="Payment QR Code"
-                    className="w-48 h-48 object-contain"
-                    data-testid="img-payment-qr-success"
-                  />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Scan to pay the registration fee
+                <a 
+                  href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=200&tn=Event+Entry&cu=INR"
+                  className="w-full max-w-md"
+                  data-testid="link-upi-payment-success"
+                >
+                  <Button 
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-6 text-base shadow-lg shadow-green-500/30 rounded-xl"
+                    data-testid="button-upi-payment-success"
+                  >
+                    <Wallet className="w-5 h-5 mr-3" />
+                    Pay ₹200 Instantly (UPI) - Event Entry
+                  </Button>
+                </a>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Opens Google Pay, PhonePe, Paytm or any UPI app
                 </p>
               </CardContent>
             </Card>
@@ -458,26 +462,28 @@ export default function Register() {
                 Complete Your Registration
               </CardTitle>
               <CardDescription className="text-sm">
-                Scan the QR code to pay and confirm your spot.
+                Click the button below to pay instantly via UPI.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center text-center">
-              <div className="mb-4 md:mb-6 p-4 md:p-6 bg-white rounded-lg border border-gray-200">
-                <img 
-                  src={qrCodeImage}
-                  alt="Payment QR Code"
-                  className="w-48 md:w-64 h-48 md:h-64 object-contain"
-                  data-testid="img-payment-qr"
-                />
-              </div>
-              <h3 className="text-base md:text-lg font-semibold text-foreground mb-2" data-testid="text-qr-title">
-                UPI Payment
-              </h3>
-              <p className="text-xs md:text-sm text-muted-foreground mb-4" data-testid="text-qr-description">
-                Scan with any UPI app to pay the registration fee.
+              <a 
+                href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=200&tn=Event+Entry&cu=INR"
+                className="w-full max-w-md"
+                data-testid="link-upi-payment"
+              >
+                <Button 
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-6 text-base md:text-lg shadow-lg shadow-green-500/30 rounded-xl"
+                  data-testid="button-upi-payment"
+                >
+                  <Wallet className="w-5 h-5 mr-3" />
+                  Pay ₹200 Instantly (UPI) - Event Entry
+                </Button>
+              </a>
+              <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-4" data-testid="text-upi-description">
+                Opens Google Pay, PhonePe, Paytm or any UPI app
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-md p-3 md:p-4 w-full">
-                <p className="text-xs md:text-sm text-blue-900" data-testid="text-qr-note">
+                <p className="text-xs md:text-sm text-blue-900" data-testid="text-payment-note">
                   <strong>Note:</strong> Keep your payment confirmation safe for camp registration.
                 </p>
               </div>
