@@ -52,12 +52,11 @@ export default function AdminLogin() {
       return;
     }
     if (secretCode === "786786") {
-      setSecretCodeVerified(true);
-      setSecretCode("");
       toast({
-        title: "Code Verified",
-        description: "Please enter your credentials",
+        title: "Access Granted",
+        description: "Redirecting to admin panel...",
       });
+      setLocation("/admin");
     } else {
       toast({
         title: "Invalid Code",
