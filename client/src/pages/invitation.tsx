@@ -179,36 +179,6 @@ export default function Invitation() {
                 </div>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6 mb-8"
-              >
-                <h3 className="font-bold text-lg mb-4">What to Bring</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Valid ID proof (Aadhar/Student ID)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Comfortable clothing for 3 days
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Notebook and pen for sessions
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Laptop (if available)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    This QR code (screenshot or print)
-                  </li>
-                </ul>
-              </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
