@@ -351,5 +351,21 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/bootcamp/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const registration = await storage.getBootcampById(id);
+      
+      if (!registration) {
+        return res.status(404).json({ error: "Registration not found" });
+      }
+      
+      res.json(registration);
+    } catch (error) {
+      console.error("Error fetching bootcamp registration:", error);
+      res.status(500).json({ error: "Failed to fetch bootcamp registration" });
+    }
+  });
+
   return httpServer;
 }

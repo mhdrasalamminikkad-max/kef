@@ -15,6 +15,7 @@ import Membership from "@/pages/membership";
 import Partners from "@/pages/partners";
 import Contact from "@/pages/contact";
 import Register from "@/pages/register";
+import Invitation from "@/pages/invitation";
 import AdminLogin from "@/pages/admin-login";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
@@ -24,6 +25,7 @@ function Router() {
     <Switch>
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={Admin} />
+      <Route path="/invitation/:id" component={Invitation} />
       <Route>
         <Layout>
           <Switch>

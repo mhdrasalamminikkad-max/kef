@@ -82,19 +82,18 @@ export default function Register() {
       const response = await apiRequest("POST", "/api/bootcamp", data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       markRegistered();
       const newCount = registrationCount + 1;
       localStorage.setItem(REGISTRATIONS_COUNT_KEY, newCount.toString());
       setRegistrationCount(newCount);
-      setJustRegistered(true);
-      setAddingAnother(false);
       form.reset();
       setUploadedFile(null);
       toast({
         title: "Registration Successful!",
-        description: "Registration complete. You can add more people or go back to home.",
+        description: "Redirecting to your invitation...",
       });
+      setLocation(`/invitation/${data.id}`);
     },
     onError: (error: Error) => {
       toast({
