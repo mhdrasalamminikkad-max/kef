@@ -67,3 +67,5 @@
 [x] 67. Banner image now fits within user's screen (max 90vh)
 [x] 68. Added white "Register Now" button below the banner
 [x] 69. Button has rounded corners, shadow, and bold text
+[x] 70. Increased banner size - modal width increased to max-w-lg (512px)
+[x] 71. Extended height to 95vh to show more of the poster image

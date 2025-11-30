@@ -45,8 +45,8 @@ export function BootcampModal() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="relative w-full max-w-sm flex flex-col items-center"
-            style={{ maxHeight: '90vh' }}
+            className="relative w-full max-w-lg flex flex-col items-center"
+            style={{ maxHeight: '95vh' }}
             onClick={(e) => e.stopPropagation()}
             data-testid="bootcamp-modal"
           >
@@ -67,7 +67,7 @@ export function BootcampModal() {
                 src={bootcampImage} 
                 alt="Startup Boot Camp" 
                 className="w-full h-auto object-contain"
-                style={{ maxHeight: 'calc(90vh - 70px)' }}
+                style={{ maxHeight: 'calc(95vh - 70px)' }}
                 data-testid="img-bootcamp-poster"
               />
             </div>
