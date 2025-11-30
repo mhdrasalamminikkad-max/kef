@@ -27,11 +27,11 @@ export function Header() {
           <Link href="/" data-testid="link-logo">
             <div className="flex items-center gap-3 cursor-pointer">
               <img src="/logo.png" alt="KEF Logo" className="w-14 h-14 rounded-lg" />
-              <div className="flex flex-col hidden sm:block max-w-xs">
-                <span className="font-bold text-xl leading-none bg-gradient-to-r from-red-600 via-yellow-400 to-cyan-500 bg-clip-text text-transparent">
+              <div className="hidden sm:flex flex-col gap-0.5">
+                <span className="font-bold text-xl leading-tight bg-gradient-to-r from-red-600 via-yellow-400 to-cyan-500 bg-clip-text text-transparent">
                   Kerala
                 </span>
-                <span className="font-bold text-xl leading-none bg-gradient-to-r from-cyan-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
+                <span className="font-bold text-xl leading-tight bg-gradient-to-r from-cyan-500 via-red-500 to-yellow-500 bg-clip-text text-transparent">
                   Economic Forum
                 </span>
               </div>
