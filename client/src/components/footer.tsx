@@ -2,7 +2,6 @@ import { Link } from "wouter";
 import { 
   Instagram, 
   Facebook,
-  Youtube, 
   Mail, 
   Phone, 
   MapPin,
@@ -24,7 +23,6 @@ const footerLinks = {
 const socialLinks = [
   { icon: Instagram, href: "https://www.instagram.com/kerala.economic.forum?igsh=MThoMXFqdXEzdnM2cA==", label: "Instagram" },
   { icon: Facebook, href: "https://www.facebook.com/share/17kPGZQci3/?mibextid=wwXIfr", label: "Facebook" },
-  { icon: Youtube, href: "#", label: "YouTube" },
 ];
 
 export function Footer() {
@@ -119,12 +117,6 @@ export function Footer() {
                 <a href="https://www.facebook.com/share/17kPGZQci3/?mibextid=wwXIfr" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group" target="_blank" rel="noopener noreferrer">
                   <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   Facebook
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group">
-                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  YouTube
                 </a>
               </li>
             </ul>

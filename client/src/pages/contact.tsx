@@ -5,7 +5,6 @@ import {
   MapPin, 
   Instagram,
   Facebook,
-  Youtube,
   Sparkles,
   Send
 } from "lucide-react";
@@ -21,7 +20,6 @@ import { Badge } from "@/components/ui/badge";
 const socialLinks = [
   { icon: Instagram, href: "https://www.instagram.com/kerala.economic.forum?igsh=MThoMXFqdXEzdnM2cA==", label: "Instagram" },
   { icon: Facebook, href: "https://www.facebook.com/share/17kPGZQci3/?mibextid=wwXIfr", label: "Facebook" },
-  { icon: Youtube, href: "#", label: "YouTube" },
 ];
 
 export default function Contact() {
