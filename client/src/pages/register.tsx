@@ -200,7 +200,7 @@ export default function Register() {
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center pt-0">
                 <a 
-                  href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=3999&tn=Event+Entry&cu=INR"
+                  href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=4999&tn=Event+Entry&cu=INR"
                   className="w-full max-w-md"
                   data-testid="link-upi-payment-success"
                 >
@@ -209,7 +209,7 @@ export default function Register() {
                     data-testid="button-upi-payment-success"
                   >
                     <Wallet className="w-5 h-5 mr-3" />
-                    <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹3999</span> Pay Now
+                    <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹4999</span> Pay Now
                   </Button>
                 </a>
                 <p className="text-sm text-muted-foreground mt-4 mb-6">
