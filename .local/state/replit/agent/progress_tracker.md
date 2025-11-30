@@ -60,3 +60,7 @@
 [x] 60. Compact content layout that fits all screen sizes
 [x] 61. Smaller, tighter spacing and typography for clean look
 [x] 62. Fixed image to show full poster without cropping (h-auto, no object-cover)
+[x] 63. Simplified modal to show just the poster image
+[x] 64. Small close icon button positioned at top-right corner
+[x] 65. Bottom "REGISTER NOW" area is now clickable and links to registration page
+[x] 66. Clean design matching user's reference screenshot
