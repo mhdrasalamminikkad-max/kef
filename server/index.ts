@@ -15,6 +15,9 @@ declare module "http" {
   }
 }
 
+// Trust proxy for Railway, Render, and other hosting platforms
+app.set("trust proxy", 1);
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "kerala-economic-forum-admin-secret-key-2024",
@@ -26,7 +29,8 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     }
   })
 );
