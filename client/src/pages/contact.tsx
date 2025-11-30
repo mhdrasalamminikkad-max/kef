@@ -5,7 +5,9 @@ import {
   MapPin, 
   Instagram,
   Linkedin,
-  Youtube
+  Youtube,
+  Sparkles,
+  Send
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const socialLinks = [
   { icon: Instagram, href: "#", label: "Instagram" },
@@ -24,19 +27,33 @@ const socialLinks = [
 export default function Contact() {
   return (
     <>
-      {/* HERO */}
+      {/* HERO - Glassmorphism */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-red-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 geometric-grid" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-10 w-20 h-20 border border-white/10 rotate-45" />
+          <div className="absolute bottom-20 left-10 w-16 h-16 border border-white/10 rotate-12" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Badge className="glass-panel text-white border-white/20 mb-6 py-1.5 px-4">
+              <Sparkles className="w-3 h-3 mr-2" />
+              Let's Connect
+            </Badge>
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4"
+            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow"
             data-testid="text-contact-title"
           >
             Get in Touch
@@ -63,7 +80,7 @@ export default function Contact() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6" data-testid="text-form-title">
                   Send us a Message
@@ -96,7 +113,8 @@ export default function Contact() {
                     <Label htmlFor="message">Message</Label>
                     <Textarea id="message" placeholder="Your message..." rows={5} data-testid="input-contact-message" />
                   </div>
-                  <Button type="submit" className="w-full bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" data-testid="button-submit-contact">
+                  <Button type="submit" className="w-full btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold" data-testid="button-submit-contact">
+                    <Send className="w-4 h-4 mr-2" />
                     Send Message
                   </Button>
                 </form>
@@ -112,15 +130,15 @@ export default function Contact() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="space-y-6"
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6" data-testid="text-address-title">
                   Address
                 </h2>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rotate-45 bg-red-500 flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-white -rotate-45" />
                     </div>
                     <div>
                       <p className="font-medium text-foreground">Kerala Economic Forum</p>
@@ -130,8 +148,8 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-cyan-500 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rotate-45 bg-cyan-500 flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-5 h-5 text-white -rotate-45" />
                     </div>
                     <div>
                       <p className="font-medium text-foreground">Email</p>
@@ -141,8 +159,8 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-yellow-400 flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-5 h-5 text-black" />
+                    <div className="w-10 h-10 rotate-45 bg-yellow-400 flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-5 h-5 text-black -rotate-45" />
                     </div>
                     <div>
                       <p className="font-medium text-foreground">Phone</p>
@@ -155,7 +173,7 @@ export default function Contact() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <h2 className="text-2xl font-bold text-foreground mb-6" data-testid="text-social-title">
                   Social Media
@@ -165,11 +183,11 @@ export default function Contact() {
                     <a
                       key={social.label}
                       href={social.href}
-                      className="w-12 h-12 rounded-lg bg-cyan-500 hover:opacity-80 flex items-center justify-center transition-opacity"
+                      className="w-12 h-12 rotate-45 bg-cyan-500 hover:bg-cyan-400 flex items-center justify-center transition-colors"
                       aria-label={social.label}
                       data-testid={`social-${social.label.toLowerCase()}`}
                     >
-                      <social.icon className="w-6 h-6 text-white" />
+                      <social.icon className="w-6 h-6 text-white -rotate-45" />
                     </a>
                   ))}
                 </div>

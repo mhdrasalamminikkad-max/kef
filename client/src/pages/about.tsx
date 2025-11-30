@@ -15,11 +15,13 @@ import {
   Globe,
   Award,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
 import { Section, SectionHeader, itemVariants } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const coreObjectives = [
   {
@@ -122,19 +124,33 @@ const leaders = [
 export default function About() {
   return (
     <>
-      {/* SECTION 1 — WHO WE ARE */}
+      {/* SECTION 1 — WHO WE ARE - Glassmorphism Hero */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-red-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 geometric-grid" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-10 w-20 h-20 border border-white/10 rotate-45" />
+          <div className="absolute bottom-20 left-10 w-16 h-16 border border-white/10 rotate-12" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Badge className="glass-panel text-white border-white/20 mb-6 py-1.5 px-4">
+              <Sparkles className="w-3 h-3 mr-2" />
+              Our Story
+            </Badge>
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl"
+            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl hero-text-shadow"
             data-testid="text-about-title"
           >
             About Kerala Economic Forum
@@ -170,11 +186,11 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-red-500 flex items-center justify-center">
-                    <Eye className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rotate-45 bg-red-500 flex items-center justify-center">
+                    <Eye className="w-7 h-7 text-white -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-vision-title">Our Vision</h2>
                 </div>
@@ -196,25 +212,31 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
-                    <Target className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rotate-45 bg-cyan-500 flex items-center justify-center">
+                    <Target className="w-7 h-7 text-white -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-mission-title">Our Mission</h2>
                 </div>
                 <ul className="space-y-4 text-muted-foreground leading-relaxed">
                   <li className="flex items-start gap-3" data-testid="text-mission-1">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-500 mt-0.5 flex-shrink-0" />
+                    <div className="w-6 h-6 rotate-45 bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-cyan-500 -rotate-45" />
+                    </div>
                     <span>To equip individuals and institutions with the skills, support, networks, and opportunities needed to build sustainable businesses.</span>
                   </li>
                   <li className="flex items-start gap-3" data-testid="text-mission-2">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-500 mt-0.5 flex-shrink-0" />
-                    <span>To bridge the gap between students → ideas → businesses → growth → investors.</span>
+                    <div className="w-6 h-6 rotate-45 bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-cyan-500 -rotate-45" />
+                    </div>
+                    <span>To bridge the gap between students, ideas, businesses, growth, and investors.</span>
                   </li>
                   <li className="flex items-start gap-3" data-testid="text-mission-3">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-500 mt-0.5 flex-shrink-0" />
+                    <div className="w-6 h-6 rotate-45 bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-cyan-500 -rotate-45" />
+                    </div>
                     <span>To become Kerala's most trusted platform for entrepreneurial guidance, collaborations, and economic upliftment.</span>
                   </li>
                 </ul>
@@ -236,11 +258,11 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
             >
-              <Card className="h-full">
+              <Card className="h-full overflow-visible">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-cyan-500 flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-bold text-sm">{objective.number}</span>
+                    <div className="w-10 h-10 rotate-45 bg-cyan-500 flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-bold text-sm -rotate-45">{objective.number}</span>
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-3" data-testid={`text-objective-title-${index}`}>
@@ -276,9 +298,11 @@ export default function About() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="h-full hover-elevate">
+                <Card className="h-full hover-elevate overflow-visible">
                   <CardContent className="p-4 flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-red-500 flex-shrink-0" />
+                    <div className="w-8 h-8 rotate-45 bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-red-500 -rotate-45" />
+                    </div>
                     <span className="text-foreground font-medium" data-testid={`text-why-${index}`}>{reason}</span>
                   </CardContent>
                 </Card>
@@ -300,10 +324,10 @@ export default function About() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full hover-elevate">
+              <Card className="h-full hover-elevate overflow-visible">
                 <CardContent className="p-6 text-center">
-                  <div className="w-20 h-20 mx-auto rounded-full bg-cyan-500 flex items-center justify-center mb-4">
-                    <Users className="w-10 h-10 text-white" />
+                  <div className="w-20 h-20 mx-auto rotate-45 bg-cyan-500 flex items-center justify-center mb-4">
+                    <Users className="w-10 h-10 text-white -rotate-45" />
                   </div>
                   <h3 className="font-semibold text-lg text-foreground mb-1" data-testid={`text-leader-name-${index}`}>
                     {leader.name}
@@ -318,6 +342,38 @@ export default function About() {
           ))}
         </div>
       </Section>
+
+      {/* CTA Section */}
+      <section className="relative overflow-hidden py-20">
+        <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-red-500" />
+        <div className="absolute inset-0 geometric-dots" />
+        
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6 hero-text-shadow">
+              Join the Movement
+            </h2>
+            <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
+              Be part of Kerala's entrepreneurial transformation. Connect with founders, mentors, and innovators.
+            </p>
+            <Link href="/membership">
+              <Button 
+                size="lg" 
+                className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shadow-lg" 
+                data-testid="button-cta-join"
+              >
+                Become a Member
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
     </>
   );
 }

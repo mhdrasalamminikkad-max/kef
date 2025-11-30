@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { motion, AnimatePresence } from "framer-motion";
@@ -58,7 +58,8 @@ export function Header() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link href="/membership" className="hidden sm:block">
-              <Button className="bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" data-testid="button-join-now">
+              <Button className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold" data-testid="button-join-now">
+                <UserPlus className="w-4 h-4 mr-2" />
                 Join Now
               </Button>
             </Link>
@@ -102,7 +103,8 @@ export function Header() {
               ))}
               <div className="pt-2">
                 <Link href="/membership">
-                  <Button className="w-full bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" onClick={() => setIsOpen(false)} data-testid="mobile-button-join">
+                  <Button className="w-full btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold" onClick={() => setIsOpen(false)} data-testid="mobile-button-join">
+                    <UserPlus className="w-4 h-4 mr-2" />
                     Join Now
                   </Button>
                 </Link>

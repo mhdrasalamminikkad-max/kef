@@ -5,8 +5,10 @@ import {
   Youtube, 
   Mail, 
   Phone, 
-  MapPin
+  MapPin,
+  ArrowRight
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const footerLinks = {
   pages: [
@@ -27,8 +29,13 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-slate-900 dark:bg-slate-950 text-slate-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+    <footer className="relative bg-slate-900 dark:bg-slate-950 text-slate-300 overflow-hidden">
+      {/* Geometric background elements */}
+      <div className="absolute inset-0 geometric-dots opacity-30" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rotate-45 -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/5 rotate-45 translate-y-1/2 -translate-x-1/2" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
@@ -49,15 +56,21 @@ export function Footer() {
             
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-sm">
-                <Mail className="w-4 h-4 text-cyan-400" />
+                <div className="w-8 h-8 rotate-45 bg-cyan-500/20 flex items-center justify-center">
+                  <Mail className="w-4 h-4 text-cyan-400 -rotate-45" />
+                </div>
                 <span>inquiry@keralaeconomicforum.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <Phone className="w-4 h-4 text-cyan-400" />
+                <div className="w-8 h-8 rotate-45 bg-cyan-500/20 flex items-center justify-center">
+                  <Phone className="w-4 h-4 text-cyan-400 -rotate-45" />
+                </div>
                 <span>+91 XXXXX XXXXX</span>
               </div>
               <div className="flex items-start gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-cyan-400 mt-0.5" />
+                <div className="w-8 h-8 rotate-45 bg-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <MapPin className="w-4 h-4 text-cyan-400 -rotate-45" />
+                </div>
                 <span>Level 3, Venture Arcade, Mavoor Rd, above Croma, Thondayad, Kozhikode, Kerala 673016</span>
               </div>
             </div>
@@ -67,11 +80,11 @@ export function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
-                  className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors"
+                  className="w-10 h-10 rotate-45 bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors"
                   aria-label={social.label}
                   data-testid={`social-${social.label.toLowerCase()}`}
                 >
-                  <social.icon className="w-4 h-4" />
+                  <social.icon className="w-4 h-4 -rotate-45" />
                 </a>
               ))}
             </div>
@@ -83,7 +96,8 @@ export function Footer() {
               {footerLinks.pages.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors flex items-center gap-2 group" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                       {link.label}
                     </span>
                   </Link>
@@ -96,21 +110,33 @@ export function Footer() {
             <h3 className="font-semibold text-white mb-4">Connect</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors">
+                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group">
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   Instagram
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors">
+                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group">
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   LinkedIn
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors">
+                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group">
+                  <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   YouTube
                 </a>
               </li>
             </ul>
+            
+            <div className="mt-6">
+              <Link href="/membership">
+                <Button className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold text-sm" data-testid="footer-join-button">
+                  Join the Forum
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 

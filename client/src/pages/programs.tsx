@@ -10,7 +10,8 @@ import {
   Target,
   CheckCircle2,
   ArrowRight,
-  Calendar
+  Calendar,
+  Sparkles
 } from "lucide-react";
 import { Section, SectionHeader, itemVariants } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,19 +40,33 @@ const workshopTopics = [
 export default function Programs() {
   return (
     <>
-      {/* HERO */}
+      {/* HERO - Glassmorphism */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-red-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 geometric-grid" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-10 w-20 h-20 border border-white/10 rotate-45" />
+          <div className="absolute bottom-20 left-10 w-16 h-16 border border-white/10 rotate-12" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Badge className="glass-panel text-white border-white/20 mb-6 py-1.5 px-4">
+              <Sparkles className="w-3 h-3 mr-2" />
+              Learn & Grow
+            </Badge>
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4"
+            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow"
             data-testid="text-programs-title"
           >
             Our Programs
@@ -77,11 +92,11 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-red-500 flex items-center justify-center">
-                    <Rocket className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rotate-45 bg-red-500 flex items-center justify-center">
+                    <Rocket className="w-7 h-7 text-white -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-bootcamp-title">
                     Startup Boot Camp — Transforming Mindsets
@@ -97,14 +112,14 @@ export default function Programs() {
                   </div>
                   <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm font-medium text-foreground">Outcome:</p>
-                    <p className="text-sm text-muted-foreground">Mindset → Idea → Action → Pitch</p>
+                    <p className="text-sm text-muted-foreground">Mindset, Idea, Action, Pitch</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between flex-wrap gap-4">
-                  <Badge className="bg-yellow-300 text-black border-0">
+                  <Badge className="bg-yellow-400 text-black border-0">
                     Upcoming Camp: Dec 26-28, 2025
                   </Badge>
-                  <Button data-testid="button-register-bootcamp">
+                  <Button className="btn-angular" data-testid="button-register-bootcamp">
                     Register Now
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -124,11 +139,11 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
-                    <Building2 className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rotate-45 bg-cyan-500 flex items-center justify-center">
+                    <Building2 className="w-7 h-7 text-white -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-conclave-title">
                     Business Conclaves
@@ -164,10 +179,10 @@ export default function Programs() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between flex-wrap gap-4">
-                  <Badge className="bg-yellow-300 text-black border-0">
+                  <Badge className="bg-yellow-400 text-black border-0">
                     Upcoming: Dec 26-28, 2025
                   </Badge>
-                  <Button data-testid="button-register-conclave">
+                  <Button className="btn-angular" data-testid="button-register-conclave">
                     Register Now
                     <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
@@ -187,11 +202,11 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-yellow-400 flex items-center justify-center">
-                    <Users className="w-7 h-7 text-black" />
+                  <div className="w-14 h-14 rotate-45 bg-yellow-400 flex items-center justify-center">
+                    <Users className="w-7 h-7 text-black -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-founder-title">
                     Founder Circles
@@ -215,11 +230,11 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
-                    <Briefcase className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rotate-45 bg-cyan-500 flex items-center justify-center">
+                    <Briefcase className="w-7 h-7 text-white -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-advisory-title">
                     Advisory Clinics
@@ -253,11 +268,11 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center">
-                    <Lightbulb className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rotate-45 bg-cyan-500 flex items-center justify-center">
+                    <Lightbulb className="w-7 h-7 text-white -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-labs-title">
                     Campus Innovation Labs
@@ -281,11 +296,11 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-xl bg-yellow-400 flex items-center justify-center">
-                    <GraduationCap className="w-7 h-7 text-black" />
+                  <div className="w-14 h-14 rotate-45 bg-yellow-400 flex items-center justify-center">
+                    <GraduationCap className="w-7 h-7 text-black -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground" data-testid="text-sef-title">
                     KEF Student Entrepreneurs Forum
@@ -315,7 +330,7 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold text-foreground mb-4" data-testid="text-fest-title">
                   Management Fest Support
@@ -339,7 +354,7 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold text-foreground mb-4" data-testid="text-workshops-title">
                   Entrepreneurship Workshops
@@ -362,7 +377,7 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold text-foreground mb-4" data-testid="text-challenges-title">
                   Campus Startup Challenges
@@ -381,7 +396,7 @@ export default function Programs() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
+            <Card className="overflow-visible">
               <CardContent className="p-6">
                 <h3 className="text-xl font-bold text-foreground mb-4" data-testid="text-incubation-title">
                   Campus Incubation Support

@@ -8,13 +8,16 @@ import {
   Award,
   CheckCircle2,
   Briefcase,
-  CheckCircle
+  CheckCircle,
+  Sparkles,
+  UserPlus
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 const membershipBenefits = [
   "Access to all events",
@@ -81,19 +84,33 @@ export default function Membership() {
 
   return (
     <>
-      {/* HERO */}
+      {/* HERO - Glassmorphism */}
       <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-red-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 geometric-grid" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-10 right-10 w-20 h-20 border border-white/10 rotate-45" />
+          <div className="absolute bottom-20 left-10 w-16 h-16 border border-white/10 rotate-12" />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Badge className="glass-panel text-white border-white/20 mb-6 py-1.5 px-4">
+              <Sparkles className="w-3 h-3 mr-2" />
+              Join the Movement
+            </Badge>
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4"
+            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow"
             data-testid="text-membership-title"
           >
             Become a Member of Kerala Economic Forum
@@ -123,9 +140,11 @@ export default function Membership() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="h-full hover-elevate">
+                <Card className="h-full hover-elevate overflow-visible">
                   <CardContent className="p-4 flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-cyan-500 flex-shrink-0" />
+                    <div className="w-8 h-8 rotate-45 bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-cyan-500 -rotate-45" />
+                    </div>
                     <span className="text-foreground font-medium" data-testid={`text-benefit-${index}`}>{benefit}</span>
                   </CardContent>
                 </Card>
@@ -147,14 +166,14 @@ export default function Membership() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full hover-elevate">
+              <Card className="h-full hover-elevate overflow-visible">
                 <CardContent className="p-6">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${
+                  <div className={`w-14 h-14 rotate-45 flex items-center justify-center mb-4 ${
                     type.gradient === 'red' ? 'bg-red-500' :
                     type.gradient === 'yellow' ? 'bg-yellow-400' :
                     'bg-cyan-500'
                   }`}>
-                    <type.icon className={`w-7 h-7 ${type.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
+                    <type.icon className={`w-7 h-7 -rotate-45 ${type.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
                   </div>
                   <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-type-title-${index}`}>
                     {type.title}
@@ -180,15 +199,15 @@ export default function Membership() {
             transition={{ duration: 0.5 }}
           >
             {isRegistered ? (
-              <Card>
+              <Card className="overflow-visible">
                 <CardContent className="p-12 text-center">
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, type: "spring" }}
                   >
-                    <div className="w-24 h-24 mx-auto bg-cyan-500 rounded-full flex items-center justify-center mb-6">
-                      <CheckCircle className="w-12 h-12 text-white" />
+                    <div className="w-24 h-24 mx-auto rotate-45 bg-cyan-500 flex items-center justify-center mb-6">
+                      <CheckCircle className="w-12 h-12 text-white -rotate-45" />
                     </div>
                   </motion.div>
                   <h2 className="text-2xl font-bold text-foreground mb-4" data-testid="text-success-title">
@@ -202,7 +221,7 @@ export default function Membership() {
                       setIsRegistered(false);
                       setFormData({ name: "", place: "", institutionName: "", phoneNumber: "" });
                     }}
-                    className="bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400"
+                    className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold"
                     data-testid="button-register-another"
                   >
                     Register Another
@@ -210,7 +229,7 @@ export default function Membership() {
                 </CardContent>
               </Card>
             ) : (
-              <Card>
+              <Card className="overflow-visible">
                 <CardContent className="p-8">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Registration Form */}
@@ -261,9 +280,10 @@ export default function Membership() {
                       </div>
                       <Button 
                         type="submit" 
-                        className="w-full bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" 
+                        className="w-full btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold" 
                         data-testid="button-submit-registration"
                       >
+                        <UserPlus className="w-4 h-4 mr-2" />
                         Complete Registration
                       </Button>
                     </form>

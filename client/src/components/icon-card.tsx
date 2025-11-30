@@ -6,14 +6,27 @@ interface IconCardProps {
   title: string;
   description: string;
   index?: number;
-  gradient?: "purple" | "blue" | "teal" | "orange";
+  gradient?: "purple" | "blue" | "teal" | "orange" | "red" | "yellow" | "cyan";
 }
 
 const gradients = {
-  purple: "from-purple-500 to-purple-600",
-  blue: "from-blue-500 to-blue-600",
-  teal: "from-teal-500 to-cyan-500",
-  orange: "from-orange-500 to-red-500",
+  purple: "bg-purple-500",
+  blue: "bg-blue-500",
+  teal: "bg-teal-500",
+  orange: "bg-orange-500",
+  red: "bg-red-500",
+  yellow: "bg-yellow-400",
+  cyan: "bg-cyan-500",
+};
+
+const iconColors = {
+  purple: "text-white",
+  blue: "text-white",
+  teal: "text-white",
+  orange: "text-white",
+  red: "text-white",
+  yellow: "text-black",
+  cyan: "text-white",
 };
 
 export function IconCard({
@@ -31,8 +44,9 @@ export function IconCard({
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="text-center p-6 group"
     >
-      <div className={`w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br ${gradients[gradient]} flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform duration-300`}>
-        <Icon className="w-7 h-7 text-white" />
+      {/* Geometric diamond-shaped icon container */}
+      <div className={`w-14 h-14 mx-auto mb-4 rotate-45 ${gradients[gradient]} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+        <Icon className={`w-7 h-7 -rotate-45 ${iconColors[gradient]}`} />
       </div>
       <h3 className="font-semibold text-lg text-foreground mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
