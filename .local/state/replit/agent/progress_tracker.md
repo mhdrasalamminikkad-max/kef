@@ -59,3 +59,4 @@
 [x] 59. Fixed height image section using clamp() for responsive sizing
 [x] 60. Compact content layout that fits all screen sizes
 [x] 61. Smaller, tighter spacing and typography for clean look
+[x] 62. Fixed image to show full poster without cropping (h-auto, no object-cover)

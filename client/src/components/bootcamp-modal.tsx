@@ -61,15 +61,15 @@ export function BootcampModal() {
               <X className="w-4 h-4" />
             </Button>
 
-            {/* Image section - fixed height */}
-            <div className="relative flex-shrink-0 h-[clamp(140px,30vh,200px)]">
+            {/* Image section - show full image */}
+            <div className="relative flex-shrink-0">
               <img 
                 src={bootcampImage} 
                 alt="Startup Boot Camp" 
-                className="w-full h-full object-cover object-top rounded-t-2xl"
+                className="w-full h-auto rounded-t-2xl"
+                style={{ maxHeight: 'min(50vh, 320px)' }}
                 data-testid="img-bootcamp-poster"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-900 via-transparent to-transparent rounded-t-2xl" />
             </div>
 
             {/* Content section - compact */}
