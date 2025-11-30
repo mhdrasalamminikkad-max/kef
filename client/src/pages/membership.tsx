@@ -15,6 +15,7 @@ import {
   Rocket,
   ArrowRight
 } from "lucide-react";
+import qrCodeImage from "@assets/qrm_1764493231811.png";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -188,6 +189,131 @@ export default function Membership() {
               </Card>
             </motion.div>
           ))}
+        </div>
+      </Section>
+
+      {/* MEMBERSHIP REGISTRATION FORM */}
+      <Section>
+        <SectionHeader title="Register Now" />
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            {isRegistered ? (
+              <Card className="overflow-visible">
+                <CardContent className="p-12 text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, type: "spring" }}
+                  >
+                    <div className="w-24 h-24 mx-auto rotate-45 bg-cyan-500 flex items-center justify-center mb-6">
+                      <CheckCircle className="w-12 h-12 text-white -rotate-45" />
+                    </div>
+                  </motion.div>
+                  <h2 className="text-2xl font-bold text-foreground mb-4" data-testid="text-success-title">
+                    You have registered successfully!
+                  </h2>
+                  <p className="text-muted-foreground mb-6" data-testid="text-success-message">
+                    Thank you for registering with Kerala Economic Forum. We will contact you soon.
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      setIsRegistered(false);
+                      setFormData({ name: "", place: "", institutionName: "", phoneNumber: "" });
+                    }}
+                    className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold"
+                    data-testid="button-register-another"
+                  >
+                    Register Another
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="overflow-visible">
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Registration Form */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name *</Label>
+                        <Input 
+                          id="name" 
+                          placeholder="Your full name" 
+                          value={formData.name}
+                          onChange={(e) => handleInputChange("name", e.target.value)}
+                          required
+                          data-testid="input-name" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="place">Place *</Label>
+                        <Input 
+                          id="place" 
+                          placeholder="Your city/town" 
+                          value={formData.place}
+                          onChange={(e) => handleInputChange("place", e.target.value)}
+                          required
+                          data-testid="input-place" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="institutionName">Institution Name *</Label>
+                        <Input 
+                          id="institutionName" 
+                          placeholder="Your college/company name" 
+                          value={formData.institutionName}
+                          onChange={(e) => handleInputChange("institutionName", e.target.value)}
+                          required
+                          data-testid="input-institution" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phoneNumber">Phone Number *</Label>
+                        <Input 
+                          id="phoneNumber" 
+                          placeholder="+91 XXXXX XXXXX" 
+                          value={formData.phoneNumber}
+                          onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                          required
+                          data-testid="input-phone" 
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold" 
+                        data-testid="button-submit-registration"
+                      >
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Complete Registration
+                      </Button>
+                    </form>
+
+                    {/* UPI QR Code Section */}
+                    <div className="flex flex-col items-center justify-center p-6 bg-muted/50 rounded-xl">
+                      <h3 className="font-semibold text-lg text-foreground mb-4" data-testid="text-payment-title">
+                        Payment via UPI
+                      </h3>
+                      <div className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                        <img 
+                          src={qrCodeImage} 
+                          alt="UPI Payment QR Code" 
+                          className="w-48 h-48"
+                          data-testid="img-upi-qr"
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground text-center" data-testid="text-upi-id">
+                        Scan to pay membership fee
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
         </div>
       </Section>
 
