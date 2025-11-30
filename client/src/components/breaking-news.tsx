@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Zap, ArrowRight, X } from "lucide-react";
+import { Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
 
@@ -11,12 +11,14 @@ export function BreakingNews() {
     return null;
   }
 
+  const newsText = "Startup Boot Camp - 3-Day Residential Experience | December 26-28, 2025 | Caliph Life School, Kozhikode | Open to ages 15-29";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white py-2 relative z-40"
+      className="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white py-2.5 relative z-40"
       data-testid="breaking-news-bar"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,28 +34,18 @@ export function BreakingNews() {
               </Button>
             </Link>
             
-            <div className="flex items-center gap-2 overflow-hidden">
+            <div className="flex items-center gap-2 overflow-hidden flex-1">
               <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded shrink-0 flex items-center gap-1">
                 <Zap className="w-3 h-3" />
                 UPCOMING
               </span>
               
-              <div className="overflow-hidden whitespace-nowrap">
-                <motion.div
-                  animate={{ x: [0, -100 + "%"] }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  className="inline-block"
-                >
-                  <span className="text-sm">
-                    Startup Boot Camp - 3-Day Residential Experience | December 26-28, 2025 | Caliph Life School, Kozhikode | Open to ages 15-29
-                    <span className="mx-8">|</span>
-                    Startup Boot Camp - 3-Day Residential Experience | December 26-28, 2025 | Caliph Life School, Kozhikode | Open to ages 15-29
-                  </span>
-                </motion.div>
+              <div className="overflow-hidden whitespace-nowrap flex-1">
+                <div className="inline-flex animate-marquee">
+                  <span className="text-sm px-4">{newsText}</span>
+                  <span className="text-sm px-4">{newsText}</span>
+                  <span className="text-sm px-4">{newsText}</span>
+                </div>
               </div>
             </div>
           </div>
