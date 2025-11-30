@@ -18,6 +18,30 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const verifyCodeMutation = useMutation({
+    mutationFn: async (code: string) => {
+      const response = await apiRequest("POST", "/api/admin/verify-code", { code });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        toast({
+          title: "Access Granted",
+          description: "Redirecting to admin panel...",
+        });
+        setLocation("/admin");
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Invalid Code",
+        description: error.message || "The secret code you entered is incorrect",
+        variant: "destructive",
+      });
+      setSecretCode("");
+    },
+  });
+
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
       const response = await apiRequest("POST", "/api/admin/login", credentials);
@@ -51,20 +75,7 @@ export default function AdminLogin() {
       });
       return;
     }
-    if (secretCode === "786786") {
-      toast({
-        title: "Access Granted",
-        description: "Redirecting to admin panel...",
-      });
-      setLocation("/admin");
-    } else {
-      toast({
-        title: "Invalid Code",
-        description: "The secret code you entered is incorrect",
-        variant: "destructive",
-      });
-      setSecretCode("");
-    }
+    verifyCodeMutation.mutate(secretCode);
   };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -110,10 +121,17 @@ export default function AdminLogin() {
               <Button
                 type="submit"
                 className="w-full"
+                disabled={verifyCodeMutation.isPending}
                 data-testid="button-verify-code"
               >
-                <Lock className="mr-2 h-4 w-4" />
-                Verify
+                {verifyCodeMutation.isPending ? (
+                  "Verifying..."
+                ) : (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Verify
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>

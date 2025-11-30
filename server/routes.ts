@@ -23,6 +23,36 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  app.post("/api/admin/verify-code", async (req, res) => {
+    try {
+      const { code } = req.body;
+      
+      if (!code || code !== "786786") {
+        return res.status(401).json({ error: "Invalid secret code" });
+      }
+      
+      const admin = await storage.getAdminByUsername("user");
+      
+      if (!admin) {
+        return res.status(500).json({ error: "Admin user not found" });
+      }
+      
+      req.session.adminId = admin.id;
+      req.session.adminUsername = admin.username;
+      
+      res.json({ 
+        success: true, 
+        admin: { 
+          id: admin.id, 
+          username: admin.username 
+        } 
+      });
+    } catch (error) {
+      console.error("Error verifying secret code:", error);
+      res.status(500).json({ error: "Verification failed" });
+    }
+  });
+  
   app.post("/api/admin/login", async (req, res) => {
     try {
       const result = adminLoginSchema.safeParse(req.body);
