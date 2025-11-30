@@ -316,6 +316,35 @@ export default function Membership() {
           </motion.div>
         </div>
       </Section>
+
+      {/* STARTUP BOOT CAMP CTA */}
+      <Section background="muted">
+        <SectionHeader title="Startup Boot Camp" />
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="overflow-visible">
+              <CardContent className="p-8 text-center">
+                <div className="mb-6">
+                  <div className="w-16 h-16 rotate-45 bg-yellow-400 flex items-center justify-center mx-auto mb-4">
+                    <Rocket className="w-8 h-8 text-black -rotate-45" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4" data-testid="text-bootcamp-cta">
+                  Startup Boot Camp - December 26-28, 2025
+                </h3>
+                <p className="text-muted-foreground max-w-2xl mx-auto" data-testid="text-bootcamp-cta-desc">
+                  A 3-day residential experience for ages 15-29 at Caliph Life School, Kozhikode. Transform your ideas into real startups with expert mentorship and hands-on workshops.
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </Section>
     </>
   );
 }
