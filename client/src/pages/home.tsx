@@ -187,7 +187,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="flex flex-wrap gap-4 mb-8"
               >
-                <Link href="/membership">
+                <Link href="/register">
                   <Button 
                     size="lg" 
                     className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shadow-lg shadow-yellow-500/30" 
@@ -468,7 +468,7 @@ export default function Home() {
               Be part of Kerala's largest entrepreneurial community. Register now and connect with founders, mentors, investors, and innovators.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/membership">
+              <Link href="/register">
                 <Button 
                   size="lg" 
                   className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shadow-lg" 

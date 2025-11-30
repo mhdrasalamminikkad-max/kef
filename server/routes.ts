@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertMembershipSchema } from "@shared/schema";
+import { insertContactSchema, insertMembershipSchema, insertBootcampSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(
@@ -88,6 +88,36 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating membership status:", error);
       res.status(500).json({ error: "Failed to update membership status" });
+    }
+  });
+
+  app.post("/api/bootcamp", async (req, res) => {
+    try {
+      const result = insertBootcampSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: validationError.message 
+        });
+      }
+      
+      const bootcamp = await storage.createBootcampRegistration(result.data);
+      res.status(201).json(bootcamp);
+    } catch (error) {
+      console.error("Error creating bootcamp registration:", error);
+      res.status(500).json({ error: "Failed to submit bootcamp registration" });
+    }
+  });
+
+  app.get("/api/bootcamp", async (req, res) => {
+    try {
+      const registrations = await storage.getBootcampRegistrations();
+      res.json(registrations);
+    } catch (error) {
+      console.error("Error fetching bootcamp registrations:", error);
+      res.status(500).json({ error: "Failed to fetch bootcamp registrations" });
     }
   });
 

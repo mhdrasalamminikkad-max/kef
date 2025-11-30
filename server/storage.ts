@@ -4,7 +4,9 @@ import {
   type Contact, 
   type InsertContact,
   type Membership,
-  type InsertMembership 
+  type InsertMembership,
+  type Bootcamp,
+  type InsertBootcamp
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -19,17 +21,22 @@ export interface IStorage {
   createMembershipApplication(membership: InsertMembership): Promise<Membership>;
   getMembershipApplications(): Promise<Membership[]>;
   updateMembershipStatus(id: string, status: string): Promise<Membership | undefined>;
+  
+  createBootcampRegistration(bootcamp: InsertBootcamp): Promise<Bootcamp>;
+  getBootcampRegistrations(): Promise<Bootcamp[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private contacts: Map<string, Contact>;
   private memberships: Map<string, Membership>;
+  private bootcamps: Map<string, Bootcamp>;
 
   constructor() {
     this.users = new Map();
     this.contacts = new Map();
     this.memberships = new Map();
+    this.bootcamps = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -54,6 +61,7 @@ export class MemStorage implements IStorage {
     const contact: Contact = {
       ...insertContact,
       id,
+      phone: insertContact.phone ?? null,
       createdAt: new Date(),
     };
     this.contacts.set(id, contact);
@@ -71,6 +79,9 @@ export class MemStorage implements IStorage {
     const membership: Membership = {
       ...insertMembership,
       id,
+      organization: insertMembership.organization ?? null,
+      designation: insertMembership.designation ?? null,
+      message: insertMembership.message ?? null,
       createdAt: new Date(),
       status: "pending",
     };
@@ -92,6 +103,26 @@ export class MemStorage implements IStorage {
       return membership;
     }
     return undefined;
+  }
+
+  async createBootcampRegistration(insertBootcamp: InsertBootcamp): Promise<Bootcamp> {
+    const id = randomUUID();
+    const bootcamp: Bootcamp = {
+      ...insertBootcamp,
+      id,
+      organization: insertBootcamp.organization ?? null,
+      expectations: insertBootcamp.expectations ?? null,
+      createdAt: new Date(),
+      status: "pending",
+    };
+    this.bootcamps.set(id, bootcamp);
+    return bootcamp;
+  }
+
+  async getBootcampRegistrations(): Promise<Bootcamp[]> {
+    return Array.from(this.bootcamps.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
   }
 }
 

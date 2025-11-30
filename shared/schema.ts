@@ -68,3 +68,34 @@ export type Contact = typeof contactSubmissions.$inferSelect;
 
 export type InsertMembership = z.infer<typeof insertMembershipSchema>;
 export type Membership = typeof membershipApplications.$inferSelect;
+
+// Startup Boot Camp Registration
+export const bootcampRegistrations = pgTable("bootcamp_registrations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  age: text("age").notNull(),
+  organization: text("organization"),
+  district: text("district").notNull(),
+  experience: text("experience").notNull(),
+  expectations: text("expectations"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  status: text("status").default("pending").notNull(),
+});
+
+export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).omit({
+  id: true,
+  createdAt: true,
+  status: true,
+}).extend({
+  email: z.string().email("Please enter a valid email address"),
+  fullName: z.string().min(2, "Name must be at least 2 characters"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  age: z.string().min(1, "Please enter your age"),
+  district: z.string().min(2, "Please select your district"),
+  experience: z.enum(["beginner", "some_experience", "experienced"]),
+});
+
+export type InsertBootcamp = z.infer<typeof insertBootcampSchema>;
+export type Bootcamp = typeof bootcampRegistrations.$inferSelect;
