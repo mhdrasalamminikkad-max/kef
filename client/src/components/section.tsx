@@ -55,7 +55,7 @@ export function Section({
     <section 
       id={id}
       className={cn(
-        "py-16 lg:py-24",
+        "py-10 md:py-16 lg:py-24",
         bgClass[background],
         className
       )}
@@ -84,21 +84,21 @@ export function SectionHeader({
     <motion.div 
       variants={itemVariants}
       className={cn(
-        "mb-12 lg:mb-16",
+        "mb-8 md:mb-12 lg:mb-16",
         align === "center" ? "text-center max-w-3xl mx-auto" : "max-w-2xl",
         className
       )}
     >
       {subtitle && (
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary mb-4">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs md:text-sm font-medium bg-primary/10 text-primary mb-3 md:mb-4">
           {subtitle}
         </span>
       )}
-      <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight">
         {title}
       </h2>
       {description && (
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+        <p className="mt-3 md:mt-4 text-sm md:text-lg text-muted-foreground leading-relaxed">
           {description}
         </p>
       )}

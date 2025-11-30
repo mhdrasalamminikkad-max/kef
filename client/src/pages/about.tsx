@@ -125,17 +125,17 @@ export default function About() {
   return (
     <>
       {/* SECTION 1 — WHO WE ARE - Glassmorphism Hero */}
-      <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
+      <section className="relative overflow-hidden min-h-[300px] md:min-h-[400px] lg:min-h-[450px] flex items-center">
         <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
-          <div className="absolute top-10 right-10 w-20 h-20 border border-white/10 rotate-45" />
-          <div className="absolute bottom-20 left-10 w-16 h-16 border border-white/10 rotate-12" />
+          <div className="absolute top-10 right-10 w-12 md:w-20 h-12 md:h-20 border border-white/10 rotate-45" />
+          <div className="absolute bottom-20 left-10 w-10 md:w-16 h-10 md:h-16 border border-white/10 rotate-12" />
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-24 w-full text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -150,7 +150,7 @@ export default function About() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl hero-text-shadow"
+            className="font-bold text-white leading-tight tracking-tight text-2xl sm:text-3xl md:text-4xl lg:text-5xl hero-text-shadow"
             data-testid="text-about-title"
           >
             About Kerala Economic Forum
