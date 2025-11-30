@@ -45,7 +45,8 @@ export function BootcampModal() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="relative max-w-sm w-full"
+            className="relative w-full max-w-sm flex flex-col items-center"
+            style={{ maxHeight: '90vh' }}
             onClick={(e) => e.stopPropagation()}
             data-testid="bootcamp-modal"
           >
@@ -53,30 +54,33 @@ export function BootcampModal() {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute -top-3 -right-3 z-10 h-8 w-8 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full shadow-lg"
+              className="absolute -top-2 -right-2 z-10 h-8 w-8 bg-white text-gray-600 hover:bg-gray-100 rounded-full shadow-lg"
               onClick={handleClose}
               data-testid="button-close-modal"
             >
               <X className="w-4 h-4" />
             </Button>
 
-            {/* Poster image */}
-            <div className="relative rounded-xl overflow-hidden shadow-2xl">
+            {/* Poster image - fits screen */}
+            <div className="rounded-xl overflow-hidden shadow-2xl">
               <img 
                 src={bootcampImage} 
                 alt="Startup Boot Camp" 
-                className="w-full h-auto"
+                className="w-full h-auto object-contain"
+                style={{ maxHeight: 'calc(90vh - 70px)' }}
                 data-testid="img-bootcamp-poster"
               />
-              
-              {/* Clickable area at bottom for Register Now */}
-              <Link href="/register" onClick={handleClose}>
-                <div 
-                  className="absolute bottom-0 left-0 right-0 h-14 cursor-pointer hover:bg-white/10 transition-colors"
-                  data-testid="button-modal-register"
-                />
-              </Link>
             </div>
+            
+            {/* White Register Now button */}
+            <Link href="/register" className="w-full mt-3" onClick={handleClose}>
+              <Button 
+                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-base py-6 rounded-xl shadow-lg"
+                data-testid="button-modal-register"
+              >
+                Register Now
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
       )}

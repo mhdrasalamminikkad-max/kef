@@ -64,3 +64,6 @@
 [x] 64. Small close icon button positioned at top-right corner
 [x] 65. Bottom "REGISTER NOW" area is now clickable and links to registration page
 [x] 66. Clean design matching user's reference screenshot
+[x] 67. Banner image now fits within user's screen (max 90vh)
+[x] 68. Added white "Register Now" button below the banner
+[x] 69. Button has rounded corners, shadow, and bold text
