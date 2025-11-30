@@ -66,7 +66,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden hidden md:flex"
+              className="lg:hidden"
               onClick={() => setIsOpen(!isOpen)}
               data-testid="button-mobile-menu"
             >
