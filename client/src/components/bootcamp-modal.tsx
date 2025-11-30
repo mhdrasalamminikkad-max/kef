@@ -45,7 +45,7 @@ export function BootcampModal() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, type: "spring", damping: 25 }}
-            className="relative max-w-lg w-full bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 rounded-xl overflow-hidden shadow-2xl"
+            className="relative max-w-lg w-full max-h-[90vh] flex flex-col bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 rounded-xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             data-testid="bootcamp-modal"
           >
@@ -59,11 +59,11 @@ export function BootcampModal() {
               <X className="w-5 h-5" />
             </Button>
 
-            <div className="relative">
+            <div className="relative flex-1 overflow-auto">
               <img 
                 src={bootcampImage} 
                 alt="Startup Boot Camp" 
-                className="w-full h-auto"
+                className="w-full h-auto max-h-[60vh] object-contain"
                 data-testid="img-bootcamp-poster"
               />
               
@@ -85,7 +85,7 @@ export function BootcampModal() {
               </div>
             </div>
 
-            <div className="p-4">
+            <div className="p-4 flex-shrink-0">
               <div className="flex gap-3">
                 <Link href="/register" className="flex-1" onClick={handleClose}>
                   <Button 

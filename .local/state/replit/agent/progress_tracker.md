@@ -45,3 +45,6 @@
 [x] 45. Fixed server-side security - code verification now enforced via session
 [x] 46. Login endpoint requires codeVerified session flag before accepting credentials
 [x] 47. Two-step verification fully secure and cannot be bypassed
+[x] 48. Fixed bootcamp popup modal sizing - now fits within 90% viewport height
+[x] 49. Image constrained to 60% of screen height with proper scrolling
+[x] 50. Buttons always visible at bottom of modal
