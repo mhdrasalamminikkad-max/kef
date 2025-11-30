@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { 
   Instagram, 
-  Linkedin, 
+  Facebook,
   Youtube, 
   Mail, 
   Phone, 
@@ -22,8 +22,8 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Instagram, href: "https://www.instagram.com/kerala.economic.forum?igsh=MThoMXFqdXEzdnM2cA==", label: "Instagram" },
+  { icon: Facebook, href: "https://www.facebook.com/share/17kPGZQci3/?mibextid=wwXIfr", label: "Facebook" },
   { icon: Youtube, href: "#", label: "YouTube" },
 ];
 
@@ -110,15 +110,15 @@ export function Footer() {
             <h3 className="font-semibold text-white mb-4">Connect</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group">
+                <a href="https://www.instagram.com/kerala.economic.forum?igsh=MThoMXFqdXEzdnM2cA==" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group" target="_blank" rel="noopener noreferrer">
                   <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                   Instagram
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group">
+                <a href="https://www.facebook.com/share/17kPGZQci3/?mibextid=wwXIfr" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group" target="_blank" rel="noopener noreferrer">
                   <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  LinkedIn
+                  Facebook
                 </a>
               </li>
               <li>
