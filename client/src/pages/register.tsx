@@ -19,32 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Link } from "wouter";
-
-const keralaDistricts = [
-  "Thiruvananthapuram",
-  "Kollam",
-  "Pathanamthitta",
-  "Alappuzha",
-  "Kottayam",
-  "Idukki",
-  "Ernakulam",
-  "Thrissur",
-  "Palakkad",
-  "Malappuram",
-  "Kozhikode",
-  "Wayanad",
-  "Kannur",
-  "Kasaragod",
-];
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -59,9 +34,6 @@ export default function Register() {
       phone: "",
       age: "",
       organization: "",
-      district: "",
-      experience: "beginner",
-      expectations: "",
     },
   });
 
@@ -250,76 +222,7 @@ export default function Register() {
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="district"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>District *</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger data-testid="select-district">
-                                <SelectValue placeholder="Select your district" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {keralaDistricts.map((district) => (
-                                <SelectItem key={district} value={district}>
-                                  {district}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
-
-                  <FormField
-                    control={form.control}
-                    name="experience"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Entrepreneurship Experience *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-experience">
-                              <SelectValue placeholder="Select your experience level" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="beginner">Beginner - Just getting started</SelectItem>
-                            <SelectItem value="some_experience">Some Experience - Have explored ideas</SelectItem>
-                            <SelectItem value="experienced">Experienced - Have worked on startups</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="expectations"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>What do you expect from this Boot Camp?</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Share what you hope to learn and achieve..."
-                            className="resize-none"
-                            rows={4}
-                            {...field}
-                            value={field.value ?? ""}
-                            data-testid="textarea-expectations"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <Button 
                     type="submit" 

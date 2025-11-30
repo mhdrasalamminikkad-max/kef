@@ -88,13 +88,14 @@ export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).om
   id: true,
   createdAt: true,
   status: true,
+  district: true,
+  experience: true,
+  expectations: true,
 }).extend({
   email: z.string().email("Please enter a valid email address"),
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   age: z.string().min(1, "Please enter your age"),
-  district: z.string().min(2, "Please select your district"),
-  experience: z.enum(["beginner", "some_experience", "experienced"]),
 });
 
 export type InsertBootcamp = z.infer<typeof insertBootcampSchema>;
