@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
   Users, 
@@ -6,15 +7,14 @@ import {
   TrendingUp,
   Award,
   CheckCircle2,
-  Briefcase
+  Briefcase,
+  CheckCircle
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const membershipBenefits = [
   "Access to all events",
@@ -60,6 +60,25 @@ const membershipTypes = [
 ];
 
 export default function Membership() {
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    place: "",
+    institutionName: "",
+    phoneNumber: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.name && formData.place && formData.institutionName && formData.phoneNumber) {
+      setIsRegistered(true);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
     <>
       {/* HERO */}
@@ -150,70 +169,184 @@ export default function Membership() {
         </div>
       </Section>
 
-      {/* SIGNUP FORM */}
+      {/* REGISTRATION FORM */}
       <Section>
-        <SectionHeader title="Join Now" />
-        <div className="max-w-2xl mx-auto">
+        <SectionHeader title="Register Now" />
+        <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card>
-              <CardContent className="p-8">
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input id="name" placeholder="Your full name" data-testid="input-name" />
+            {isRegistered ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, type: "spring" }}
+                  >
+                    <div className="w-24 h-24 mx-auto bg-cyan-500 rounded-full flex items-center justify-center mb-6">
+                      <CheckCircle className="w-12 h-12 text-white" />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" data-testid="input-email" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone</Label>
-                      <Input id="phone" placeholder="+91 XXXXX XXXXX" data-testid="input-phone" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
-                      <Select>
-                        <SelectTrigger data-testid="select-role">
-                          <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="entrepreneur">Entrepreneur</SelectItem>
-                          <SelectItem value="student">Student</SelectItem>
-                          <SelectItem value="business">Business</SelectItem>
-                          <SelectItem value="investor">Investor</SelectItem>
-                          <SelectItem value="institution">Institution</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="startup">Startup Name</Label>
-                      <Input id="startup" placeholder="Your startup/business name" data-testid="input-startup" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="city">City</Label>
-                      <Input id="city" placeholder="Your city" data-testid="input-city" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea id="message" placeholder="Tell us about yourself and your goals..." rows={4} data-testid="input-message" />
-                  </div>
-                  <Button type="submit" className="w-full bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" data-testid="button-submit-membership">
-                    Submit Application
+                  </motion.div>
+                  <h2 className="text-2xl font-bold text-foreground mb-4" data-testid="text-success-title">
+                    You have registered successfully!
+                  </h2>
+                  <p className="text-muted-foreground mb-6" data-testid="text-success-message">
+                    Thank you for registering with Kerala Economic Forum. We will contact you soon.
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      setIsRegistered(false);
+                      setFormData({ name: "", place: "", institutionName: "", phoneNumber: "" });
+                    }}
+                    className="bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400"
+                    data-testid="button-register-another"
+                  >
+                    Register Another
                   </Button>
-                </form>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Registration Form */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name *</Label>
+                        <Input 
+                          id="name" 
+                          placeholder="Your full name" 
+                          value={formData.name}
+                          onChange={(e) => handleInputChange("name", e.target.value)}
+                          required
+                          data-testid="input-name" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="place">Place *</Label>
+                        <Input 
+                          id="place" 
+                          placeholder="Your city/town" 
+                          value={formData.place}
+                          onChange={(e) => handleInputChange("place", e.target.value)}
+                          required
+                          data-testid="input-place" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="institutionName">Institution Name *</Label>
+                        <Input 
+                          id="institutionName" 
+                          placeholder="Your college/company name" 
+                          value={formData.institutionName}
+                          onChange={(e) => handleInputChange("institutionName", e.target.value)}
+                          required
+                          data-testid="input-institution" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phoneNumber">Phone Number *</Label>
+                        <Input 
+                          id="phoneNumber" 
+                          placeholder="+91 XXXXX XXXXX" 
+                          value={formData.phoneNumber}
+                          onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                          required
+                          data-testid="input-phone" 
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-yellow-300 text-black hover:bg-yellow-400 border-yellow-400" 
+                        data-testid="button-submit-registration"
+                      >
+                        Complete Registration
+                      </Button>
+                    </form>
+
+                    {/* UPI QR Code Section */}
+                    <div className="flex flex-col items-center justify-center p-6 bg-muted/50 rounded-xl">
+                      <h3 className="font-semibold text-lg text-foreground mb-4" data-testid="text-payment-title">
+                        Payment via UPI
+                      </h3>
+                      <div className="bg-white p-4 rounded-xl shadow-sm mb-4">
+                        {/* Fake UPI QR Code */}
+                        <svg 
+                          width="200" 
+                          height="200" 
+                          viewBox="0 0 200 200" 
+                          className="mx-auto"
+                          data-testid="img-upi-qr"
+                        >
+                          <rect width="200" height="200" fill="white"/>
+                          {/* QR Code pattern - simplified fake pattern */}
+                          <rect x="20" y="20" width="40" height="40" fill="black"/>
+                          <rect x="140" y="20" width="40" height="40" fill="black"/>
+                          <rect x="20" y="140" width="40" height="40" fill="black"/>
+                          <rect x="25" y="25" width="30" height="30" fill="white"/>
+                          <rect x="145" y="25" width="30" height="30" fill="white"/>
+                          <rect x="25" y="145" width="30" height="30" fill="white"/>
+                          <rect x="30" y="30" width="20" height="20" fill="black"/>
+                          <rect x="150" y="30" width="20" height="20" fill="black"/>
+                          <rect x="30" y="150" width="20" height="20" fill="black"/>
+                          {/* Data modules */}
+                          <rect x="70" y="20" width="10" height="10" fill="black"/>
+                          <rect x="90" y="20" width="10" height="10" fill="black"/>
+                          <rect x="110" y="20" width="10" height="10" fill="black"/>
+                          <rect x="70" y="40" width="10" height="10" fill="black"/>
+                          <rect x="100" y="40" width="10" height="10" fill="black"/>
+                          <rect x="120" y="40" width="10" height="10" fill="black"/>
+                          <rect x="80" y="60" width="10" height="10" fill="black"/>
+                          <rect x="110" y="60" width="10" height="10" fill="black"/>
+                          <rect x="20" y="70" width="10" height="10" fill="black"/>
+                          <rect x="40" y="70" width="10" height="10" fill="black"/>
+                          <rect x="70" y="70" width="10" height="10" fill="black"/>
+                          <rect x="90" y="70" width="10" height="10" fill="black"/>
+                          <rect x="120" y="70" width="10" height="10" fill="black"/>
+                          <rect x="150" y="70" width="10" height="10" fill="black"/>
+                          <rect x="170" y="70" width="10" height="10" fill="black"/>
+                          <rect x="20" y="90" width="10" height="10" fill="black"/>
+                          <rect x="50" y="90" width="10" height="10" fill="black"/>
+                          <rect x="80" y="90" width="10" height="10" fill="black"/>
+                          <rect x="100" y="90" width="10" height="10" fill="black"/>
+                          <rect x="130" y="90" width="10" height="10" fill="black"/>
+                          <rect x="160" y="90" width="10" height="10" fill="black"/>
+                          <rect x="30" y="110" width="10" height="10" fill="black"/>
+                          <rect x="60" y="110" width="10" height="10" fill="black"/>
+                          <rect x="90" y="110" width="10" height="10" fill="black"/>
+                          <rect x="110" y="110" width="10" height="10" fill="black"/>
+                          <rect x="140" y="110" width="10" height="10" fill="black"/>
+                          <rect x="170" y="110" width="10" height="10" fill="black"/>
+                          <rect x="70" y="130" width="10" height="10" fill="black"/>
+                          <rect x="100" y="130" width="10" height="10" fill="black"/>
+                          <rect x="120" y="130" width="10" height="10" fill="black"/>
+                          <rect x="150" y="130" width="10" height="10" fill="black"/>
+                          <rect x="70" y="150" width="10" height="10" fill="black"/>
+                          <rect x="90" y="150" width="10" height="10" fill="black"/>
+                          <rect x="130" y="150" width="10" height="10" fill="black"/>
+                          <rect x="160" y="150" width="10" height="10" fill="black"/>
+                          <rect x="70" y="170" width="10" height="10" fill="black"/>
+                          <rect x="100" y="170" width="10" height="10" fill="black"/>
+                          <rect x="120" y="170" width="10" height="10" fill="black"/>
+                          <rect x="140" y="170" width="10" height="10" fill="black"/>
+                          <rect x="170" y="170" width="10" height="10" fill="black"/>
+                        </svg>
+                      </div>
+                      <p className="text-sm text-muted-foreground text-center" data-testid="text-upi-id">
+                        UPI ID: <span className="font-medium text-foreground">kef@upi</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground text-center mt-2">
+                        Scan to pay membership fee
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </motion.div>
         </div>
       </Section>
