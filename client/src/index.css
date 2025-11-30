@@ -285,4 +285,117 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Glassmorphism Panel Utilities */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-panel-strong {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .glass-panel-dark {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .glass-panel {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .dark .glass-panel-strong {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Hero text with shadow for contrast */
+  .hero-text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-highlight {
+    color: #fef08a;
+    text-shadow: 0 0 20px rgba(254, 240, 138, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Geometric Button Shapes */
+  .btn-hexagon {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .btn-diamond {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .btn-parallelogram {
+    clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .btn-chevron-right {
+    clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%, 15% 50%);
+    padding-left: 1.5rem;
+    padding-right: 2rem;
+  }
+
+  .btn-angular {
+    clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+  }
+
+  /* Geometric Card Shapes */
+  .card-angular {
+    clip-path: polygon(0% 5%, 5% 0%, 100% 0%, 100% 95%, 95% 100%, 0% 100%);
+  }
+
+  .card-corner-cut {
+    clip-path: polygon(0% 0%, calc(100% - 20px) 0%, 100% 20px, 100% 100%, 20px 100%, 0% calc(100% - 20px));
+  }
+
+  /* Animated gradient background for hero */
+  .hero-gradient-animated {
+    background: linear-gradient(-45deg, #ef4444, #f97316, #eab308, #22d3ee);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Geometric decorative elements */
+  .geometric-grid {
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .geometric-dots {
+    background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
 }
