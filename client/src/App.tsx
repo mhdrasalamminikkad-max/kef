@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { RegistrationProvider } from "@/contexts/registration-context";
 import { Layout } from "@/components/layout";
+import { useSecretCode } from "@/hooks/use-secret-code";
 
 import Home from "@/pages/home";
 import About from "@/pages/about";
@@ -41,13 +42,20 @@ function Router() {
   );
 }
 
+function SecretCodeListener({ children }: { children: React.ReactNode }) {
+  useSecretCode();
+  return <>{children}</>;
+}
+
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="kef-theme">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <RegistrationProvider>
-            <Router />
+            <SecretCodeListener>
+              <Router />
+            </SecretCodeListener>
             <Toaster />
           </RegistrationProvider>
         </TooltipProvider>

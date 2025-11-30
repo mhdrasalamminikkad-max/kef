@@ -26,10 +26,10 @@ export default function AdminLogin() {
     onSuccess: (data) => {
       if (data.success) {
         toast({
-          title: "Access Granted",
-          description: "Redirecting to admin panel...",
+          title: "Code Verified",
+          description: "Please enter your credentials to continue",
         });
-        setLocation("/admin");
+        setSecretCodeVerified(true);
       }
     },
     onError: (error: Error) => {

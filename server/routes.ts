@@ -8,6 +8,7 @@ declare module 'express-session' {
   interface SessionData {
     adminId?: string;
     adminUsername?: string;
+    codeVerified?: boolean;
   }
 }
 
@@ -31,21 +32,11 @@ export async function registerRoutes(
         return res.status(401).json({ error: "Invalid secret code" });
       }
       
-      const admin = await storage.getAdminByUsername("user");
-      
-      if (!admin) {
-        return res.status(500).json({ error: "Admin user not found" });
-      }
-      
-      req.session.adminId = admin.id;
-      req.session.adminUsername = admin.username;
+      req.session.codeVerified = true;
       
       res.json({ 
-        success: true, 
-        admin: { 
-          id: admin.id, 
-          username: admin.username 
-        } 
+        success: true,
+        message: "Code verified successfully"
       });
     } catch (error) {
       console.error("Error verifying secret code:", error);
@@ -55,6 +46,10 @@ export async function registerRoutes(
   
   app.post("/api/admin/login", async (req, res) => {
     try {
+      if (!req.session?.codeVerified) {
+        return res.status(403).json({ error: "Secret code verification required first" });
+      }
+      
       const result = adminLoginSchema.safeParse(req.body);
       
       if (!result.success) {
@@ -74,6 +69,7 @@ export async function registerRoutes(
       
       req.session.adminId = admin.id;
       req.session.adminUsername = admin.username;
+      req.session.codeVerified = false;
       
       res.json({ 
         success: true, 
