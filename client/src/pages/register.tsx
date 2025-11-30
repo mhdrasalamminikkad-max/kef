@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
+import qrCodeImage from "@assets/qrm_1764493655676.png";
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -241,6 +242,47 @@ export default function Register() {
                   </Button>
                 </form>
               </Form>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* PAYMENT SECTION */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8"
+        >
+          <Card className="backdrop-blur-sm bg-white/95">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-green-600" />
+                Complete Your Registration
+              </CardTitle>
+              <CardDescription>
+                Scan the QR code below to complete your payment and confirm your spot.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center text-center">
+              <div className="mb-6 p-6 bg-white rounded-lg border border-gray-200">
+                <img 
+                  src={qrCodeImage}
+                  alt="Payment QR Code"
+                  className="w-64 h-64 object-contain"
+                  data-testid="img-payment-qr"
+                />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2" data-testid="text-qr-title">
+                UPI Payment
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4" data-testid="text-qr-description">
+                Scan this QR code with any UPI app to complete your Boot Camp registration fee payment.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-4 w-full">
+                <p className="text-sm text-blue-900" data-testid="text-qr-note">
+                  <strong>Note:</strong> After scanning and paying, you'll receive a confirmation. Please keep it safe for camp registration.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
