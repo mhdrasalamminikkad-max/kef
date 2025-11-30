@@ -28,10 +28,10 @@ export function BreakingNews() {
             <Link href="/register">
               <Button 
                 size="sm" 
-                className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shrink-0 text-xs md:text-sm px-2 md:px-3 h-7 md:h-8"
+                className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shrink-0 text-xs md:text-sm"
                 data-testid="button-breaking-news-register"
               >
-                Register Now
+                Register
               </Button>
             </Link>
             
