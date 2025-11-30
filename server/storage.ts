@@ -8,10 +8,17 @@ import {
   type Bootcamp,
   type InsertBootcamp,
   type Admin,
-  type InsertAdmin
+  type InsertAdmin,
+  users,
+  contactSubmissions,
+  membershipApplications,
+  bootcampRegistrations,
+  adminUsers
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -273,4 +280,177 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  constructor() {
+    this.initDefaultAdmin();
+  }
+
+  private async initDefaultAdmin() {
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminUsername || !adminPassword) {
+      if (process.env.NODE_ENV === "production") {
+        console.error("SECURITY WARNING: ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required in production!");
+        return;
+      }
+      console.warn("WARNING: Using default admin credentials. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables for production.");
+    }
+    
+    const finalUsername = adminUsername || "user";
+    const finalPassword = adminPassword || "caliph786786";
+    
+    const existingAdmin = await this.getAdminByUsername(finalUsername);
+    if (!existingAdmin) {
+      await this.createAdmin({
+        username: finalUsername,
+        password: finalPassword
+      });
+      console.log(`Admin user "${finalUsername}" created successfully.`);
+    }
+  }
+
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  async createContactSubmission(insertContact: InsertContact): Promise<Contact> {
+    const result = await db.insert(contactSubmissions).values(insertContact).returning();
+    return result[0];
+  }
+
+  async getContactSubmissions(): Promise<Contact[]> {
+    return await db.select().from(contactSubmissions).orderBy(contactSubmissions.createdAt);
+  }
+
+  async getContactById(id: string): Promise<Contact | undefined> {
+    const result = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id));
+    return result[0];
+  }
+
+  async deleteContact(id: string): Promise<boolean> {
+    const result = await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async createMembershipApplication(insertMembership: InsertMembership): Promise<Membership> {
+    const result = await db.insert(membershipApplications).values(insertMembership).returning();
+    return result[0];
+  }
+
+  async getMembershipApplications(): Promise<Membership[]> {
+    return await db.select().from(membershipApplications).orderBy(membershipApplications.createdAt);
+  }
+
+  async getMembershipById(id: string): Promise<Membership | undefined> {
+    const result = await db.select().from(membershipApplications).where(eq(membershipApplications.id, id));
+    return result[0];
+  }
+
+  async updateMembershipStatus(id: string, status: string): Promise<Membership | undefined> {
+    const result = await db.update(membershipApplications)
+      .set({ status })
+      .where(eq(membershipApplications.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteMembership(id: string): Promise<boolean> {
+    const result = await db.delete(membershipApplications).where(eq(membershipApplications.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async createBootcampRegistration(insertBootcamp: InsertBootcamp): Promise<Bootcamp> {
+    const result = await db.insert(bootcampRegistrations).values({
+      ...insertBootcamp,
+      district: "",
+      experience: "",
+    }).returning();
+    return result[0];
+  }
+
+  async getBootcampRegistrations(): Promise<Bootcamp[]> {
+    return await db.select().from(bootcampRegistrations).orderBy(bootcampRegistrations.createdAt);
+  }
+
+  async getBootcampById(id: string): Promise<Bootcamp | undefined> {
+    const result = await db.select().from(bootcampRegistrations).where(eq(bootcampRegistrations.id, id));
+    return result[0];
+  }
+
+  async updateBootcampStatus(id: string, status: string): Promise<Bootcamp | undefined> {
+    const result = await db.update(bootcampRegistrations)
+      .set({ status })
+      .where(eq(bootcampRegistrations.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteBootcamp(id: string): Promise<boolean> {
+    const result = await db.delete(bootcampRegistrations).where(eq(bootcampRegistrations.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getAdminByUsername(username: string): Promise<Admin | undefined> {
+    const result = await db.select().from(adminUsers).where(eq(adminUsers.username, username));
+    return result[0];
+  }
+
+  async createAdmin(insertAdmin: InsertAdmin): Promise<Admin> {
+    const hashedPassword = await bcrypt.hash(insertAdmin.password, 10);
+    const result = await db.insert(adminUsers).values({
+      ...insertAdmin,
+      password: hashedPassword
+    }).returning();
+    return result[0];
+  }
+
+  async getAdmins(): Promise<Admin[]> {
+    return await db.select().from(adminUsers);
+  }
+
+  async verifyAdminPassword(username: string, password: string): Promise<Admin | null> {
+    const admin = await this.getAdminByUsername(username);
+    if (!admin) {
+      return null;
+    }
+    const isValid = await bcrypt.compare(password, admin.password);
+    if (!isValid) {
+      return null;
+    }
+    return admin;
+  }
+
+  async getDashboardStats(): Promise<{
+    totalBootcampRegistrations: number;
+    totalMembershipApplications: number;
+    totalContactSubmissions: number;
+    pendingBootcamp: number;
+    pendingMembership: number;
+  }> {
+    const bootcamps = await this.getBootcampRegistrations();
+    const memberships = await this.getMembershipApplications();
+    const contacts = await this.getContactSubmissions();
+
+    return {
+      totalBootcampRegistrations: bootcamps.length,
+      totalMembershipApplications: memberships.length,
+      totalContactSubmissions: contacts.length,
+      pendingBootcamp: bootcamps.filter(b => b.status === "pending").length,
+      pendingMembership: memberships.filter(m => m.status === "pending").length,
+    };
+  }
+}
+
+export const storage = new DatabaseStorage();
