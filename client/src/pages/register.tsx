@@ -200,7 +200,7 @@ export default function Register() {
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center pt-0">
                 <a 
-                  href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=200&tn=Event+Entry&cu=INR"
+                  href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=4999&tn=Event+Entry&cu=INR"
                   className="w-full max-w-md"
                   data-testid="link-upi-payment-success"
                 >
@@ -209,7 +209,7 @@ export default function Register() {
                     data-testid="button-upi-payment-success"
                   >
                     <Wallet className="w-5 h-5 mr-3" />
-                    Pay ₹200 Instantly (UPI) - Event Entry
+                    Pay ₹4999 Instantly (UPI) - Event Entry
                   </Button>
                 </a>
                 <p className="text-sm text-muted-foreground mt-4 mb-6">
@@ -502,7 +502,7 @@ export default function Register() {
             </CardHeader>
             <CardContent className="flex flex-col items-center text-center">
               <a 
-                href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=200&tn=Event+Entry&cu=INR"
+                href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=4999&tn=Event+Entry&cu=INR"
                 className="w-full max-w-md"
                 data-testid="link-upi-payment"
               >
@@ -511,7 +511,7 @@ export default function Register() {
                   data-testid="button-upi-payment"
                 >
                   <Wallet className="w-5 h-5 mr-3" />
-                  Pay ₹200 Instantly (UPI) - Event Entry
+                  Pay ₹4999 Instantly (UPI) - Event Entry
                 </Button>
               </a>
               <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-6" data-testid="text-upi-description">
