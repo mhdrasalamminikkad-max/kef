@@ -100,12 +100,13 @@ export const bootcampRegistrations = pgTable("bootcamp_registrations", {
   email: text("email").notNull(),
   phone: text("phone").notNull(),
   age: text("age").notNull(),
-  organization: text("organization"),
+  organization: text("organization").notNull(),
+  paymentProof: text("payment_proof").notNull(),
   district: text("district").notNull(),
   experience: text("experience").notNull(),
   expectations: text("expectations"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  status: text("status").default("pending").notNull(),
+  status: text("status").default("approved").notNull(),
 });
 
 export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).omit({
@@ -120,6 +121,8 @@ export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).om
   fullName: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   age: z.string().min(1, "Please enter your age"),
+  organization: z.string().min(2, "Institution name is required"),
+  paymentProof: z.string().min(1, "Payment proof is required"),
 });
 
 export type InsertBootcamp = z.infer<typeof insertBootcampSchema>;

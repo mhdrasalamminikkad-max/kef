@@ -47,10 +47,20 @@ export default function Register() {
       phone: "",
       age: "",
       organization: "",
+      paymentProof: "",
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
@@ -74,6 +84,8 @@ export default function Register() {
       }
 
       setUploadedFile(file);
+      const base64 = await convertFileToBase64(file);
+      form.setValue("paymentProof", base64);
     }
   };
 
@@ -345,9 +357,9 @@ export default function Register() {
                       name="organization"
                       render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                          <FormLabel>Organization / College</FormLabel>
+                          <FormLabel>Institution / Organization *</FormLabel>
                           <FormControl>
-                            <Input placeholder="School/college/company (optional)" {...field} value={field.value ?? ""} data-testid="input-organization" />
+                            <Input placeholder="School, College, or Company name" {...field} value={field.value ?? ""} data-testid="input-organization" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -355,42 +367,49 @@ export default function Register() {
                     />
                   </div>
 
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <Upload className="w-4 h-4" />
-                      Upload Document (Optional)
-                    </FormLabel>
-                    <FormControl>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 text-center hover:border-blue-500 transition-colors cursor-pointer" data-testid="upload-document-area">
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/gif,application/pdf"
-                          onChange={handleFileChange}
-                          className="hidden"
-                          id="document-upload"
-                          data-testid="input-document-upload"
-                        />
-                        <label htmlFor="document-upload" className="cursor-pointer block">
-                          {uploadedFile ? (
-                            <div className="text-sm">
-                              <p className="font-semibold text-green-600 mb-1">File Selected</p>
-                              <p className="text-gray-600">{uploadedFile.name}</p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                {(uploadedFile.size / 1024).toFixed(2)} KB
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="text-sm">
-                              <p className="font-semibold text-gray-700 mb-1">Click to upload</p>
-                              <p className="text-xs text-gray-400">
-                                JPEG, PNG, GIF, PDF (Max 5MB)
-                              </p>
-                            </div>
-                          )}
-                        </label>
-                      </div>
-                    </FormControl>
-                  </FormItem>
+                  <FormField
+                    control={form.control}
+                    name="paymentProof"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Upload className="w-4 h-4" />
+                          Payment Screenshot *
+                        </FormLabel>
+                        <FormControl>
+                          <div className={`border-2 border-dashed rounded-lg p-4 md:p-6 text-center transition-colors cursor-pointer ${uploadedFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500'}`} data-testid="upload-payment-area">
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/gif,application/pdf"
+                              onChange={handleFileChange}
+                              className="hidden"
+                              id="payment-upload"
+                              data-testid="input-payment-upload"
+                            />
+                            <label htmlFor="payment-upload" className="cursor-pointer block">
+                              {uploadedFile ? (
+                                <div className="text-sm">
+                                  <p className="font-semibold text-green-600 mb-1">Payment Proof Uploaded</p>
+                                  <p className="text-gray-600">{uploadedFile.name}</p>
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {(uploadedFile.size / 1024).toFixed(2)} KB
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="text-sm">
+                                  <p className="font-semibold text-gray-700 mb-1">Upload Payment Screenshot</p>
+                                  <p className="text-xs text-gray-400">
+                                    JPEG, PNG, GIF, PDF (Max 5MB)
+                                  </p>
+                                </div>
+                              )}
+                            </label>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <Button 
                     type="submit" 

@@ -178,12 +178,13 @@ export class MemStorage implements IStorage {
       email: insertBootcamp.email,
       phone: insertBootcamp.phone,
       age: insertBootcamp.age,
-      organization: insertBootcamp.organization ?? null,
+      organization: insertBootcamp.organization,
+      paymentProof: insertBootcamp.paymentProof,
       district: "",
       experience: "",
       expectations: null,
       createdAt: new Date(),
-      status: "pending",
+      status: "approved",
     };
     this.bootcamps.set(id, bootcamp);
     return bootcamp;
