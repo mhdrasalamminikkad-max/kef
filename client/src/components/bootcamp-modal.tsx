@@ -3,30 +3,22 @@ import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRegistrationStatus } from "@/hooks/use-registration-status";
 import bootcampImage from "@assets/kef a_1764492076701.png";
 
 export function BootcampModal() {
-  const { isModalDismissed, isRegistered, isLoaded, dismissModal } = useRegistrationStatus();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Always show the banner when user opens the website
   useEffect(() => {
-    if (isLoaded && !isModalDismissed && !isRegistered) {
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded, isModalDismissed, isRegistered]);
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleClose = () => {
     setIsOpen(false);
-    dismissModal();
   };
-
-  if (!isLoaded) {
-    return null;
-  }
 
   return (
     <AnimatePresence>
