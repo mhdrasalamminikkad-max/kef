@@ -220,9 +220,9 @@ export default function Register() {
                 <div className="w-full border-t border-gray-200 pt-6">
                   <h4 className="text-sm font-semibold text-foreground mb-4">Or Pay Manually</h4>
                   
-                  <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-                    <p className="text-xs text-muted-foreground mb-1">UPI ID</p>
-                    <p className="text-sm font-mono font-medium text-foreground break-all">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-5 mb-4 text-left border border-blue-200">
+                    <p className="text-xs font-semibold text-blue-600 mb-2 tracking-wide">UPI ID</p>
+                    <p className="text-base font-semibold tracking-wide text-gray-800 font-sans break-all" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", letterSpacing: '0.3px' }}>
                       caliphworldfoundation.9605399676.ibz@icici
                     </p>
                   </div>
@@ -530,7 +530,7 @@ export default function Register() {
             </CardHeader>
             <CardContent className="flex flex-col items-center text-center">
               <a 
-                href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=3999&tn=Event+Entry&cu=INR"
+                href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=4999&tn=Event+Entry&cu=INR"
                 className="w-full max-w-md"
                 data-testid="link-upi-payment"
               >
@@ -539,7 +539,7 @@ export default function Register() {
                   data-testid="button-upi-payment"
                 >
                   <Wallet className="w-5 h-5 mr-3" />
-                  <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹3999</span> Pay Now
+                  <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹4999</span> Pay Now
                 </Button>
               </a>
               <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-6" data-testid="text-upi-description">
@@ -551,9 +551,9 @@ export default function Register() {
                 <h4 className="text-sm font-semibold text-foreground mb-4">Or Pay Manually</h4>
                 
                 {/* UPI ID */}
-                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-                  <p className="text-xs text-muted-foreground mb-1">UPI ID</p>
-                  <p className="text-sm font-mono font-medium text-foreground break-all" data-testid="text-upi-id">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-5 mb-4 text-left border border-blue-200">
+                  <p className="text-xs font-semibold text-blue-600 mb-2 tracking-wide">UPI ID</p>
+                  <p className="text-base font-semibold tracking-wide text-gray-800 font-sans break-all" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", letterSpacing: '0.3px' }} data-testid="text-upi-id">
                     caliphworldfoundation.9605399676.ibz@icici
                   </p>
                 </div>
