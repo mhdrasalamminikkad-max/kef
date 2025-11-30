@@ -154,7 +154,7 @@ export default function Contact() {
                     <div>
                       <p className="font-medium text-foreground">Email</p>
                       <p className="text-muted-foreground text-sm" data-testid="text-email">
-                        inquiry@keralaeconomicforum.com
+                        keralaeconomicforum.com
                       </p>
                     </div>
                   </div>
@@ -165,7 +165,7 @@ export default function Contact() {
                     <div>
                       <p className="font-medium text-foreground">Phone</p>
                       <p className="text-muted-foreground text-sm" data-testid="text-phone">
-                        +91 XXXXX XXXXX
+                        +91 9072344431
                       </p>
                     </div>
                   </div>
