@@ -27,14 +27,9 @@ export function Header() {
           <Link href="/" data-testid="link-logo">
             <div className="flex items-center gap-2 cursor-pointer">
               <img src="/logo.png" alt="KEF Logo" className="w-10 h-10 rounded-lg" />
-              <div className="flex flex-col">
-                <span className="font-bold text-lg leading-tight text-red-500">
-                  KEF
-                </span>
-                <span className="text-xs text-muted-foreground leading-tight hidden sm:block">
-                  Kerala Economic Forum
-                </span>
-              </div>
+              <span className="font-bold text-sm leading-tight text-red-500 hidden sm:block">
+                Kerala Economic Forum
+              </span>
             </div>
           </Link>
 
