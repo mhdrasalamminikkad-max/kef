@@ -169,3 +169,45 @@ export const updateProgramSchema = z.object({
 export type InsertProgram = z.infer<typeof insertProgramSchema>;
 export type UpdateProgram = z.infer<typeof updateProgramSchema>;
 export type Program = typeof programs.$inferSelect;
+
+// Partners management
+export const partners = pgTable("partners", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  logo: text("logo").notNull(),
+  description: text("description"),
+  website: text("website"),
+  category: text("category").default("partner").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  order: text("order").default("0").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPartnerSchema = createInsertSchema(partners).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  name: z.string().min(2, "Partner name must be at least 2 characters"),
+  logo: z.string().min(1, "Logo image is required"),
+  description: z.string().optional(),
+  website: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
+  category: z.string().default("partner"),
+  isActive: z.boolean().default(true),
+  order: z.string().default("0"),
+});
+
+export const updatePartnerSchema = z.object({
+  name: z.string().min(2, "Partner name must be at least 2 characters").optional(),
+  logo: z.string().min(1, "Logo image is required").optional(),
+  description: z.string().optional(),
+  website: z.string().url("Please enter a valid website URL").optional().or(z.literal("")),
+  category: z.string().optional(),
+  isActive: z.boolean().optional(),
+  order: z.string().optional(),
+});
+
+export type InsertPartner = z.infer<typeof insertPartnerSchema>;
+export type UpdatePartner = z.infer<typeof updatePartnerSchema>;
+export type Partner = typeof partners.$inferSelect;
