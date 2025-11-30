@@ -304,13 +304,32 @@ export default function Register() {
             </div>
           </div>
 
-          <div className="mt-6 md:mt-8 p-4 md:p-6 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
-            <p className="text-white/90 text-sm md:text-base mb-2">
-              <span className="font-semibold">Camp Fee:</span> <span className="text-lg md:text-xl font-bold text-yellow-300">₹6999/-</span>
-            </p>
-            <p className="text-green-300 font-semibold text-base md:text-lg">
-              Early Bird offer: <span className="text-yellow-300">₹4999</span> only (till Dec 10, 2025)
-            </p>
+          <div className="mt-8 md:mt-10 max-w-2xl mx-auto">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-yellow-400/20 to-cyan-500/20"></div>
+              <div className="relative p-6 md:p-8 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-md border border-white/30">
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <p className="text-gray-600 text-sm md:text-base font-medium mb-2">Standard Camp Fee</p>
+                    <p className="text-3xl md:text-4xl font-black text-gray-800">
+                      <span className="line-through text-gray-400 text-2xl md:text-3xl">₹6999</span>
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center justify-center">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+                  </div>
+                  
+                  <div className="text-center bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border-2 border-yellow-300">
+                    <p className="text-gray-600 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1">Early Bird Special</p>
+                    <p className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500">
+                      ₹4999
+                    </p>
+                    <p className="text-cyan-600 text-xs md:text-sm font-bold mt-2">Valid till December 10, 2025</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
           <p className="text-white/70 mt-4 max-w-2xl mx-auto text-sm md:text-base">
