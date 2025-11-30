@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -21,11 +21,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import qrCodeImage from "@assets/qrm_1764493655676.png";
+import { useState } from "react";
 
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { markRegistered, isRegistered } = useRegistrationStatus();
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const form = useForm<InsertBootcamp>({
     resolver: zodResolver(insertBootcampSchema),
@@ -37,6 +39,33 @@ export default function Register() {
       organization: "",
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
+      
+      if (!validTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload an image (JPEG, PNG, GIF) or PDF document.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload a file smaller than 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setUploadedFile(file);
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: async (data: InsertBootcamp) => {
@@ -224,6 +253,45 @@ export default function Register() {
                       )}
                     />
                   </div>
+
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      Upload Supporting Document (Screenshot/PDF)
+                    </FormLabel>
+                    <FormControl>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer" data-testid="upload-document-area">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/gif,application/pdf"
+                          onChange={handleFileChange}
+                          className="hidden"
+                          id="document-upload"
+                          data-testid="input-document-upload"
+                        />
+                        <label htmlFor="document-upload" className="cursor-pointer block">
+                          {uploadedFile ? (
+                            <div className="text-sm">
+                              <p className="font-semibold text-green-600 mb-1">File Selected</p>
+                              <p className="text-gray-600">{uploadedFile.name}</p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {(uploadedFile.size / 1024).toFixed(2)} KB
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="text-sm">
+                              <p className="font-semibold text-gray-700 mb-1">Click to upload</p>
+                              <p className="text-gray-500">or drag and drop</p>
+                              <p className="text-xs text-gray-400 mt-2">
+                                Supported: JPEG, PNG, GIF, PDF (Max 5MB)
+                              </p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+                    </FormControl>
+                    <p className="text-xs text-gray-500 mt-2">Optional: Upload a screenshot of payment proof, ID, or any supporting document</p>
+                  </FormItem>
 
                   <Button 
                     type="submit" 
