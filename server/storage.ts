@@ -11,6 +11,7 @@ import {
   type InsertAdmin
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -37,6 +38,7 @@ export interface IStorage {
   getAdminByUsername(username: string): Promise<Admin | undefined>;
   createAdmin(admin: InsertAdmin): Promise<Admin>;
   getAdmins(): Promise<Admin[]>;
+  verifyAdminPassword(username: string, password: string): Promise<Admin | null>;
   
   getDashboardStats(): Promise<{
     totalBootcampRegistrations: number;
@@ -65,13 +67,29 @@ export class MemStorage implements IStorage {
   }
 
   private async initDefaultAdmin() {
-    const existingAdmin = await this.getAdminByUsername("admin");
-    if (!existingAdmin) {
-      await this.createAdmin({
-        username: "admin",
-        password: "admin123"
-      });
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminUsername || !adminPassword) {
+      if (process.env.NODE_ENV === "production") {
+        console.error("SECURITY WARNING: ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required in production!");
+        return;
+      }
+      console.warn("WARNING: Using default admin credentials. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables for production.");
     }
+    
+    const finalUsername = adminUsername || "admin";
+    const finalPassword = adminPassword || "admin123";
+    
+    const existingAdmin = await this.getAdminByUsername(finalUsername);
+    if (existingAdmin) {
+      this.admins.delete(existingAdmin.id);
+    }
+    
+    await this.createAdmin({
+      username: finalUsername,
+      password: finalPassword
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -207,9 +225,11 @@ export class MemStorage implements IStorage {
 
   async createAdmin(insertAdmin: InsertAdmin): Promise<Admin> {
     const id = randomUUID();
+    const hashedPassword = await bcrypt.hash(insertAdmin.password, 10);
     const admin: Admin = {
       ...insertAdmin,
       id,
+      password: hashedPassword,
       createdAt: new Date(),
     };
     this.admins.set(id, admin);
@@ -218,6 +238,18 @@ export class MemStorage implements IStorage {
 
   async getAdmins(): Promise<Admin[]> {
     return Array.from(this.admins.values());
+  }
+
+  async verifyAdminPassword(username: string, password: string): Promise<Admin | null> {
+    const admin = await this.getAdminByUsername(username);
+    if (!admin) {
+      return null;
+    }
+    const isValid = await bcrypt.compare(password, admin.password);
+    if (!isValid) {
+      return null;
+    }
+    return admin;
   }
 
   async getDashboardStats(): Promise<{

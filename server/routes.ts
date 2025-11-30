@@ -36,9 +36,9 @@ export async function registerRoutes(
       }
       
       const { username, password } = result.data;
-      const admin = await storage.getAdminByUsername(username);
+      const admin = await storage.verifyAdminPassword(username, password);
       
-      if (!admin || admin.password !== password) {
+      if (!admin) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
       

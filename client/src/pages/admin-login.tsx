@@ -121,7 +121,7 @@ export default function AdminLogin() {
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            <p>Default credentials: admin / admin123</p>
+            <p>Contact administrator for credentials</p>
           </div>
         </CardContent>
       </Card>
