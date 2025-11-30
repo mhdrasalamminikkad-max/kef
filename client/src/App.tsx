@@ -14,22 +14,30 @@ import Membership from "@/pages/membership";
 import Partners from "@/pages/partners";
 import Contact from "@/pages/contact";
 import Register from "@/pages/register";
+import AdminLogin from "@/pages/admin-login";
+import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <Layout>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/about" component={About} />
-        <Route path="/programs" component={Programs} />
-        <Route path="/membership" component={Membership} />
-        <Route path="/partners" component={Partners} />
-        <Route path="/contact" component={Contact} />
-        <Route path="/register" component={Register} />
-        <Route component={NotFound} />
-      </Switch>
-    </Layout>
+    <Switch>
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin" component={Admin} />
+      <Route>
+        <Layout>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/about" component={About} />
+            <Route path="/programs" component={Programs} />
+            <Route path="/membership" component={Membership} />
+            <Route path="/partners" component={Partners} />
+            <Route path="/contact" component={Contact} />
+            <Route path="/register" component={Register} />
+            <Route component={NotFound} />
+          </Switch>
+        </Layout>
+      </Route>
+    </Switch>
   );
 }
 

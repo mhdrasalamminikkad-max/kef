@@ -9,6 +9,30 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
 });
 
+export const adminUsers = pgTable("admin_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAdminSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export const adminLoginSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export type InsertAdmin = z.infer<typeof insertAdminSchema>;
+export type Admin = typeof adminUsers.$inferSelect;
+export type AdminLogin = z.infer<typeof adminLoginSchema>;
+
 export const contactSubmissions = pgTable("contact_submissions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
