@@ -232,14 +232,14 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="flex flex-col sm:flex-row gap-3 md:gap-4"
               >
-                <Link href="/register">
+                <Link href="/programs">
                   <Button 
                     size="lg" 
                     className="w-full sm:w-auto btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shadow-lg shadow-yellow-500/30 text-sm md:text-base" 
-                    data-testid="button-register-now"
+                    data-testid="button-upcoming-programs"
                   >
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Register Now
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Upcoming Programs
                   </Button>
                 </Link>
                 <Link href="/programs" className="hidden sm:block">
