@@ -48,3 +48,10 @@
 [x] 48. Fixed bootcamp popup modal sizing - now fits within 90% viewport height
 [x] 49. Image constrained to 60% of screen height with proper scrolling
 [x] 50. Buttons always visible at bottom of modal
+[x] 51. Redesigned popup modal with beautiful mobile-first layout
+[x] 52. Added bottom sheet style animation for mobile (slides up from bottom)
+[x] 53. Clean white/dark mode design with proper spacing
+[x] 54. Added drag indicator for mobile, rounded corners, and shadow effects
+[x] 55. Info pills with icons for event details (date, location, age group)
+[x] 56. Large touch-friendly buttons with stacked layout on mobile
+[x] 57. Limited seats badge with sparkle icon for urgency

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Calendar, MapPin, Users, ArrowRight } from "lucide-react";
+import { X, Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
 import bootcampImage from "@assets/kef a_1764492076701.png";
@@ -36,73 +36,111 @@ export function BootcampModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-md"
           onClick={handleClose}
           data-testid="bootcamp-modal-overlay"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3, type: "spring", damping: 25 }}
-            className="relative max-w-lg w-full max-h-[90vh] flex flex-col bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 rounded-xl overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ duration: 0.4, type: "spring", damping: 25 }}
+            className="relative w-full sm:max-w-md sm:mx-4 max-h-[85vh] sm:max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 sm:rounded-2xl rounded-t-3xl overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
             data-testid="bootcamp-modal"
           >
+            {/* Mobile drag indicator */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+            </div>
+
+            {/* Close button */}
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-3 right-3 z-10 text-white hover:bg-white/20 rounded-full"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 bg-black/20 text-white hover:bg-black/40 rounded-full backdrop-blur-sm"
               onClick={handleClose}
               data-testid="button-close-modal"
             >
               <X className="w-5 h-5" />
             </Button>
 
-            <div className="relative flex-1 overflow-auto">
-              <img 
-                src={bootcampImage} 
-                alt="Startup Boot Camp" 
-                className="w-full h-auto max-h-[60vh] object-contain"
-                data-testid="img-bootcamp-poster"
-              />
-              
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-900 via-blue-900/80 to-transparent p-4">
-                <div className="flex flex-wrap gap-3 text-white/90 text-xs mb-3">
-                  <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-2 py-1">
-                    <Calendar className="w-3 h-3" />
-                    <span>Dec 26-28, 2025</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-2 py-1">
-                    <MapPin className="w-3 h-3" />
-                    <span>Kozhikode</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-full px-2 py-1">
-                    <Users className="w-3 h-3" />
-                    <span>Ages 15-29</span>
-                  </div>
-                </div>
+            {/* Image section */}
+            <div className="relative flex-shrink-0">
+              <div className="relative overflow-hidden">
+                <img 
+                  src={bootcampImage} 
+                  alt="Startup Boot Camp" 
+                  className="w-full h-auto max-h-[40vh] sm:max-h-[45vh] object-cover object-top"
+                  data-testid="img-bootcamp-poster"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-900 via-transparent to-transparent" />
               </div>
             </div>
 
-            <div className="p-4 flex-shrink-0">
-              <div className="flex gap-3">
+            {/* Content section */}
+            <div className="flex-1 px-5 sm:px-6 pb-6 pt-2 space-y-4 overflow-auto">
+              {/* Badge */}
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-xs font-bold rounded-full">
+                  <Sparkles className="w-3 h-3" />
+                  LIMITED SEATS
+                </span>
+              </div>
+
+              {/* Title */}
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                  Startup Boot Camp
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  3-Day Residential Experience
+                </p>
+              </div>
+
+              {/* Info pills */}
+              <div className="flex flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-700 dark:text-gray-300">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  <span>Dec 26-28, 2025</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-700 dark:text-gray-300">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span>Kozhikode</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-700 dark:text-gray-300">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span>Ages 15-29</span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                Join Kerala's most exciting entrepreneurship bootcamp. Learn, network, and launch your startup journey!
+              </p>
+            </div>
+
+            {/* Action buttons - fixed at bottom */}
+            <div className="flex-shrink-0 p-4 sm:p-5 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/register" className="flex-1" onClick={handleClose}>
                   <Button 
-                    className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-semibold"
+                    size="lg"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 sm:py-5 rounded-xl shadow-lg shadow-primary/25"
                     data-testid="button-modal-register"
                   >
                     Register Now
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
                 <Button 
+                  size="lg"
                   variant="outline" 
-                  className="border-white/30 text-white hover:bg-white/10"
+                  className="sm:w-auto w-full py-6 sm:py-5 rounded-xl border-gray-200 dark:border-gray-700"
                   onClick={handleClose}
                   data-testid="button-modal-later"
                 >
-                  Later
+                  Maybe Later
                 </Button>
               </div>
             </div>
