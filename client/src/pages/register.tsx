@@ -333,7 +333,7 @@ export default function Register() {
           </div>
           
           <p className="text-white/70 mt-4 max-w-2xl mx-auto text-sm md:text-base">
-            Open to ages 15-29. Build an entrepreneurial mindset and turn ideas into real startups.
+            Open to ages 15-39. Build an entrepreneurial mindset and turn ideas into real startups.
           </p>
 
           {addingAnother && (

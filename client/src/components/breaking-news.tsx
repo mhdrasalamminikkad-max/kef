@@ -11,7 +11,7 @@ export function BreakingNews() {
     return null;
   }
 
-  const newsText = "Startup Boot Camp - 3-Day Residential Experience | December 26-28, 2025 | Caliph Life School, Kozhikode | Open to ages 15-29";
+  const newsText = "Startup Boot Camp - 3-Day Residential Experience | December 26-28, 2025 | Caliph Life School, Kozhikode | Open to ages 15-39";
   const mobileNewsText = "Startup Boot Camp | Dec 26-28, 2025 | Kozhikode";
 
   return (

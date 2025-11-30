@@ -12,7 +12,7 @@ export function FloatingInvitationsIcon() {
       id: "1",
       title: "Startup Boot Camp",
       date: "December 26-28, 2025",
-      description: "3-Day Residential Experience at Caliph Life School, Kozhikode. Open to ages 15-29.",
+      description: "3-Day Residential Experience at Caliph Life School, Kozhikode. Open to ages 15-39.",
       cta: "Register Now",
       link: "/register"
     },

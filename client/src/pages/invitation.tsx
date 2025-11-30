@@ -173,7 +173,7 @@ export default function Invitation() {
                     <Users className="w-5 h-5 text-red-500 mt-0.5" />
                     <div>
                       <p className="font-semibold">Age Group</p>
-                      <p className="text-muted-foreground">15-29 years</p>
+                      <p className="text-muted-foreground">15-39 years</p>
                     </div>
                   </div>
                 </div>
