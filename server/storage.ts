@@ -9,11 +9,15 @@ import {
   type InsertBootcamp,
   type Admin,
   type InsertAdmin,
+  type Program,
+  type InsertProgram,
+  type UpdateProgram,
   users,
   contactSubmissions,
   membershipApplications,
   bootcampRegistrations,
-  adminUsers
+  adminUsers,
+  programs
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
@@ -54,6 +58,13 @@ export interface IStorage {
     pendingBootcamp: number;
     pendingMembership: number;
   }>;
+  
+  getPrograms(): Promise<Program[]>;
+  getActivePrograms(): Promise<Program[]>;
+  getProgramById(id: string): Promise<Program | undefined>;
+  createProgram(program: InsertProgram): Promise<Program>;
+  updateProgram(id: string, program: UpdateProgram): Promise<Program | undefined>;
+  deleteProgram(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -62,6 +73,7 @@ export class MemStorage implements IStorage {
   private memberships: Map<string, Membership>;
   private bootcamps: Map<string, Bootcamp>;
   private admins: Map<string, Admin>;
+  private programsMap: Map<string, Program>;
 
   constructor() {
     this.users = new Map();
@@ -69,8 +81,10 @@ export class MemStorage implements IStorage {
     this.memberships = new Map();
     this.bootcamps = new Map();
     this.admins = new Map();
+    this.programsMap = new Map();
     
     this.initDefaultAdmin();
+    this.initDefaultPrograms();
   }
 
   private async initDefaultAdmin() {
@@ -86,6 +100,24 @@ export class MemStorage implements IStorage {
       username: finalUsername,
       password: finalPassword
     });
+  }
+
+  private async initDefaultPrograms() {
+    const defaultPrograms = [
+      { title: "Startup Boot Camp", description: "Residential camps with workshops, business model creation, and pitching sessions.", icon: "Rocket", gradient: "orange" as const },
+      { title: "Business Conclaves", description: "Large-scale gatherings connecting founders, investors, and thought leaders.", icon: "Building2", gradient: "blue" as const },
+      { title: "Founder Circle", description: "Exclusive networking dinners for honest entrepreneur conversations.", icon: "Users", gradient: "purple" as const },
+      { title: "Advisory Clinics", description: "One-on-one mentoring in finance, branding, legal, and marketing.", icon: "Briefcase", gradient: "teal" as const },
+      { title: "Campus Labs", description: "Innovation cells and student incubators in colleges across Kerala.", icon: "GraduationCap", gradient: "blue" as const },
+    ];
+
+    for (let i = 0; i < defaultPrograms.length; i++) {
+      await this.createProgram({
+        ...defaultPrograms[i],
+        order: String(i),
+        isActive: true,
+      });
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -268,6 +300,55 @@ export class MemStorage implements IStorage {
       pendingMembership: memberships.filter(m => m.status === "pending").length,
     };
   }
+
+  async getPrograms(): Promise<Program[]> {
+    return Array.from(this.programsMap.values()).sort(
+      (a, b) => parseInt(a.order) - parseInt(b.order)
+    );
+  }
+
+  async getActivePrograms(): Promise<Program[]> {
+    return (await this.getPrograms()).filter(p => p.isActive);
+  }
+
+  async getProgramById(id: string): Promise<Program | undefined> {
+    return this.programsMap.get(id);
+  }
+
+  async createProgram(insertProgram: InsertProgram): Promise<Program> {
+    const id = randomUUID();
+    const program: Program = {
+      id,
+      title: insertProgram.title,
+      description: insertProgram.description,
+      icon: insertProgram.icon,
+      features: insertProgram.features ?? null,
+      gradient: insertProgram.gradient ?? "purple",
+      isActive: insertProgram.isActive ?? true,
+      order: insertProgram.order ?? "0",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.programsMap.set(id, program);
+    return program;
+  }
+
+  async updateProgram(id: string, updateData: UpdateProgram): Promise<Program | undefined> {
+    const program = this.programsMap.get(id);
+    if (!program) return undefined;
+    
+    const updated: Program = {
+      ...program,
+      ...updateData,
+      updatedAt: new Date(),
+    };
+    this.programsMap.set(id, updated);
+    return updated;
+  }
+
+  async deleteProgram(id: string): Promise<boolean> {
+    return this.programsMap.delete(id);
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -429,6 +510,37 @@ export class DatabaseStorage implements IStorage {
       pendingBootcamp: bootcamps.filter(b => b.status === "pending").length,
       pendingMembership: memberships.filter(m => m.status === "pending").length,
     };
+  }
+
+  async getPrograms(): Promise<Program[]> {
+    return await db.select().from(programs).orderBy(programs.order);
+  }
+
+  async getActivePrograms(): Promise<Program[]> {
+    return await db.select().from(programs).where(eq(programs.isActive, true)).orderBy(programs.order);
+  }
+
+  async getProgramById(id: string): Promise<Program | undefined> {
+    const result = await db.select().from(programs).where(eq(programs.id, id));
+    return result[0];
+  }
+
+  async createProgram(insertProgram: InsertProgram): Promise<Program> {
+    const result = await db.insert(programs).values(insertProgram).returning();
+    return result[0];
+  }
+
+  async updateProgram(id: string, updateData: UpdateProgram): Promise<Program | undefined> {
+    const result = await db.update(programs)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(programs.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteProgram(id: string): Promise<boolean> {
+    const result = await db.delete(programs).where(eq(programs.id, id)).returning();
+    return result.length > 0;
   }
 }
 

@@ -127,3 +127,45 @@ export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).om
 
 export type InsertBootcamp = z.infer<typeof insertBootcampSchema>;
 export type Bootcamp = typeof bootcampRegistrations.$inferSelect;
+
+// Programs management
+export const programs = pgTable("programs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull(),
+  features: text("features").array(),
+  gradient: text("gradient").default("purple").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  order: text("order").default("0").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertProgramSchema = createInsertSchema(programs).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  title: z.string().min(2, "Title must be at least 2 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  icon: z.string().min(1, "Icon is required"),
+  features: z.array(z.string()).optional(),
+  gradient: z.enum(["purple", "blue", "teal", "orange"]).default("purple"),
+  isActive: z.boolean().default(true),
+  order: z.string().default("0"),
+});
+
+export const updateProgramSchema = z.object({
+  title: z.string().min(2, "Title must be at least 2 characters").optional(),
+  description: z.string().min(10, "Description must be at least 10 characters").optional(),
+  icon: z.string().min(1, "Icon is required").optional(),
+  features: z.array(z.string()).optional(),
+  gradient: z.enum(["purple", "blue", "teal", "orange"]).optional(),
+  isActive: z.boolean().optional(),
+  order: z.string().optional(),
+});
+
+export type InsertProgram = z.infer<typeof insertProgramSchema>;
+export type UpdateProgram = z.infer<typeof updateProgramSchema>;
+export type Program = typeof programs.$inferSelect;

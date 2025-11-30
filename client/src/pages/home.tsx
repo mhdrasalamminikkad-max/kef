@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Rocket, 
   Users, 
@@ -17,13 +18,57 @@ import {
   UserPlus,
   Star,
   ChevronRight,
-  Zap
+  Zap,
+  Target,
+  Award,
+  type LucideIcon
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import type { Program } from "@shared/schema";
+
+const iconMap: Record<string, LucideIcon> = {
+  Rocket,
+  Building2,
+  Users,
+  Briefcase,
+  GraduationCap,
+  Lightbulb,
+  Target,
+  Award,
+  TrendingUp,
+};
+
+const fallbackPrograms = [
+  {
+    title: "Startup Boot Camp",
+    description: "Residential camps with workshops, business model creation, and pitching sessions.",
+    icon: "Rocket",
+  },
+  {
+    title: "Business Conclaves",
+    description: "Large-scale gatherings connecting founders, investors, and thought leaders.",
+    icon: "Building2",
+  },
+  {
+    title: "Founder Circle",
+    description: "Exclusive networking dinners for honest entrepreneur conversations.",
+    icon: "Users",
+  },
+  {
+    title: "Advisory Clinics",
+    description: "One-on-one mentoring in finance, branding, legal, and marketing.",
+    icon: "Briefcase",
+  },
+  {
+    title: "Campus Labs",
+    description: "Innovation cells and student incubators in colleges across Kerala.",
+    icon: "GraduationCap",
+  },
+];
 
 const whatWeDo = [
   {
@@ -64,33 +109,6 @@ const whatWeDo = [
   },
 ];
 
-const signaturePrograms = [
-  {
-    title: "Startup Boot Camp",
-    description: "Residential camps with workshops, business model creation, and pitching sessions.",
-    icon: Rocket,
-  },
-  {
-    title: "Business Conclaves",
-    description: "Large-scale gatherings connecting founders, investors, and thought leaders.",
-    icon: Building2,
-  },
-  {
-    title: "Founder Circle",
-    description: "Exclusive networking dinners for honest entrepreneur conversations.",
-    icon: Users,
-  },
-  {
-    title: "Advisory Clinics",
-    description: "One-on-one mentoring in finance, branding, legal, and marketing.",
-    icon: Briefcase,
-  },
-  {
-    title: "Campus Labs",
-    description: "Innovation cells and student incubators in colleges across Kerala.",
-    icon: GraduationCap,
-  },
-];
 
 const impactMetrics = [
   { end: 1000, suffix: "+", label: "Startups", icon: Rocket },
@@ -128,6 +146,18 @@ function Layers(props: any) {
 }
 
 export default function Home() {
+  const programsQuery = useQuery<Program[]>({
+    queryKey: ["/api/programs"],
+  });
+  
+  const signaturePrograms = programsQuery.data?.length 
+    ? programsQuery.data.map(p => ({
+        title: p.title,
+        description: p.description,
+        icon: p.icon,
+      }))
+    : fallbackPrograms;
+  
   return (
     <>
       {/* MOBILE HERO SECTION */}
@@ -378,60 +408,66 @@ export default function Home() {
         {/* Mobile horizontal scroll */}
         <div className="md:hidden">
           <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-            {signaturePrograms.map((program, index) => (
-              <motion.div
-                key={program.title}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="flex-shrink-0 w-[280px] snap-center"
-              >
-                <Card className="h-full mobile-card-shadow">
-                  <CardContent className="p-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
-                      index % 3 === 0 ? 'bg-red-500' :
-                      index % 3 === 1 ? 'bg-yellow-400' :
-                      'bg-cyan-500'
-                    }`}>
-                      <program.icon className={`w-6 h-6 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
-                    </div>
-                    <h3 className="font-semibold text-foreground text-base mb-2" data-testid={`text-program-title-${index}`}>
-                      {program.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed" data-testid={`text-program-desc-${index}`}>
-                      {program.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            {signaturePrograms.map((program, index) => {
+              const IconComponent = iconMap[program.icon] || Rocket;
+              return (
+                <motion.div
+                  key={program.title}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="flex-shrink-0 w-[280px] snap-center"
+                >
+                  <Card className="h-full mobile-card-shadow">
+                    <CardContent className="p-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+                        index % 3 === 0 ? 'bg-red-500' :
+                        index % 3 === 1 ? 'bg-yellow-400' :
+                        'bg-cyan-500'
+                      }`}>
+                        <IconComponent className={`w-6 h-6 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
+                      </div>
+                      <h3 className="font-semibold text-foreground text-base mb-2" data-testid={`text-program-title-${index}`}>
+                        {program.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed" data-testid={`text-program-desc-${index}`}>
+                        {program.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
 
         {/* Desktop Grid */}
         <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {signaturePrograms.map((program, index) => (
-            <motion.div
-              key={program.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="h-full hover-elevate overflow-visible">
-                <CardContent className="p-6">
-                  <div className="w-2 h-12 bg-gradient-to-b from-red-500 via-yellow-400 to-cyan-500 mb-4" />
-                  <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-program-title-${index}`}>
-                    {program.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground" data-testid={`text-program-desc-${index}`}>
-                    {program.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+          {signaturePrograms.map((program, index) => {
+            const IconComponent = iconMap[program.icon] || Rocket;
+            return (
+              <motion.div
+                key={program.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="h-full hover-elevate overflow-visible">
+                  <CardContent className="p-6">
+                    <div className="w-2 h-12 bg-gradient-to-b from-red-500 via-yellow-400 to-cyan-500 mb-4" />
+                    <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-program-title-${index}`}>
+                      {program.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground" data-testid={`text-program-desc-${index}`}>
+                      {program.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
         
         <div className="mt-6 md:mt-8 text-center">

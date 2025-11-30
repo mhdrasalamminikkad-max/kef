@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema } from "@shared/schema";
+import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 
 declare module 'express-session' {
@@ -364,6 +364,90 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching bootcamp registration:", error);
       res.status(500).json({ error: "Failed to fetch bootcamp registration" });
+    }
+  });
+
+  // Programs API routes (public)
+  app.get("/api/programs", async (req, res) => {
+    try {
+      const allPrograms = await storage.getActivePrograms();
+      res.json(allPrograms);
+    } catch (error) {
+      console.error("Error fetching programs:", error);
+      res.status(500).json({ error: "Failed to fetch programs" });
+    }
+  });
+
+  // Admin Programs API routes
+  app.get("/api/admin/programs", requireAdmin, async (req, res) => {
+    try {
+      const allPrograms = await storage.getPrograms();
+      res.json(allPrograms);
+    } catch (error) {
+      console.error("Error fetching programs:", error);
+      res.status(500).json({ error: "Failed to fetch programs" });
+    }
+  });
+
+  app.post("/api/admin/programs", requireAdmin, async (req, res) => {
+    try {
+      const result = insertProgramSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: validationError.message 
+        });
+      }
+      
+      const program = await storage.createProgram(result.data);
+      res.status(201).json(program);
+    } catch (error) {
+      console.error("Error creating program:", error);
+      res.status(500).json({ error: "Failed to create program" });
+    }
+  });
+
+  app.patch("/api/admin/programs/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = updateProgramSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: validationError.message 
+        });
+      }
+      
+      const updated = await storage.updateProgram(id, result.data);
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating program:", error);
+      res.status(500).json({ error: "Failed to update program" });
+    }
+  });
+
+  app.delete("/api/admin/programs/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteProgram(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting program:", error);
+      res.status(500).json({ error: "Failed to delete program" });
     }
   });
 

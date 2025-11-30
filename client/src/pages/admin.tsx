@@ -47,8 +47,24 @@ import {
   Eye,
   Loader2,
   RefreshCw,
+  Image,
+  Layers,
+  Plus,
+  Pencil,
 } from "lucide-react";
-import type { Bootcamp, Membership, Contact } from "@shared/schema";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { Bootcamp, Membership, Contact, Program } from "@shared/schema";
+import bootcampPoster from "@assets/kef a_1764492076701.png";
 
 interface DashboardStats {
   totalBootcampRegistrations: number;
@@ -75,9 +91,23 @@ export default function AdminDashboard() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
-    type: "bootcamp" | "membership" | "contact";
+    type: "bootcamp" | "membership" | "contact" | "program";
     id: string;
   }>({ open: false, type: "bootcamp", id: "" });
+  const [showPoster, setShowPoster] = useState(false);
+  const [programDialog, setProgramDialog] = useState<{
+    open: boolean;
+    mode: "add" | "edit";
+    program?: Program;
+  }>({ open: false, mode: "add" });
+  const [programForm, setProgramForm] = useState({
+    title: "",
+    description: "",
+    icon: "Rocket",
+    gradient: "purple" as "purple" | "blue" | "teal" | "orange",
+    isActive: true,
+    order: "0",
+  });
 
   const sessionQuery = useQuery<SessionData>({
     queryKey: ["/api/admin/session"],
@@ -100,6 +130,11 @@ export default function AdminDashboard() {
 
   const contactQuery = useQuery<Contact[]>({
     queryKey: ["/api/admin/contact"],
+    enabled: !!sessionQuery.data?.authenticated,
+  });
+
+  const programsQuery = useQuery<Program[]>({
+    queryKey: ["/api/admin/programs"],
     enabled: !!sessionQuery.data?.authenticated,
   });
 
@@ -193,6 +228,83 @@ export default function AdminDashboard() {
     },
   });
 
+  const createProgram = useMutation({
+    mutationFn: async (data: typeof programForm) => {
+      const response = await apiRequest("POST", "/api/admin/programs", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/programs"] });
+      setProgramDialog({ open: false, mode: "add" });
+      resetProgramForm();
+      toast({
+        title: "Program Created",
+        description: "New program has been added successfully",
+      });
+    },
+  });
+
+  const updateProgram = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: typeof programForm }) => {
+      const response = await apiRequest("PATCH", `/api/admin/programs/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/programs"] });
+      setProgramDialog({ open: false, mode: "add" });
+      resetProgramForm();
+      toast({
+        title: "Program Updated",
+        description: "Program has been updated successfully",
+      });
+    },
+  });
+
+  const deleteProgram = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/programs/${id}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/programs"] });
+      toast({
+        title: "Deleted",
+        description: "Program has been deleted",
+      });
+    },
+  });
+
+  const resetProgramForm = () => {
+    setProgramForm({
+      title: "",
+      description: "",
+      icon: "Rocket",
+      gradient: "purple",
+      isActive: true,
+      order: "0",
+    });
+  };
+
+  const openEditProgram = (program: Program) => {
+    setProgramForm({
+      title: program.title,
+      description: program.description,
+      icon: program.icon,
+      gradient: program.gradient as "purple" | "blue" | "teal" | "orange",
+      isActive: program.isActive,
+      order: program.order,
+    });
+    setProgramDialog({ open: true, mode: "edit", program });
+  };
+
+  const handleProgramSubmit = () => {
+    if (programDialog.mode === "add") {
+      createProgram.mutate(programForm);
+    } else if (programDialog.program) {
+      updateProgram.mutate({ id: programDialog.program.id, data: programForm });
+    }
+  };
+
   useEffect(() => {
     if (sessionQuery.data && !sessionQuery.data.authenticated) {
       setLocation("/admin/login");
@@ -206,6 +318,8 @@ export default function AdminDashboard() {
       deleteMembership.mutate(deleteDialog.id);
     } else if (deleteDialog.type === "contact") {
       deleteContact.mutate(deleteDialog.id);
+    } else if (deleteDialog.type === "program") {
+      deleteProgram.mutate(deleteDialog.id);
     }
     setDeleteDialog({ open: false, type: "bootcamp", id: "" });
   };
@@ -215,6 +329,7 @@ export default function AdminDashboard() {
     queryClient.invalidateQueries({ queryKey: ["/api/admin/bootcamp"] });
     queryClient.invalidateQueries({ queryKey: ["/api/admin/membership"] });
     queryClient.invalidateQueries({ queryKey: ["/api/admin/contact"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/programs"] });
     toast({
       title: "Refreshed",
       description: "All data has been refreshed",
@@ -271,7 +386,7 @@ export default function AdminDashboard() {
 
       <main className="container py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="mb-6 grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="dashboard" data-testid="tab-dashboard">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               Dashboard
@@ -287,6 +402,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="contact" data-testid="tab-contact">
               <MessageSquare className="mr-2 h-4 w-4" />
               Contact
+            </TabsTrigger>
+            <TabsTrigger value="programs" data-testid="tab-programs">
+              <Layers className="mr-2 h-4 w-4" />
+              Programs
             </TabsTrigger>
           </TabsList>
 
@@ -345,6 +464,34 @@ export default function AdminDashboard() {
                     {(statsQuery.data?.pendingBootcamp ?? 0) + (statsQuery.data?.pendingMembership ?? 0)}
                   </div>
                   <p className="text-xs text-muted-foreground">Items need review</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="mt-6">
+              <Card data-testid="card-bootcamp-poster">
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
+                  <div>
+                    <CardTitle>Bootcamp Event Poster</CardTitle>
+                    <CardDescription>Current Startup Boot Camp promotional material</CardDescription>
+                  </div>
+                  <Image className="h-5 w-5 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div 
+                    className="cursor-pointer hover-elevate rounded-lg overflow-hidden border border-border"
+                    onClick={() => setShowPoster(true)}
+                    data-testid="button-view-poster"
+                  >
+                    <img 
+                      src={bootcampPoster} 
+                      alt="Startup Boot Camp Poster" 
+                      className="w-full h-auto max-h-[400px] object-contain bg-muted"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-3 text-center">
+                    Click to view full size
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -597,6 +744,92 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="programs">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <div>
+                  <CardTitle>Programs Management</CardTitle>
+                  <CardDescription>
+                    Add, edit, or remove programs displayed on the website
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={() => {
+                    resetProgramForm();
+                    setProgramDialog({ open: true, mode: "add" });
+                  }}
+                  data-testid="button-add-program"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Program
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {programsQuery.isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : programsQuery.data?.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No programs yet. Add your first program!
+                  </div>
+                ) : (
+                  <ScrollArea className="h-[500px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Icon</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {programsQuery.data?.map((program) => (
+                          <TableRow key={program.id} data-testid={`row-program-${program.id}`}>
+                            <TableCell>{program.order}</TableCell>
+                            <TableCell className="font-medium">{program.title}</TableCell>
+                            <TableCell className="max-w-[250px] truncate">{program.description}</TableCell>
+                            <TableCell>{program.icon}</TableCell>
+                            <TableCell>
+                              {program.isActive ? (
+                                <Badge className="bg-green-500/20 text-green-600 dark:text-green-400">Active</Badge>
+                              ) : (
+                                <Badge className="bg-gray-500/20 text-gray-600 dark:text-gray-400">Inactive</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openEditProgram(program)}
+                                  data-testid={`button-edit-program-${program.id}`}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setDeleteDialog({ open: true, type: "program", id: program.id })}
+                                  data-testid={`button-delete-program-${program.id}`}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
 
@@ -781,6 +1014,145 @@ export default function AdminDashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={showPoster} onOpenChange={setShowPoster}>
+        <DialogContent className="max-w-3xl p-2">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Bootcamp Event Poster</DialogTitle>
+            <DialogDescription>Full size view of the Startup Boot Camp poster</DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-center">
+            <img 
+              src={bootcampPoster} 
+              alt="Startup Boot Camp Poster" 
+              className="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+              data-testid="img-poster-fullsize"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={programDialog.open} onOpenChange={(open) => {
+        if (!open) {
+          setProgramDialog({ open: false, mode: "add" });
+          resetProgramForm();
+        }
+      }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{programDialog.mode === "add" ? "Add New Program" : "Edit Program"}</DialogTitle>
+            <DialogDescription>
+              {programDialog.mode === "add" 
+                ? "Create a new program to display on the website"
+                : "Update the program details"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={programForm.title}
+                onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
+                placeholder="e.g., Startup Boot Camp"
+                data-testid="input-program-title"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={programForm.description}
+                onChange={(e) => setProgramForm({ ...programForm, description: e.target.value })}
+                placeholder="Brief description of the program..."
+                data-testid="input-program-description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="icon">Icon</Label>
+                <Select
+                  value={programForm.icon}
+                  onValueChange={(value) => setProgramForm({ ...programForm, icon: value })}
+                >
+                  <SelectTrigger data-testid="select-program-icon">
+                    <SelectValue placeholder="Select icon" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Rocket">Rocket</SelectItem>
+                    <SelectItem value="Building2">Building</SelectItem>
+                    <SelectItem value="Users">Users</SelectItem>
+                    <SelectItem value="Briefcase">Briefcase</SelectItem>
+                    <SelectItem value="GraduationCap">Graduation Cap</SelectItem>
+                    <SelectItem value="Lightbulb">Lightbulb</SelectItem>
+                    <SelectItem value="Target">Target</SelectItem>
+                    <SelectItem value="Award">Award</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="gradient">Color Theme</Label>
+                <Select
+                  value={programForm.gradient}
+                  onValueChange={(value: "purple" | "blue" | "teal" | "orange") => setProgramForm({ ...programForm, gradient: value })}
+                >
+                  <SelectTrigger data-testid="select-program-gradient">
+                    <SelectValue placeholder="Select color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="purple">Purple</SelectItem>
+                    <SelectItem value="blue">Blue</SelectItem>
+                    <SelectItem value="teal">Teal</SelectItem>
+                    <SelectItem value="orange">Orange</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="order">Display Order</Label>
+              <Input
+                id="order"
+                type="number"
+                value={programForm.order}
+                onChange={(e) => setProgramForm({ ...programForm, order: e.target.value })}
+                placeholder="0"
+                data-testid="input-program-order"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="isActive"
+                checked={programForm.isActive}
+                onCheckedChange={(checked) => setProgramForm({ ...programForm, isActive: checked })}
+                data-testid="switch-program-active"
+              />
+              <Label htmlFor="isActive">Active (visible on website)</Label>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setProgramDialog({ open: false, mode: "add" });
+                resetProgramForm();
+              }}
+              data-testid="button-cancel-program"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleProgramSubmit}
+              disabled={!programForm.title || !programForm.description || createProgram.isPending || updateProgram.isPending}
+              data-testid="button-save-program"
+            >
+              {(createProgram.isPending || updateProgram.isPending) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {programDialog.mode === "add" ? "Create Program" : "Save Changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

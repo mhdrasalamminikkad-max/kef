@@ -57,24 +57,25 @@ Preferred communication style: Simple, everyday language.
 
 **Data Layer Abstraction**
 - Storage interface pattern (`IStorage`) for data operations
-- In-memory implementation (`MemStorage`) for development/testing
-- Designed for easy swap to database-backed storage (Drizzle ORM integration ready)
+- Database-backed implementation (`DatabaseStorage`) for production data persistence
+- PostgreSQL database with Drizzle ORM for all data operations
 
 ### Data Storage Solution
 
 **Database Configuration**
 - Drizzle ORM configured for PostgreSQL via Neon serverless driver
-- Schema defined in `/shared/schema.ts` with three main tables:
+- Schema defined in `/shared/schema.ts` with main tables:
   - `users` - User authentication (username/password)
   - `contact_submissions` - Contact form submissions
   - `membership_applications` - Membership applications with status tracking
+  - `bootcamp_registrations` - Startup Boot Camp registration data
+  - `programs` - Dynamic programs management (title, description, icon, gradient, active status)
 - Zod schemas derived from Drizzle tables for runtime validation
 - Migration system configured via `drizzle-kit` (migrations output to `/migrations/`)
 
-**Current State vs. Production**
-- Application currently uses in-memory storage (`MemStorage`) for demonstration
-- Database schema and ORM are configured but not actively connected
-- Easy migration path: swap `MemStorage` for Drizzle-based implementation when `DATABASE_URL` is provided
+**Production Database**
+- Application uses PostgreSQL database for all data persistence
+- Database connection via `DATABASE_URL` environment variable
 
 ### Build & Deployment
 

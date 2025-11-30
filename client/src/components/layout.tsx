@@ -3,6 +3,7 @@ import { Footer } from "@/components/footer";
 import { BreakingNews } from "@/components/breaking-news";
 import { BootcampModal } from "@/components/bootcamp-modal";
 import { MobileNav } from "@/components/mobile-nav";
+import { FloatingInvitationButton } from "@/components/floating-invitation-button";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export function Layout({ children }: LayoutProps) {
       </div>
       <MobileNav />
       <BootcampModal />
+      <FloatingInvitationButton />
     </div>
   );
 }
