@@ -21,9 +21,9 @@ interface HeroProps {
 }
 
 const gradients = {
-  purple: "from-purple-600 via-purple-500 to-blue-600",
-  blue: "from-blue-600 via-indigo-500 to-purple-600",
-  teal: "from-teal-500 via-cyan-500 to-blue-600",
+  purple: "from-red-500 via-red-500 to-cyan-400",
+  blue: "from-red-500 via-cyan-400 to-yellow-300",
+  teal: "from-cyan-400 via-yellow-300 to-red-500",
 };
 
 export function Hero({
@@ -69,8 +69,8 @@ export function Hero({
       
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-20 w-60 h-60 bg-blue-400/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-purple-300/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 right-1/3 w-72 h-72 bg-yellow-300/15 rounded-full blur-3xl" />
       </div>
       
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />

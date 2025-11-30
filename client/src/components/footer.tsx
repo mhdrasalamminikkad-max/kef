@@ -48,9 +48,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">K</span>
-              </div>
+              <img src="/logo.png" alt="KEF Logo" className="w-10 h-10 rounded-lg" />
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-tight text-white">
                   Kerala Economic Forum
@@ -68,15 +66,15 @@ export function Footer() {
             
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-sm">
-                <Mail className="w-4 h-4 text-purple-400" />
+                <Mail className="w-4 h-4 text-cyan-400" />
                 <span>info@keralaeconomicforum.org</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <Phone className="w-4 h-4 text-purple-400" />
+                <Phone className="w-4 h-4 text-cyan-400" />
                 <span>+91 471 123 4567</span>
               </div>
               <div className="flex items-center gap-3 text-sm">
-                <MapPin className="w-4 h-4 text-purple-400" />
+                <MapPin className="w-4 h-4 text-cyan-400" />
                 <span>Thiruvananthapuram, Kerala, India</span>
               </div>
             </div>
@@ -86,7 +84,7 @@ export function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
-                  className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-purple-600 flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors"
                   aria-label={social.label}
                   data-testid={`social-${social.label.toLowerCase()}`}
                 >
@@ -102,7 +100,7 @@ export function Footer() {
               {footerLinks.about.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-slate-400 hover:text-purple-400 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
                       {link.label}
                     </span>
                   </Link>
@@ -117,7 +115,7 @@ export function Footer() {
               {footerLinks.programs.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <span className="text-sm text-slate-400 hover:text-purple-400 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
                       {link.label}
                     </span>
                   </Link>

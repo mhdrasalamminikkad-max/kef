@@ -37,11 +37,9 @@ export function Header() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           <Link href="/" data-testid="link-logo">
             <div className="flex items-center gap-2 cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-                <span className="text-white font-bold text-lg">K</span>
-              </div>
+              <img src="/logo.png" alt="KEF Logo" className="w-10 h-10 rounded-lg" />
               <div className="flex flex-col">
-                <span className="font-bold text-lg leading-tight bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="font-bold text-lg leading-tight bg-gradient-to-r from-red-500 to-cyan-400 bg-clip-text text-transparent">
                   KEF
                 </span>
                 <span className="text-xs text-muted-foreground leading-tight hidden sm:block">

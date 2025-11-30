@@ -54,7 +54,7 @@ export function AnimatedCounter({
       transition={{ duration: 0.5 }}
       className="text-center"
     >
-      <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+      <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-red-500 to-cyan-400 bg-clip-text text-transparent">
         {prefix}{count.toLocaleString()}{suffix}
       </div>
       <div className="mt-2 text-sm font-medium text-muted-foreground uppercase tracking-wide">

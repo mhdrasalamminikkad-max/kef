@@ -34,19 +34,19 @@ export function EventCard({
     >
       <Card className="overflow-hidden hover-elevate group cursor-pointer h-full">
         {imagePlaceholder && (
-          <div className="relative aspect-video bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30">
+          <div className="relative aspect-video bg-gradient-to-br from-red-100 to-cyan-100 dark:from-red-900/30 dark:to-cyan-900/30">
             <div className="absolute inset-0 flex items-center justify-center">
-              <Calendar className="w-12 h-12 text-purple-300 dark:text-purple-600" />
+              <Calendar className="w-12 h-12 text-red-300 dark:text-red-600" />
             </div>
             {category && (
               <Badge 
-                className="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0"
+                className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-cyan-400 text-white border-0"
               >
                 {category}
               </Badge>
             )}
             <div className="absolute bottom-3 right-3 bg-white dark:bg-slate-900 rounded-lg px-3 py-1.5 shadow-lg">
-              <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">
+              <span className="text-sm font-semibold text-red-500 dark:text-red-400">
                 {date}
               </span>
             </div>
@@ -62,12 +62,12 @@ export function EventCard({
           <div className="space-y-2 mb-4">
             {time && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4 text-purple-500" />
+                <Clock className="w-4 h-4 text-red-500" />
                 <span>{time}</span>
               </div>
             )}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4 text-purple-500" />
+              <MapPin className="w-4 h-4 text-red-500" />
               <span className="line-clamp-1">{location}</span>
             </div>
           </div>

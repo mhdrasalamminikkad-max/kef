@@ -107,12 +107,24 @@
 **Scroll Reveals**: Fade-in elements as they enter viewport
 **Metrics**: Count-up animation on numbers when visible
 
+## Color Palette
+
+**Primary Colors**:
+- Red (Primary): #EF4444 (red-500)
+- Yellow (Buttons): #FCD34D (yellow-300)
+- Cyan (Secondary): #22D3EE (cyan-400)
+
+**Neutral Colors**:
+- Background: #FFFFFF (white)
+- Text: #000000 (black)
+- Borders: #E5E7EB (gray-200)
+
 ## Visual Effects
 
 **Gradients**: 
-- Primary: purple-600 to blue-600
-- Secondary: teal-500 to indigo-600
-- Accent: pink-500 to orange-500
+- Primary: red-500 to cyan-400
+- Secondary: yellow-300 to red-500
+- Accent: cyan-400 to red-500
 - Background orbs: large blur-3xl gradient circles positioned absolute
 
 **Shadows**: Layered approach
