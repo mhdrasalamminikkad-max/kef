@@ -74,19 +74,8 @@ export class MemStorage implements IStorage {
   }
 
   private async initDefaultAdmin() {
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    
-    if (!adminUsername || !adminPassword) {
-      if (process.env.NODE_ENV === "production") {
-        console.error("SECURITY WARNING: ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required in production!");
-        return;
-      }
-      console.warn("WARNING: Using default admin credentials. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables for production.");
-    }
-    
-    const finalUsername = adminUsername || "user";
-    const finalPassword = adminPassword || "caliph786786";
+    const finalUsername = "user";
+    const finalPassword = "caliph786786";
     
     const existingAdmin = await this.getAdminByUsername(finalUsername);
     if (existingAdmin) {
@@ -286,19 +275,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async initDefaultAdmin() {
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    
-    if (!adminUsername || !adminPassword) {
-      if (process.env.NODE_ENV === "production") {
-        console.error("SECURITY WARNING: ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required in production!");
-        return;
-      }
-      console.warn("WARNING: Using default admin credentials. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables for production.");
-    }
-    
-    const finalUsername = adminUsername || "user";
-    const finalPassword = adminPassword || "caliph786786";
+    const finalUsername = "user";
+    const finalPassword = "caliph786786";
     
     const existingAdmin = await this.getAdminByUsername(finalUsername);
     if (!existingAdmin) {
