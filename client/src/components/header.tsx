@@ -56,7 +56,6 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
             <Link href="/membership" className="hidden sm:block">
               <Button className="btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold" data-testid="button-join-now">
                 <UserPlus className="w-4 h-4 mr-2" />
