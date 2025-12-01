@@ -1516,16 +1516,13 @@ export default function AdminDashboard() {
                 data-testid="input-program-order"
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="bannerImage">Banner Image URL (optional)</Label>
-              <Input
-                id="bannerImage"
-                value={programForm.bannerImage}
-                onChange={(e) => setProgramForm({ ...programForm, bannerImage: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-                data-testid="input-program-banner"
-              />
-            </div>
+            <ImageUpload
+              value={programForm.bannerImage}
+              onChange={(url) => setProgramForm({ ...programForm, bannerImage: url })}
+              label="Banner Image (optional)"
+              placeholder="Upload or enter image URL"
+              data-testid="input-program-banner"
+            />
             <div className="grid gap-2">
               <Label htmlFor="features">Features (comma-separated, optional)</Label>
               <Input
