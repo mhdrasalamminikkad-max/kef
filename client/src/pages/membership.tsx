@@ -263,16 +263,49 @@ export default function Membership() {
             <Card className="overflow-visible">
               <CardContent className="p-6 sm:p-8">
                 {isSubmitted ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="w-8 h-8 text-white" />
+                  <div className="space-y-8">
+                    <div className="text-center py-8 border-b pb-8">
+                      <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-foreground mb-2" data-testid="text-success-title">
+                        Application Submitted!
+                      </h3>
+                      <p className="text-muted-foreground mb-6" data-testid="text-success-message">
+                        Thank you for your interest in joining Kerala Economic Forum. We'll review your application and contact you soon.
+                      </p>
                     </div>
-                    <h3 className="text-xl font-semibold text-foreground mb-2" data-testid="text-success-title">
-                      Application Submitted!
-                    </h3>
-                    <p className="text-muted-foreground mb-6" data-testid="text-success-message">
-                      Thank you for your interest in joining Kerala Economic Forum. We'll review your application and contact you soon.
-                    </p>
+
+                    {/* Payment Section */}
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold text-foreground mb-4">Complete Membership Payment</h3>
+                      <p className="text-sm text-muted-foreground mb-6">Scan the QR code below to pay membership fee</p>
+                      
+                      <div className="flex flex-col items-center gap-6">
+                        <div className="bg-white p-4 rounded-lg border-4 border-yellow-400 shadow-lg" data-testid="qr-code-payment">
+                          <img 
+                            src={qrCodeImage} 
+                            alt="Payment QR Code" 
+                            className="w-40 h-40 object-contain"
+                            data-testid="img-payment-qr"
+                          />
+                        </div>
+                        
+                        <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800 text-left max-w-sm">
+                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">OR Pay Manually:</p>
+                          <p className="text-xs text-muted-foreground mb-2">UPI ID:</p>
+                          <p className="text-sm font-mono font-semibold break-all mb-4">caliphworldfoundation.9605399676.ibz@icici</p>
+                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">Bank Transfer:</p>
+                          <div className="text-xs space-y-1 text-muted-foreground">
+                            <p>CALIPH WORLD FOUNDATION</p>
+                            <p>ICICI BANK - MUKKAM BRANCH</p>
+                            <p>A/C: 265405000474</p>
+                            <p>IFSC: ICIC0002654</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <Button 
                       variant="outline" 
                       onClick={() => {
@@ -288,6 +321,7 @@ export default function Membership() {
                           message: ""
                         });
                       }}
+                      className="w-full"
                       data-testid="button-submit-another"
                     >
                       Submit Another Application
