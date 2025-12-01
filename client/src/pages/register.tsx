@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import qrCodeImage from "@assets/qrm_1764493231811.png";
-import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.PNG";
+import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.png";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 
