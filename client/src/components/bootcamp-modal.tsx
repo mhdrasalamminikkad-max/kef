@@ -39,15 +39,10 @@ export function BootcampModal() {
       return;
     }
 
-    const delay = parseInt(settings.delaySeconds) * 1000 || 1500;
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-      if (settings.showOnce) {
-        sessionStorage.setItem(sessionKey, "true");
-      }
-    }, delay);
-
-    return () => clearTimeout(timer);
+    setIsOpen(true);
+    if (settings.showOnce) {
+      sessionStorage.setItem(sessionKey, "true");
+    }
   }, [settings, isMounted, isLoading]);
 
   const handleClose = () => {

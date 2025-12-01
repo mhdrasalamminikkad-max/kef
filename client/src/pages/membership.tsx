@@ -13,7 +13,8 @@ import {
   Sparkles,
   UserPlus,
   Rocket,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
 import qrCodeImage from "@assets/qrm_1764493231811.png";
 import { Section, SectionHeader } from "@/components/section";
@@ -22,6 +23,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 const membershipBenefits = [
   "Access to all events",
@@ -66,20 +72,69 @@ const membershipTypes = [
   }
 ];
 
+const membershipTypeOptions = [
+  { value: "individual", label: "Entrepreneur / Individual" },
+  { value: "student", label: "Student" },
+  { value: "corporate", label: "Business / Corporate" },
+  { value: "institutional", label: "Institution / Organization" },
+];
+
+const interestOptions = [
+  "Networking & Events",
+  "Mentorship",
+  "Funding Support",
+  "Startup Resources",
+  "Campus Programs",
+  "Business Partnerships",
+  "Investment Opportunities",
+];
+
 export default function Membership() {
-  const [isRegistered, setIsRegistered] = useState(false);
+  const { toast } = useToast();
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    place: "",
-    institutionName: "",
-    phoneNumber: ""
+    fullName: "",
+    email: "",
+    phone: "",
+    organization: "",
+    designation: "",
+    membershipType: "",
+    interests: "",
+    message: ""
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const response = await apiRequest("POST", "/api/membership", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      setIsSubmitted(true);
+      toast({
+        title: "Application Submitted!",
+        description: "Thank you for applying. We'll review your application and get back to you soon.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Submission Failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.place && formData.institutionName && formData.phoneNumber) {
-      setIsRegistered(true);
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.membershipType || !formData.interests) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
     }
+    submitMutation.mutate(formData);
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -189,6 +244,193 @@ export default function Membership() {
               </Card>
             </motion.div>
           ))}
+        </div>
+      </Section>
+
+      {/* MEMBERSHIP APPLICATION FORM */}
+      <Section>
+        <SectionHeader 
+          title="Apply for Membership" 
+          subtitle="Fill out the form below to join Kerala Economic Forum"
+        />
+        <div className="max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="overflow-visible">
+              <CardContent className="p-6 sm:p-8">
+                {isSubmitted ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-foreground mb-2" data-testid="text-success-title">
+                      Application Submitted!
+                    </h3>
+                    <p className="text-muted-foreground mb-6" data-testid="text-success-message">
+                      Thank you for your interest in joining Kerala Economic Forum. We'll review your application and contact you soon.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setIsSubmitted(false);
+                        setFormData({
+                          fullName: "",
+                          email: "",
+                          phone: "",
+                          organization: "",
+                          designation: "",
+                          membershipType: "",
+                          interests: "",
+                          message: ""
+                        });
+                      }}
+                      data-testid="button-submit-another"
+                    >
+                      Submit Another Application
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="fullName">Full Name *</Label>
+                        <Input
+                          id="fullName"
+                          placeholder="Enter your full name"
+                          value={formData.fullName}
+                          onChange={(e) => handleInputChange("fullName", e.target.value)}
+                          required
+                          data-testid="input-fullname"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="your@email.com"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange("email", e.target.value)}
+                          required
+                          data-testid="input-email"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number *</Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="+91 9876543210"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange("phone", e.target.value)}
+                          required
+                          data-testid="input-phone"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="membershipType">Membership Type *</Label>
+                        <Select
+                          value={formData.membershipType}
+                          onValueChange={(value) => handleInputChange("membershipType", value)}
+                        >
+                          <SelectTrigger data-testid="select-membership-type">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {membershipTypeOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="organization">Organization / Institution</Label>
+                        <Input
+                          id="organization"
+                          placeholder="Company or college name"
+                          value={formData.organization}
+                          onChange={(e) => handleInputChange("organization", e.target.value)}
+                          data-testid="input-organization"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="designation">Designation / Role</Label>
+                        <Input
+                          id="designation"
+                          placeholder="Your role or position"
+                          value={formData.designation}
+                          onChange={(e) => handleInputChange("designation", e.target.value)}
+                          data-testid="input-designation"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="interests">Areas of Interest *</Label>
+                      <Select
+                        value={formData.interests}
+                        onValueChange={(value) => handleInputChange("interests", value)}
+                      >
+                        <SelectTrigger data-testid="select-interests">
+                          <SelectValue placeholder="What are you interested in?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {interestOptions.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Additional Message (Optional)</Label>
+                      <Textarea
+                        id="message"
+                        placeholder="Tell us more about yourself or why you want to join..."
+                        value={formData.message}
+                        onChange={(e) => handleInputChange("message", e.target.value)}
+                        rows={4}
+                        data-testid="textarea-message"
+                      />
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-red-500 hover:bg-red-600 text-white py-6"
+                      disabled={submitMutation.isPending}
+                      data-testid="button-submit-membership"
+                    >
+                      {submitMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Submit Application
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </Section>
     </>
