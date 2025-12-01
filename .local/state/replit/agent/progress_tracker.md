@@ -81,3 +81,8 @@
 [x] 81. Rebuilt production bundle without import.meta warnings
 [x] 82. Verified development server still works correctly after the fix
 [x] 83. Railway deployment fix completed - ready for redeployment
+[x] 84. Fixed popup not showing on Railway - added fallback when API settings unavailable
+[x] 85. Updated bootcamp-modal.tsx to wait for isLoading state before proceeding
+[x] 86. Popup now uses bundled fallback image when API fails or returns no settings
+[x] 87. Verified popup works correctly in development environment
+[x] 88. Ready for redeployment to Railway for popup fix to take effect

@@ -39,11 +39,13 @@ export function BootcampModal() {
   const [finalImageUrl, setFinalImageUrl] = useState<string>(bootcampImage);
 
   useEffect(() => {
-    if (!settings) return;
+    // If settings haven't loaded yet and we're still loading, wait
+    if (isLoading) return;
     
     setImageLoaded(false);
 
-    const dynamicUrl = settings.bannerImage;
+    // Use settings banner image if available, otherwise use bundled fallback
+    const dynamicUrl = settings?.bannerImage;
     
     if (dynamicUrl && dynamicUrl.trim()) {
       const img = new Image();
@@ -53,17 +55,19 @@ export function BootcampModal() {
         setImageLoaded(true);
       };
       img.onerror = () => {
+        // If dynamic image fails, use bundled fallback
         setFinalImageUrl(bootcampImage);
         preloadedImageRef.current = bootcampImage;
         setImageLoaded(true);
       };
       img.src = dynamicUrl;
     } else {
+      // No dynamic URL configured, use bundled fallback image
       setFinalImageUrl(bootcampImage);
       preloadedImageRef.current = bootcampImage;
       setImageLoaded(true);
     }
-  }, [settings?.bannerImage, settings?.isEnabled]);
+  }, [settings?.bannerImage, settings?.isEnabled, isLoading]);
 
   useEffect(() => {
     if (!isMounted) return;
