@@ -92,3 +92,8 @@
 [x] 92. Button changes to green Ticket icon after registration
 [x] 93. Shows "View Your Invitation" tooltip when hovering over the button
 [x] 94. Non-registered users still see the event popup when clicking
+[x] 95. Added STARTUP BOOT CAMP as a "live" program
+[x] 96. Added Founder Circle Meets as "upcoming" program
+[x] 97. Added Startup Advisory Clinics as "upcoming" program
+[x] 98. Added Campus Innovation Labs as "upcoming" program
+[x] 99. All programs display with correct status badges (Live Now / Upcoming)
