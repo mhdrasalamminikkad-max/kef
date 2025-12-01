@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import compression from "compression";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -9,6 +10,9 @@ import path from "path";
 const app = express();
 const httpServer = createServer(app);
 const MemoryStoreSession = MemoryStore(session);
+
+// Enable gzip compression for all responses - reduces bandwidth by 70-90%
+app.use(compression());
 
 declare module "http" {
   interface IncomingMessage {
@@ -46,14 +50,22 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
-// Serve static assets from attached_assets folder
+// Serve static assets from attached_assets folder with caching
 // Use process.cwd() which works reliably in both dev and production environments
 const assetsPath = path.resolve(process.cwd(), "attached_assets");
-app.use(express.static(assetsPath));
+app.use(express.static(assetsPath, {
+  maxAge: '1d', // Cache for 1 day
+  etag: true,
+  lastModified: true
+}));
 
-// Serve uploaded files from public/uploads folder
+// Serve uploaded files from public/uploads folder with caching
 const uploadsPath = path.resolve(process.cwd(), "public/uploads");
-app.use("/uploads", express.static(uploadsPath));
+app.use("/uploads", express.static(uploadsPath, {
+  maxAge: '7d', // Cache uploads for 7 days
+  etag: true,
+  lastModified: true
+}));
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
