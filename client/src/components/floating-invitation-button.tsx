@@ -21,21 +21,27 @@ export function FloatingInvitationButton() {
   const { isModalDismissed, isLoaded, reopenModal, isModalCurrentlyOpen, isRegistered, registrationId } = useRegistrationStatus();
   const [isMounted, setIsMounted] = useState(false);
 
-  const { data: settings } = useQuery<PopupSettings>({
+  const { data: settings, isLoading: isSettingsLoading, isError: isSettingsError } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
+    retry: 2,
   });
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  const isPopupEnabled = settings?.isEnabled ?? true;
+  
+  const settingsReady = !isSettingsLoading || isSettingsError;
+
   const shouldShowButton = 
     isMounted && 
     isLoaded && 
+    settingsReady &&
     isModalDismissed && 
-    settings?.isEnabled && 
+    isPopupEnabled && 
     !isModalCurrentlyOpen;
 
   if (!isMounted) return null;

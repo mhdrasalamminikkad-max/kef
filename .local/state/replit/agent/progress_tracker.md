@@ -104,3 +104,8 @@
 [x] 104. Screenshot verified - homepage displays correctly with Startup Boot Camp popup
 [x] 105. All features working perfectly (navigation, popup modal, registration flow)
 [x] 106. Migration to Replit environment FULLY COMPLETED - project ready for development
+[x] 107. Fixed floating icon not showing on Railway - added fallback when API unavailable
+[x] 108. FloatingInvitationButton now defaults isEnabled to true if API fails
+[x] 109. Added retry logic (2 attempts) for popup settings API calls
+[x] 110. Updated bootcamp-modal.tsx with same fallback logic for consistency
+[x] 111. Verified fix in development environment - ready for Railway redeployment

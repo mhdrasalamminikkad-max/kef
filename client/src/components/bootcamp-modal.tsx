@@ -26,11 +26,14 @@ export function BootcampModal() {
   const preloadedImageRef = useRef<string | null>(null);
   const { dismissModal, shouldShowModal, setModalOpen } = useRegistrationStatus();
 
-  const { data: settings, isLoading } = useQuery<PopupSettings>({
+  const { data: settings, isLoading, isError } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
+    retry: 2,
   });
+
+  const isPopupEnabled = settings?.isEnabled ?? true;
 
   useEffect(() => {
     setIsMounted(true);
@@ -78,10 +81,10 @@ export function BootcampModal() {
   }, [isMounted, imageLoaded]);
 
   useEffect(() => {
-    if (shouldShowModal && settings?.isEnabled && imageLoaded) {
+    if (shouldShowModal && isPopupEnabled && imageLoaded) {
       setIsOpen(true);
     }
-  }, [shouldShowModal, settings?.isEnabled, imageLoaded]);
+  }, [shouldShowModal, isPopupEnabled, imageLoaded]);
 
   // Sync modal open state with context
   useEffect(() => {
