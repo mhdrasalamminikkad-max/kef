@@ -92,6 +92,15 @@ Preferred communication style: Simple, everyday language.
 - Reorganized navigation: Home, Programs, Membership, Partners, About Us, Contact
 - Programs link to individual detail pages (/programs/:id)
 
+### Image Upload System (December 2025)
+- Converted admin panel from URL-based image inputs to file uploads
+- File upload endpoint at `/api/admin/upload` with admin authentication
+- Supported formats: JPG, PNG, GIF, WebP (SVG disabled for security)
+- Max file size: 10MB
+- Files stored in `public/uploads/` directory
+- ImageUpload component with drag-and-drop, preview, and progress indicator
+- Works for popup banners, program banners, and partner logos
+
 **Production Database**
 - Application uses PostgreSQL database for all data persistence
 - Database connection via `DATABASE_URL` environment variable
