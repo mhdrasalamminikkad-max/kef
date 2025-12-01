@@ -1231,7 +1231,7 @@ export default function AdminDashboard() {
       </main>
 
       <Dialog open={!!selectedBootcamp} onOpenChange={() => setSelectedBootcamp(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Bootcamp Registration Details</DialogTitle>
             <DialogDescription>
@@ -1239,6 +1239,7 @@ export default function AdminDashboard() {
             </DialogDescription>
           </DialogHeader>
           {selectedBootcamp && (
+            <ScrollArea className="flex-1 pr-4">
             <div className="grid gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -1280,6 +1281,29 @@ export default function AdminDashboard() {
                   <p className="text-base" data-testid="text-detail-expectations">{selectedBootcamp.expectations}</p>
                 </div>
               )}
+              {selectedBootcamp.paymentProof && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Payment Proof / Source Document</p>
+                  <div className="border rounded-lg overflow-hidden bg-muted/30">
+                    <img 
+                      src={selectedBootcamp.paymentProof} 
+                      alt="Payment Proof" 
+                      className="w-full max-h-96 object-contain"
+                      data-testid="img-payment-proof"
+                    />
+                  </div>
+                  <a 
+                    href={selectedBootcamp.paymentProof} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 mt-2"
+                    data-testid="link-view-full-image"
+                  >
+                    <Eye className="h-4 w-4" />
+                    View Full Image
+                  </a>
+                </div>
+              )}
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Registration Date</p>
                 <p className="text-base" data-testid="text-detail-date">
@@ -1287,6 +1311,7 @@ export default function AdminDashboard() {
                 </p>
               </div>
             </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>

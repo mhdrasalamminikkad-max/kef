@@ -42,13 +42,14 @@ app.use(
 
 app.use(
   express.json({
+    limit: '50mb', // Allow large base64 encoded files
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
   }),
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 // Serve static assets from attached_assets folder with caching
 // Use process.cwd() which works reliably in both dev and production environments

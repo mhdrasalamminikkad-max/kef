@@ -4,7 +4,6 @@ import { BreakingNews } from "@/components/breaking-news";
 import { BootcampModal } from "@/components/bootcamp-modal";
 import { MobileNav } from "@/components/mobile-nav";
 import { FloatingInvitationButton } from "@/components/floating-invitation-button";
-import { FloatingInvitationsIcon } from "@/components/floating-invitations-icon";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -26,7 +25,6 @@ export function Layout({ children }: LayoutProps) {
       <MobileNav />
       <BootcampModal />
       <FloatingInvitationButton />
-      <FloatingInvitationsIcon />
     </div>
   );
 }
