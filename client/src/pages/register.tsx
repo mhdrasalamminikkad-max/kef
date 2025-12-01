@@ -27,7 +27,7 @@ const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { markRegistered, isRegistered } = useRegistrationStatus();
+  const { markRegistered, isRegistered, clearRegistered } = useRegistrationStatus();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [addingAnother, setAddingAnother] = useState(false);
   const [registrationCount, setRegistrationCount] = useState(0);
@@ -120,6 +120,7 @@ export default function Register() {
   };
 
   const handleAddAnother = () => {
+    clearRegistered();
     setAddingAnother(true);
     setJustRegistered(false);
   };

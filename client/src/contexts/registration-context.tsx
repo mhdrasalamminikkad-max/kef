@@ -11,6 +11,7 @@ interface RegistrationContextType {
   markRegistered: () => void;
   dismissModal: () => void;
   reopenModal: () => void;
+  clearRegistered: () => void;
 }
 
 const RegistrationContext = createContext<RegistrationContextType | undefined>(undefined);
@@ -44,6 +45,11 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     setShouldShowModal(true);
   }, []);
 
+  const clearRegistered = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
+    setIsRegistered(false);
+  }, []);
+
   return (
     <RegistrationContext.Provider
       value={{
@@ -54,6 +60,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         markRegistered,
         dismissModal,
         reopenModal,
+        clearRegistered,
       }}
     >
       {children}
