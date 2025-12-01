@@ -67,7 +67,7 @@ import {
 } from "@/components/ui/select";
 import type { Bootcamp, Membership, Contact, Program, Partner, PopupSettings } from "@shared/schema";
 import { Handshake } from "lucide-react";
-import bootcampPoster from "@assets/kef a_1764492076701.png";
+import bootcampPoster from "@assets/kef_bootcamp.png";
 
 interface DashboardStats {
   totalBootcampRegistrations: number;

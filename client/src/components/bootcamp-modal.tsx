@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import bootcampImage from "@assets/kef a_1764492076701.png";
+import bootcampImage from "@assets/kef_bootcamp.png";
 
 interface PopupSettings {
   id: number;
@@ -47,7 +47,7 @@ export function BootcampModal() {
     setIsOpen(false);
   };
 
-  const imageToShow = settings?.bannerImage || bootcampImage;
+  const imageToShow = bootcampImage;
   const buttonText = settings?.buttonText || "Register Now";
   const buttonLink = settings?.buttonLink || "/register";
 

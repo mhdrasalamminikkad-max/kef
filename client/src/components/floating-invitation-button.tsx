@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
-import bootcampImage from "@assets/kef a_1764492076701.png";
+import bootcampImage from "@assets/kef_bootcamp.png";
 import { Link } from "wouter";
 
 export function FloatingInvitationButton() {
