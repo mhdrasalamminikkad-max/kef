@@ -3,22 +3,53 @@ import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import bootcampImage from "@assets/kef a_1764492076701.png";
+
+interface PopupSettings {
+  id: number;
+  isEnabled: boolean;
+  title: string;
+  bannerImage: string;
+  buttonText: string;
+  buttonLink: string;
+  delaySeconds: string;
+  showOnce: boolean;
+}
 
 export function BootcampModal() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Always show the banner when user opens the website
+  const { data: settings } = useQuery<PopupSettings>({
+    queryKey: ["/api/popup-settings"],
+  });
+
   useEffect(() => {
+    if (!settings?.isEnabled) return;
+
+    const sessionKey = "popup_shown";
+    if (settings.showOnce && sessionStorage.getItem(sessionKey)) {
+      return;
+    }
+
+    const delay = parseInt(settings.delaySeconds) * 1000 || 1000;
     const timer = setTimeout(() => {
       setIsOpen(true);
-    }, 1000);
+      if (settings.showOnce) {
+        sessionStorage.setItem(sessionKey, "true");
+      }
+    }, delay);
+
     return () => clearTimeout(timer);
-  }, []);
+  }, [settings]);
 
   const handleClose = () => {
     setIsOpen(false);
   };
+
+  const imageToShow = settings?.bannerImage || bootcampImage;
+  const buttonText = settings?.buttonText || "Register Now";
+  const buttonLink = settings?.buttonLink || "/register";
 
   return (
     <AnimatePresence>
@@ -42,7 +73,6 @@ export function BootcampModal() {
             onClick={(e) => e.stopPropagation()}
             data-testid="bootcamp-modal"
           >
-            {/* Close button - small icon at top right */}
             <Button
               variant="ghost"
               size="icon"
@@ -53,24 +83,22 @@ export function BootcampModal() {
               <X className="w-4 h-4" />
             </Button>
 
-            {/* Poster image - fits screen */}
             <div className="rounded-xl overflow-hidden shadow-2xl">
               <img 
-                src={bootcampImage} 
-                alt="Startup Boot Camp" 
+                src={imageToShow} 
+                alt={settings?.title || "Startup Boot Camp"}
                 className="w-full h-auto object-contain"
                 style={{ maxHeight: 'calc(95vh - 70px)' }}
                 data-testid="img-bootcamp-poster"
               />
             </div>
             
-            {/* White Register Now button */}
-            <Link href="/register" className="w-full mt-3" onClick={handleClose}>
+            <Link href={buttonLink} className="w-full mt-3" onClick={handleClose}>
               <Button 
                 className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-base py-6 rounded-xl shadow-lg"
                 data-testid="button-modal-register"
               >
-                Register Now
+                {buttonText}
               </Button>
             </Link>
           </motion.div>
