@@ -17,7 +17,7 @@ interface PopupSettings {
 }
 
 export function FloatingInvitationButton() {
-  const { isModalDismissed, isRegistered, isLoaded, reopenModal, shouldShowModal } = useRegistrationStatus();
+  const { isModalDismissed, isLoaded, reopenModal, isModalCurrentlyOpen } = useRegistrationStatus();
   const [isMounted, setIsMounted] = useState(false);
 
   const { data: settings } = useQuery<PopupSettings>({
@@ -34,9 +34,8 @@ export function FloatingInvitationButton() {
     isMounted && 
     isLoaded && 
     isModalDismissed && 
-    !isRegistered && 
     settings?.isEnabled && 
-    !shouldShowModal;
+    !isModalCurrentlyOpen;
 
   if (!isMounted) return null;
 

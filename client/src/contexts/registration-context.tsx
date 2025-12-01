@@ -8,10 +8,12 @@ interface RegistrationContextType {
   isModalDismissed: boolean;
   isLoaded: boolean;
   shouldShowModal: boolean;
+  isModalCurrentlyOpen: boolean;
   markRegistered: () => void;
   dismissModal: () => void;
   reopenModal: () => void;
   clearRegistered: () => void;
+  setModalOpen: (open: boolean) => void;
 }
 
 const RegistrationContext = createContext<RegistrationContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [isModalDismissed, setIsModalDismissed] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [shouldShowModal, setShouldShowModal] = useState(false);
+  const [isModalCurrentlyOpen, setIsModalCurrentlyOpen] = useState(false);
 
   useEffect(() => {
     const registered = localStorage.getItem(STORAGE_KEY) === "true";
@@ -39,6 +42,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(MODAL_DISMISSED_KEY, "true");
     setIsModalDismissed(true);
     setShouldShowModal(false);
+    setIsModalCurrentlyOpen(false);
   }, []);
 
   const reopenModal = useCallback(() => {
@@ -50,6 +54,10 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     setIsRegistered(false);
   }, []);
 
+  const setModalOpen = useCallback((open: boolean) => {
+    setIsModalCurrentlyOpen(open);
+  }, []);
+
   return (
     <RegistrationContext.Provider
       value={{
@@ -57,10 +65,12 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         isModalDismissed,
         isLoaded,
         shouldShowModal,
+        isModalCurrentlyOpen,
         markRegistered,
         dismissModal,
         reopenModal,
         clearRegistered,
+        setModalOpen,
       }}
     >
       {children}
