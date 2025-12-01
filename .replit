@@ -27,10 +27,6 @@ localPort = 39343
 externalPort = 5173
 
 [[ports]]
-localPort = 40971
-externalPort = 6800
-
-[[ports]]
 localPort = 41483
 externalPort = 5000
 
@@ -75,3 +71,4 @@ waitForPort = 5000
 
 [agent]
 expertMode = true
+integrations = ["resend:1.0.0"]

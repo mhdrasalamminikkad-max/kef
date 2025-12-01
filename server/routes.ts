@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema, insertPartnerSchema, updatePartnerSchema, updatePopupSettingsSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { sendBootcampRegistrationEmail, sendMembershipApplicationEmail, sendContactFormEmail } from "./email";
 
 declare module 'express-session' {
   interface SessionData {
@@ -252,6 +253,17 @@ export async function registerRoutes(
       }
       
       const contact = await storage.createContactSubmission(result.data);
+      
+      // Send email notification to admin
+      sendContactFormEmail({
+        name: contact.name,
+        email: contact.email,
+        phone: contact.phone || undefined,
+        subject: contact.subject,
+        message: contact.message,
+        createdAt: contact.createdAt,
+      }).catch(err => console.error("Failed to send contact email:", err));
+      
       res.status(201).json(contact);
     } catch (error) {
       console.error("Error creating contact submission:", error);
@@ -282,6 +294,18 @@ export async function registerRoutes(
       }
       
       const membership = await storage.createMembershipApplication(result.data);
+      
+      // Send email notification to admin
+      sendMembershipApplicationEmail({
+        name: membership.name,
+        email: membership.email,
+        phone: membership.phone,
+        organization: membership.organization || undefined,
+        designation: membership.designation || undefined,
+        membershipType: membership.membershipType,
+        createdAt: membership.createdAt,
+      }).catch(err => console.error("Failed to send membership email:", err));
+      
       res.status(201).json(membership);
     } catch (error) {
       console.error("Error creating membership application:", error);
@@ -334,6 +358,23 @@ export async function registerRoutes(
       }
       
       const bootcamp = await storage.createBootcampRegistration(result.data);
+      
+      // Send email notification to admin
+      sendBootcampRegistrationEmail({
+        name: bootcamp.name,
+        email: bootcamp.email,
+        phone: bootcamp.phone,
+        age: bootcamp.age,
+        gender: bootcamp.gender,
+        guardianName: bootcamp.guardianName || undefined,
+        guardianPhone: bootcamp.guardianPhone || undefined,
+        address: bootcamp.address,
+        district: bootcamp.district,
+        experience: bootcamp.experience || undefined,
+        expectations: bootcamp.expectations || undefined,
+        createdAt: bootcamp.createdAt,
+      }).catch(err => console.error("Failed to send bootcamp email:", err));
+      
       res.status(201).json(bootcamp);
     } catch (error) {
       console.error("Error creating bootcamp registration:", error);
