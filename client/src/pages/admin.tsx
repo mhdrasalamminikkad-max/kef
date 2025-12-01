@@ -1594,25 +1594,13 @@ export default function AdminDashboard() {
                 data-testid="input-partner-name"
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="partnerLogo">Logo URL</Label>
-              <Input
-                id="partnerLogo"
-                value={partnerForm.logo}
-                onChange={(e) => setPartnerForm({ ...partnerForm, logo: e.target.value })}
-                placeholder="https://example.com/logo.png"
-                data-testid="input-partner-logo"
-              />
-              {partnerForm.logo && (
-                <div className="mt-2 p-2 bg-muted rounded-md">
-                  <img 
-                    src={partnerForm.logo} 
-                    alt="Logo preview" 
-                    className="h-12 w-auto object-contain"
-                  />
-                </div>
-              )}
-            </div>
+            <ImageUpload
+              value={partnerForm.logo}
+              onChange={(url) => setPartnerForm({ ...partnerForm, logo: url })}
+              label="Logo"
+              placeholder="Upload or enter logo URL"
+              data-testid="input-partner-logo"
+            />
             <div className="grid gap-2">
               <Label htmlFor="partnerWebsite">Website URL (optional)</Label>
               <Input
