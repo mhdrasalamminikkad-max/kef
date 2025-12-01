@@ -54,7 +54,7 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 // Serve static assets from attached_assets folder with caching
 // Use process.cwd() which works reliably in both dev and production environments
 const assetsPath = path.resolve(process.cwd(), "attached_assets");
-app.use(express.static(assetsPath, {
+app.use("/assets", express.static(assetsPath, {
   maxAge: '1d', // Cache for 1 day
   etag: true,
   lastModified: true

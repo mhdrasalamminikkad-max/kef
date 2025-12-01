@@ -10,6 +10,12 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Serve attached assets from attached_assets folder in production
+  const assetsPath = path.resolve(process.cwd(), "attached_assets");
+  if (fs.existsSync(assetsPath)) {
+    app.use("/assets", express.static(assetsPath));
+  }
+
   // Serve uploaded files from public/uploads in production
   const uploadsPath = path.resolve(process.cwd(), "public/uploads");
   if (fs.existsSync(uploadsPath)) {
