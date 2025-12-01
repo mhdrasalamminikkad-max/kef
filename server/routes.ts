@@ -297,12 +297,13 @@ export async function registerRoutes(
       
       // Send email notification to admin
       sendMembershipApplicationEmail({
-        name: membership.name,
+        fullName: membership.fullName,
         email: membership.email,
         phone: membership.phone,
         organization: membership.organization || undefined,
         designation: membership.designation || undefined,
         membershipType: membership.membershipType,
+        interests: membership.interests,
         createdAt: membership.createdAt,
       }).catch(err => console.error("Failed to send membership email:", err));
       
@@ -361,17 +362,15 @@ export async function registerRoutes(
       
       // Send email notification to admin
       sendBootcampRegistrationEmail({
-        name: bootcamp.name,
+        fullName: bootcamp.fullName,
         email: bootcamp.email,
         phone: bootcamp.phone,
         age: bootcamp.age,
-        gender: bootcamp.gender,
-        guardianName: bootcamp.guardianName || undefined,
-        guardianPhone: bootcamp.guardianPhone || undefined,
-        address: bootcamp.address,
+        organization: bootcamp.organization,
+        paymentProof: bootcamp.paymentProof,
         district: bootcamp.district,
-        experience: bootcamp.experience || undefined,
-        expectations: bootcamp.expectations || undefined,
+        experience: bootcamp.experience,
+        expectations: bootcamp.expectations,
         createdAt: bootcamp.createdAt,
       }).catch(err => console.error("Failed to send bootcamp email:", err));
       

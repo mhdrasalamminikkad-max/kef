@@ -39,17 +39,15 @@ async function getResendClient() {
 }
 
 export async function sendBootcampRegistrationEmail(registration: {
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
   age: string;
-  gender: string;
-  guardianName?: string;
-  guardianPhone?: string;
-  address: string;
+  organization: string;
+  paymentProof: string;
   district: string;
-  experience?: string;
-  expectations?: string;
+  experience: string;
+  expectations?: string | null;
   createdAt: Date;
 }) {
   try {
@@ -67,7 +65,7 @@ export async function sendBootcampRegistrationEmail(registration: {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 10px; font-weight: bold; color: #374151; width: 40%;">Full Name:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.name}</td>
+              <td style="padding: 10px; color: #1f2937;">${registration.fullName}</td>
             </tr>
             <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Email:</td>
@@ -79,44 +77,30 @@ export async function sendBootcampRegistrationEmail(registration: {
             </tr>
             <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Age:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.age} years</td>
+              <td style="padding: 10px; color: #1f2937;">${registration.age}</td>
             </tr>
             <tr>
-              <td style="padding: 10px; font-weight: bold; color: #374151;">Gender:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.gender}</td>
+              <td style="padding: 10px; font-weight: bold; color: #374151;">Organization/Institution:</td>
+              <td style="padding: 10px; color: #1f2937;">${registration.organization}</td>
             </tr>
             <tr style="background: #f3f4f6;">
-              <td style="padding: 10px; font-weight: bold; color: #374151;">Address:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.address}</td>
-            </tr>
-            <tr>
               <td style="padding: 10px; font-weight: bold; color: #374151;">District:</td>
               <td style="padding: 10px; color: #1f2937;">${registration.district}</td>
             </tr>
-            ${registration.guardianName ? `
-            <tr style="background: #f3f4f6;">
-              <td style="padding: 10px; font-weight: bold; color: #374151;">Guardian Name:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.guardianName}</td>
-            </tr>
-            ` : ''}
-            ${registration.guardianPhone ? `
             <tr>
-              <td style="padding: 10px; font-weight: bold; color: #374151;">Guardian Phone:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.guardianPhone}</td>
-            </tr>
-            ` : ''}
-            ${registration.experience ? `
-            <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Experience:</td>
               <td style="padding: 10px; color: #1f2937;">${registration.experience}</td>
             </tr>
-            ` : ''}
             ${registration.expectations ? `
-            <tr>
+            <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Expectations:</td>
               <td style="padding: 10px; color: #1f2937;">${registration.expectations}</td>
             </tr>
             ` : ''}
+            <tr>
+              <td style="padding: 10px; font-weight: bold; color: #374151;">Payment Proof:</td>
+              <td style="padding: 10px; color: #1f2937;">${registration.paymentProof}</td>
+            </tr>
             <tr style="background: #fef3c7;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Registered At:</td>
               <td style="padding: 10px; color: #1f2937;">${new Date(registration.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
@@ -135,7 +119,7 @@ export async function sendBootcampRegistrationEmail(registration: {
     const result = await client.emails.send({
       from: fromEmail,
       to: 'keralaeconomicforum@gmail.com',
-      subject: `New Bootcamp Registration: ${registration.name}`,
+      subject: `New Bootcamp Registration: ${registration.fullName}`,
       html: emailHtml,
     });
 
@@ -148,12 +132,13 @@ export async function sendBootcampRegistrationEmail(registration: {
 }
 
 export async function sendMembershipApplicationEmail(application: {
-  name: string;
+  fullName: string;
   email: string;
   phone: string;
-  organization?: string;
-  designation?: string;
+  organization?: string | null;
+  designation?: string | null;
   membershipType: string;
+  interests: string;
   createdAt: Date;
 }) {
   try {
@@ -171,7 +156,7 @@ export async function sendMembershipApplicationEmail(application: {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 10px; font-weight: bold; color: #374151; width: 40%;">Full Name:</td>
-              <td style="padding: 10px; color: #1f2937;">${application.name}</td>
+              <td style="padding: 10px; color: #1f2937;">${application.fullName}</td>
             </tr>
             <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Email:</td>
@@ -185,14 +170,18 @@ export async function sendMembershipApplicationEmail(application: {
               <td style="padding: 10px; font-weight: bold; color: #374151;">Membership Type:</td>
               <td style="padding: 10px; color: #1f2937;">${application.membershipType}</td>
             </tr>
-            ${application.organization ? `
             <tr>
+              <td style="padding: 10px; font-weight: bold; color: #374151;">Interests:</td>
+              <td style="padding: 10px; color: #1f2937;">${application.interests}</td>
+            </tr>
+            ${application.organization ? `
+            <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Organization:</td>
               <td style="padding: 10px; color: #1f2937;">${application.organization}</td>
             </tr>
             ` : ''}
             ${application.designation ? `
-            <tr style="background: #f3f4f6;">
+            <tr>
               <td style="padding: 10px; font-weight: bold; color: #374151;">Designation:</td>
               <td style="padding: 10px; color: #1f2937;">${application.designation}</td>
             </tr>
@@ -215,7 +204,7 @@ export async function sendMembershipApplicationEmail(application: {
     const result = await client.emails.send({
       from: fromEmail,
       to: 'keralaeconomicforum@gmail.com',
-      subject: `New Membership Application: ${application.name}`,
+      subject: `New Membership Application: ${application.fullName}`,
       html: emailHtml,
     });
 
