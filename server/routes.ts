@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema, insertPartnerSchema, updatePartnerSchema } from "@shared/schema";
+import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema, insertPartnerSchema, updatePartnerSchema, updatePopupSettingsSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 
 declare module 'express-session' {
@@ -549,6 +549,48 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting partner:", error);
       res.status(500).json({ error: "Failed to delete partner" });
+    }
+  });
+
+  // Popup Settings API routes (public - for the frontend to fetch)
+  app.get("/api/popup-settings", async (req, res) => {
+    try {
+      const settings = await storage.getPopupSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching popup settings:", error);
+      res.status(500).json({ error: "Failed to fetch popup settings" });
+    }
+  });
+
+  // Admin Popup Settings API routes
+  app.get("/api/admin/popup-settings", requireAdmin, async (req, res) => {
+    try {
+      const settings = await storage.getPopupSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching popup settings:", error);
+      res.status(500).json({ error: "Failed to fetch popup settings" });
+    }
+  });
+
+  app.patch("/api/admin/popup-settings", requireAdmin, async (req, res) => {
+    try {
+      const result = updatePopupSettingsSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: validationError.message 
+        });
+      }
+      
+      const updated = await storage.updatePopupSettings(result.data);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating popup settings:", error);
+      res.status(500).json({ error: "Failed to update popup settings" });
     }
   });
 
