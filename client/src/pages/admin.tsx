@@ -51,6 +51,8 @@ import {
   Layers,
   Plus,
   Pencil,
+  BellRing,
+  Save,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,7 +65,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Bootcamp, Membership, Contact, Program, Partner } from "@shared/schema";
+import type { Bootcamp, Membership, Contact, Program, Partner, PopupSettings } from "@shared/schema";
 import { Handshake } from "lucide-react";
 import bootcampPoster from "@assets/kef a_1764492076701.png";
 
@@ -123,6 +125,15 @@ export default function AdminDashboard() {
     order: "0",
     isActive: true,
   });
+  const [popupForm, setPopupForm] = useState({
+    isEnabled: true,
+    title: "Startup Boot Camp",
+    bannerImage: "",
+    buttonText: "Register Now",
+    buttonLink: "/register",
+    delaySeconds: "1",
+    showOnce: false,
+  });
 
   const sessionQuery = useQuery<SessionData>({
     queryKey: ["/api/admin/session"],
@@ -157,6 +168,25 @@ export default function AdminDashboard() {
     queryKey: ["/api/admin/partners"],
     enabled: !!sessionQuery.data?.authenticated,
   });
+
+  const popupSettingsQuery = useQuery<PopupSettings>({
+    queryKey: ["/api/admin/popup-settings"],
+    enabled: !!sessionQuery.data?.authenticated,
+  });
+
+  useEffect(() => {
+    if (popupSettingsQuery.data) {
+      setPopupForm({
+        isEnabled: popupSettingsQuery.data.isEnabled,
+        title: popupSettingsQuery.data.title,
+        bannerImage: popupSettingsQuery.data.bannerImage,
+        buttonText: popupSettingsQuery.data.buttonText,
+        buttonLink: popupSettingsQuery.data.buttonLink,
+        delaySeconds: popupSettingsQuery.data.delaySeconds,
+        showOnce: popupSettingsQuery.data.showOnce,
+      });
+    }
+  }, [popupSettingsQuery.data]);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -346,6 +376,27 @@ export default function AdminDashboard() {
     },
   });
 
+  const updatePopupSettings = useMutation({
+    mutationFn: async (data: typeof popupForm) => {
+      const response = await apiRequest("PATCH", "/api/admin/popup-settings", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/popup-settings"] });
+      toast({
+        title: "Settings Updated",
+        description: "Popup banner settings have been updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update popup settings",
+        variant: "destructive",
+      });
+    },
+  });
+
   const resetProgramForm = () => {
     setProgramForm({
       title: "",
@@ -498,7 +549,7 @@ export default function AdminDashboard() {
 
       <main className="container py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto lg:inline-grid">
+          <TabsList className="mb-6 grid w-full grid-cols-4 sm:grid-cols-7 lg:w-auto lg:inline-grid">
             <TabsTrigger value="dashboard" data-testid="tab-dashboard">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               Dashboard
@@ -522,6 +573,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="partners" data-testid="tab-partners">
               <Handshake className="mr-2 h-4 w-4" />
               Partners
+            </TabsTrigger>
+            <TabsTrigger value="popup" data-testid="tab-popup">
+              <BellRing className="mr-2 h-4 w-4" />
+              Popup
             </TabsTrigger>
           </TabsList>
 
@@ -1040,6 +1095,155 @@ export default function AdminDashboard() {
                       </TableBody>
                     </Table>
                   </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="popup">
+            <Card>
+              <CardHeader>
+                <CardTitle>Popup Banner Settings</CardTitle>
+                <CardDescription>
+                  Control the popup banner that appears when visitors open the website
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {popupSettingsQuery.isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <Label className="text-base font-medium">Enable Popup</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Show the popup banner when visitors open the website
+                        </p>
+                      </div>
+                      <Switch
+                        checked={popupForm.isEnabled}
+                        onCheckedChange={(checked) => setPopupForm({ ...popupForm, isEnabled: checked })}
+                        data-testid="switch-popup-enabled"
+                      />
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="popup-title">Popup Title</Label>
+                        <Input
+                          id="popup-title"
+                          value={popupForm.title}
+                          onChange={(e) => setPopupForm({ ...popupForm, title: e.target.value })}
+                          placeholder="Startup Boot Camp"
+                          data-testid="input-popup-title"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="popup-delay">Delay (seconds)</Label>
+                        <Input
+                          id="popup-delay"
+                          type="number"
+                          min="0"
+                          max="30"
+                          value={popupForm.delaySeconds}
+                          onChange={(e) => setPopupForm({ ...popupForm, delaySeconds: e.target.value })}
+                          placeholder="1"
+                          data-testid="input-popup-delay"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          How many seconds to wait before showing the popup
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="popup-button-text">Button Text</Label>
+                        <Input
+                          id="popup-button-text"
+                          value={popupForm.buttonText}
+                          onChange={(e) => setPopupForm({ ...popupForm, buttonText: e.target.value })}
+                          placeholder="Register Now"
+                          data-testid="input-popup-button-text"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="popup-button-link">Button Link</Label>
+                        <Input
+                          id="popup-button-link"
+                          value={popupForm.buttonLink}
+                          onChange={(e) => setPopupForm({ ...popupForm, buttonLink: e.target.value })}
+                          placeholder="/register"
+                          data-testid="input-popup-button-link"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="popup-banner-image">Banner Image URL</Label>
+                      <Input
+                        id="popup-banner-image"
+                        value={popupForm.bannerImage}
+                        onChange={(e) => setPopupForm({ ...popupForm, bannerImage: e.target.value })}
+                        placeholder="https://example.com/banner.png or /assets/image.png"
+                        data-testid="input-popup-banner-image"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter the URL of the banner image to display in the popup
+                      </p>
+                    </div>
+
+                    {popupForm.bannerImage && (
+                      <div className="space-y-2">
+                        <Label>Preview</Label>
+                        <div className="rounded-lg overflow-hidden border border-border max-w-md">
+                          <img 
+                            src={popupForm.bannerImage} 
+                            alt="Banner Preview" 
+                            className="w-full h-auto object-contain bg-muted"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <Label className="text-base font-medium">Show Once Per Session</Label>
+                        <p className="text-sm text-muted-foreground">
+                          Only show the popup once per browser session (won't show again until browser is closed)
+                        </p>
+                      </div>
+                      <Switch
+                        checked={popupForm.showOnce}
+                        onCheckedChange={(checked) => setPopupForm({ ...popupForm, showOnce: checked })}
+                        data-testid="switch-popup-show-once"
+                      />
+                    </div>
+
+                    <Button 
+                      onClick={() => updatePopupSettings.mutate(popupForm)}
+                      disabled={updatePopupSettings.isPending}
+                      className="w-full sm:w-auto"
+                      data-testid="button-save-popup-settings"
+                    >
+                      {updatePopupSettings.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" />
+                          Save Settings
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 )}
               </CardContent>
             </Card>
