@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
@@ -19,12 +20,18 @@ interface PopupSettings {
 
 export function BootcampModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const { data: settings } = useQuery<PopupSettings>({
+  const { data: settings, isLoading } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
   });
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || isLoading) return;
     if (!settings?.isEnabled) return;
 
     const sessionKey = "popup_shown";
@@ -32,7 +39,7 @@ export function BootcampModal() {
       return;
     }
 
-    const delay = parseInt(settings.delaySeconds) * 1000 || 1000;
+    const delay = parseInt(settings.delaySeconds) * 1000 || 1500;
     const timer = setTimeout(() => {
       setIsOpen(true);
       if (settings.showOnce) {
@@ -41,7 +48,7 @@ export function BootcampModal() {
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [settings]);
+  }, [settings, isMounted, isLoading]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -51,7 +58,9 @@ export function BootcampModal() {
   const buttonText = settings?.buttonText || "Register Now";
   const buttonLink = settings?.buttonLink || "/register";
 
-  return (
+  if (!isMounted) return null;
+
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -59,43 +68,52 @@ export function BootcampModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
+          style={{ 
+            zIndex: 99999,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            touchAction: 'none'
+          }}
           onClick={handleClose}
           data-testid="bootcamp-modal-overlay"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-            className="relative w-full max-w-lg flex flex-col items-center"
-            style={{ maxHeight: '95vh' }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="relative w-full max-w-[92vw] sm:max-w-md md:max-w-lg flex flex-col items-center"
+            style={{ maxHeight: '88vh' }}
             onClick={(e) => e.stopPropagation()}
             data-testid="bootcamp-modal"
           >
             <Button
               variant="ghost"
               size="icon"
-              className="absolute -top-2 -right-2 z-10 h-8 w-8 bg-white text-gray-600 hover:bg-gray-100 rounded-full shadow-lg"
+              className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 z-10 h-9 w-9 sm:h-10 sm:w-10 bg-white text-gray-600 hover:bg-gray-100 rounded-full shadow-lg border border-gray-200"
               onClick={handleClose}
               data-testid="button-close-modal"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
 
-            <div className="rounded-xl overflow-hidden shadow-2xl">
+            <div className="rounded-lg sm:rounded-xl overflow-hidden shadow-2xl w-full">
               <img 
                 src={imageToShow} 
                 alt={settings?.title || "Startup Boot Camp"}
                 className="w-full h-auto object-contain"
-                style={{ maxHeight: 'calc(95vh - 70px)' }}
+                style={{ maxHeight: 'calc(82vh - 70px)' }}
                 data-testid="img-bootcamp-poster"
               />
             </div>
             
-            <Link href={buttonLink} className="w-full mt-3" onClick={handleClose}>
+            <Link href={buttonLink} className="w-full mt-3 sm:mt-4" onClick={handleClose}>
               <Button 
-                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-base py-6 rounded-xl shadow-lg"
+                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-sm sm:text-base py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg"
                 data-testid="button-modal-register"
               >
                 {buttonText}
@@ -106,4 +124,6 @@ export function BootcampModal() {
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }
