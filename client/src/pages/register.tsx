@@ -94,7 +94,7 @@ export default function Register() {
       return response.json();
     },
     onSuccess: (data) => {
-      markRegistered();
+      markRegistered(data.id);
       const newCount = registrationCount + 1;
       localStorage.setItem(REGISTRATIONS_COUNT_KEY, newCount.toString());
       setRegistrationCount(newCount);

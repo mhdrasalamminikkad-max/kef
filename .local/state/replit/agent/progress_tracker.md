@@ -86,3 +86,9 @@
 [x] 86. Popup now uses bundled fallback image when API fails or returns no settings
 [x] 87. Verified popup works correctly in development environment
 [x] 88. Ready for redeployment to Railway for popup fix to take effect
+[x] 89. Updated floating icon to show personal invitation after registration
+[x] 90. Added registrationId storage in registration context (localStorage)
+[x] 91. Floating button now navigates to /invitation/:id for registered users
+[x] 92. Button changes to green Ticket icon after registration
+[x] 93. Shows "View Your Invitation" tooltip when hovering over the button
+[x] 94. Non-registered users still see the event popup when clicking

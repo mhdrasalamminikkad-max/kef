@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 const STORAGE_KEY = "kef:bootcamp-registered";
 const MODAL_DISMISSED_KEY = "kef:bootcamp-modal-dismissed";
+const REGISTRATION_ID_KEY = "kef:bootcamp-registration-id";
 
 interface RegistrationContextType {
   isRegistered: boolean;
@@ -9,7 +10,8 @@ interface RegistrationContextType {
   isLoaded: boolean;
   shouldShowModal: boolean;
   isModalCurrentlyOpen: boolean;
-  markRegistered: () => void;
+  registrationId: string | null;
+  markRegistered: (registrationId?: string) => void;
   dismissModal: () => void;
   reopenModal: () => void;
   clearRegistered: () => void;
@@ -24,17 +26,24 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const [isModalCurrentlyOpen, setIsModalCurrentlyOpen] = useState(false);
+  const [registrationId, setRegistrationId] = useState<string | null>(null);
 
   useEffect(() => {
     const registered = localStorage.getItem(STORAGE_KEY) === "true";
     const dismissed = localStorage.getItem(MODAL_DISMISSED_KEY) === "true";
+    const savedRegId = localStorage.getItem(REGISTRATION_ID_KEY);
     setIsRegistered(registered);
     setIsModalDismissed(dismissed);
+    setRegistrationId(savedRegId);
     setIsLoaded(true);
   }, []);
 
-  const markRegistered = useCallback(() => {
+  const markRegistered = useCallback((regId?: string) => {
     localStorage.setItem(STORAGE_KEY, "true");
+    if (regId) {
+      localStorage.setItem(REGISTRATION_ID_KEY, regId);
+      setRegistrationId(regId);
+    }
     setIsRegistered(true);
   }, []);
 
@@ -51,7 +60,9 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
 
   const clearRegistered = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(REGISTRATION_ID_KEY);
     setIsRegistered(false);
+    setRegistrationId(null);
   }, []);
 
   const setModalOpen = useCallback((open: boolean) => {
@@ -66,6 +77,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         isLoaded,
         shouldShowModal,
         isModalCurrentlyOpen,
+        registrationId,
         markRegistered,
         dismissModal,
         reopenModal,
