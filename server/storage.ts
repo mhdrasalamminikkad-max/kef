@@ -15,13 +15,16 @@ import {
   type Partner,
   type InsertPartner,
   type UpdatePartner,
+  type PopupSettings,
+  type UpdatePopupSettings,
   users,
   contactSubmissions,
   membershipApplications,
   bootcampRegistrations,
   adminUsers,
   programs,
-  partners
+  partners,
+  popupSettings
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
@@ -76,6 +79,9 @@ export interface IStorage {
   createPartner(partner: InsertPartner): Promise<Partner>;
   updatePartner(id: string, partner: UpdatePartner): Promise<Partner | undefined>;
   deletePartner(id: string): Promise<boolean>;
+  
+  getPopupSettings(): Promise<PopupSettings | null>;
+  updatePopupSettings(settings: UpdatePopupSettings): Promise<PopupSettings>;
 }
 
 export class MemStorage implements IStorage {
@@ -86,6 +92,7 @@ export class MemStorage implements IStorage {
   private admins: Map<string, Admin>;
   private programsMap: Map<string, Program>;
   private partnersMap: Map<string, Partner>;
+  private popupSettingsData: PopupSettings | null = null;
 
   constructor() {
     this.users = new Map();
@@ -98,6 +105,7 @@ export class MemStorage implements IStorage {
     
     this.initDefaultAdmin();
     this.initDefaultPrograms();
+    this.initDefaultPopupSettings();
   }
 
   private async initDefaultAdmin() {
@@ -131,6 +139,20 @@ export class MemStorage implements IStorage {
         isActive: true,
       });
     }
+  }
+
+  private async initDefaultPopupSettings() {
+    this.popupSettingsData = {
+      id: randomUUID(),
+      isEnabled: true,
+      title: "Startup Boot Camp",
+      bannerImage: "/assets/kef a_1764492076701.png",
+      buttonText: "Register Now",
+      buttonLink: "/register",
+      delaySeconds: "1",
+      showOnce: false,
+      updatedAt: new Date(),
+    };
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -411,6 +433,22 @@ export class MemStorage implements IStorage {
 
   async deletePartner(id: string): Promise<boolean> {
     return this.partnersMap.delete(id);
+  }
+
+  async getPopupSettings(): Promise<PopupSettings | null> {
+    return this.popupSettingsData;
+  }
+
+  async updatePopupSettings(settings: UpdatePopupSettings): Promise<PopupSettings> {
+    if (!this.popupSettingsData) {
+      await this.initDefaultPopupSettings();
+    }
+    this.popupSettingsData = {
+      ...this.popupSettingsData!,
+      ...settings,
+      updatedAt: new Date(),
+    };
+    return this.popupSettingsData;
   }
 }
 
@@ -701,6 +739,44 @@ export class DatabaseStorage implements IStorage {
   async deletePartner(id: string): Promise<boolean> {
     const result = await db.delete(partners).where(eq(partners.id, id)).returning();
     return result.length > 0;
+  }
+
+  async getPopupSettings(): Promise<PopupSettings | null> {
+    const result = await db.select().from(popupSettings);
+    if (result.length === 0) {
+      const defaultSettings = await db.insert(popupSettings).values({
+        isEnabled: true,
+        title: "Startup Boot Camp",
+        bannerImage: "/assets/kef a_1764492076701.png",
+        buttonText: "Register Now",
+        buttonLink: "/register",
+        delaySeconds: "1",
+        showOnce: false,
+      }).returning();
+      return defaultSettings[0];
+    }
+    return result[0];
+  }
+
+  async updatePopupSettings(settings: UpdatePopupSettings): Promise<PopupSettings> {
+    const existing = await this.getPopupSettings();
+    if (!existing) {
+      const created = await db.insert(popupSettings).values({
+        isEnabled: settings.isEnabled ?? true,
+        title: settings.title ?? "Startup Boot Camp",
+        bannerImage: settings.bannerImage ?? "/assets/kef a_1764492076701.png",
+        buttonText: settings.buttonText ?? "Register Now",
+        buttonLink: settings.buttonLink ?? "/register",
+        delaySeconds: settings.delaySeconds ?? "1",
+        showOnce: settings.showOnce ?? false,
+      }).returning();
+      return created[0];
+    }
+    const result = await db.update(popupSettings)
+      .set({ ...settings, updatedAt: new Date() })
+      .where(eq(popupSettings.id, existing.id))
+      .returning();
+    return result[0];
   }
 }
 

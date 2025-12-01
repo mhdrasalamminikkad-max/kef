@@ -214,3 +214,29 @@ export const updatePartnerSchema = z.object({
 export type InsertPartner = z.infer<typeof insertPartnerSchema>;
 export type UpdatePartner = z.infer<typeof updatePartnerSchema>;
 export type Partner = typeof partners.$inferSelect;
+
+// Popup Banner Settings
+export const popupSettings = pgTable("popup_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  isEnabled: boolean("is_enabled").default(true).notNull(),
+  title: text("title").default("Startup Boot Camp").notNull(),
+  bannerImage: text("banner_image").notNull(),
+  buttonText: text("button_text").default("Register Now").notNull(),
+  buttonLink: text("button_link").default("/register").notNull(),
+  delaySeconds: text("delay_seconds").default("1").notNull(),
+  showOnce: boolean("show_once").default(false).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const updatePopupSettingsSchema = z.object({
+  isEnabled: z.boolean().optional(),
+  title: z.string().min(1, "Title is required").optional(),
+  bannerImage: z.string().min(1, "Banner image URL is required").optional(),
+  buttonText: z.string().min(1, "Button text is required").optional(),
+  buttonLink: z.string().min(1, "Button link is required").optional(),
+  delaySeconds: z.string().optional(),
+  showOnce: z.boolean().optional(),
+});
+
+export type UpdatePopupSettings = z.infer<typeof updatePopupSettingsSchema>;
+export type PopupSettings = typeof popupSettings.$inferSelect;
