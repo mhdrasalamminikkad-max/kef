@@ -12,7 +12,10 @@ import {
   ArrowRight,
   Sparkles,
   Loader2,
-  LucideIcon
+  LucideIcon,
+  Play,
+  Clock,
+  History
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,6 +48,27 @@ const workshopTopics = [
   "Leadership for Young Entrepreneurs"
 ];
 
+const statusConfig = {
+  live: { 
+    label: "Live Now", 
+    bgClass: "bg-green-500/20", 
+    textClass: "text-green-600 dark:text-green-400",
+    icon: Play
+  },
+  upcoming: { 
+    label: "Upcoming", 
+    bgClass: "bg-blue-500/20", 
+    textClass: "text-blue-600 dark:text-blue-400",
+    icon: Clock
+  },
+  past: { 
+    label: "Completed", 
+    bgClass: "bg-gray-500/20", 
+    textClass: "text-gray-600 dark:text-gray-400",
+    icon: History
+  },
+};
+
 function ProgramCard({ 
   program, 
   index
@@ -54,6 +78,8 @@ function ProgramCard({
 }) {
   const IconComponent = iconMap[program.icon] || Rocket;
   const iconBgClass = gradientBgMap[program.gradient] || gradientBgMap.purple;
+  const status = statusConfig[program.programStatus as keyof typeof statusConfig] || statusConfig.upcoming;
+  const StatusIcon = status.icon;
   
   return (
     <motion.div
@@ -73,21 +99,24 @@ function ProgramCard({
                 <IconComponent className={`w-6 h-6 -rotate-45 ${program.gradient === 'orange' ? 'text-black' : 'text-white'}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-foreground mb-2">
-                  {program.title}
-                </h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-lg font-bold text-foreground">
+                    {program.title}
+                  </h3>
+                </div>
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                   {program.description}
                 </p>
-                {program.isActive && (
-                  <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-0 mb-3">
-                    Active
-                  </Badge>
-                )}
-                <Button variant="ghost" className="p-0 h-auto font-medium text-red-500 hover:text-red-600">
-                  View Details
-                  <ArrowRight className="ml-1 w-4 h-4" />
-                </Button>
+                <Badge className={`${status.bgClass} ${status.textClass} border-0 mb-3`}>
+                  <StatusIcon className="w-3 h-3 mr-1" />
+                  {status.label}
+                </Badge>
+                <div>
+                  <Button variant="ghost" className="p-0 h-auto font-medium text-red-500 hover:text-red-600">
+                    View Details
+                    <ArrowRight className="ml-1 w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -101,6 +130,10 @@ export default function Programs() {
   const { data: programsList, isLoading } = useQuery<Program[]>({
     queryKey: ["/api/programs"],
   });
+
+  const livePrograms = programsList?.filter(p => p.programStatus === 'live') || [];
+  const upcomingPrograms = programsList?.filter(p => p.programStatus === 'upcoming') || [];
+  const pastPrograms = programsList?.filter(p => p.programStatus === 'past') || [];
 
   return (
     <>
@@ -146,31 +179,81 @@ export default function Programs() {
         </div>
       </section>
 
-      <Section>
-        <SectionHeader
-          title="Explore Our Programs"
-          description="Each program is crafted to create real impact, practical learning, and meaningful opportunities."
-        />
-        {isLoading ? (
+      {isLoading ? (
+        <Section>
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
-        ) : programsList && programsList.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {programsList.map((program, index) => (
-              <ProgramCard
-                key={program.id}
-                program={program}
-                index={index}
+        </Section>
+      ) : (
+        <>
+          {/* LIVE PROGRAMS */}
+          {livePrograms.length > 0 && (
+            <Section>
+              <SectionHeader
+                title="Live Programs"
+                subtitle="Currently running programs - Register now!"
               />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-muted-foreground">
-            No programs available at the moment. Check back soon!
-          </div>
-        )}
-      </Section>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {livePrograms.map((program, index) => (
+                  <ProgramCard
+                    key={program.id}
+                    program={program}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* UPCOMING PROGRAMS */}
+          {upcomingPrograms.length > 0 && (
+            <Section background={livePrograms.length > 0 ? "muted" : undefined}>
+              <SectionHeader
+                title="Upcoming Programs"
+                subtitle="Stay tuned for these exciting programs coming soon"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {upcomingPrograms.map((program, index) => (
+                  <ProgramCard
+                    key={program.id}
+                    program={program}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* PAST PROGRAMS */}
+          {pastPrograms.length > 0 && (
+            <Section background={(livePrograms.length > 0 && upcomingPrograms.length === 0) || (livePrograms.length === 0 && upcomingPrograms.length > 0) ? "muted" : undefined}>
+              <SectionHeader
+                title="Past Programs"
+                subtitle="Completed programs that made an impact"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pastPrograms.map((program, index) => (
+                  <ProgramCard
+                    key={program.id}
+                    program={program}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* No programs message */}
+          {livePrograms.length === 0 && upcomingPrograms.length === 0 && pastPrograms.length === 0 && (
+            <Section>
+              <div className="text-center py-12 text-muted-foreground">
+                No programs available at the moment. Check back soon!
+              </div>
+            </Section>
+          )}
+        </>
+      )}
 
       <Section background="muted">
         <SectionHeader

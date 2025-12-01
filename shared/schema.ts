@@ -138,6 +138,7 @@ export const programs = pgTable("programs", {
   gradient: text("gradient").default("purple").notNull(),
   bannerImage: text("banner_image"),
   isActive: boolean("is_active").default(true).notNull(),
+  programStatus: text("program_status").default("upcoming").notNull(), // past, live, upcoming
   order: text("order").default("0").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -155,6 +156,7 @@ export const insertProgramSchema = createInsertSchema(programs).omit({
   gradient: z.enum(["purple", "blue", "teal", "orange"]).default("purple"),
   bannerImage: z.string().optional(),
   isActive: z.boolean().default(true),
+  programStatus: z.enum(["past", "live", "upcoming"]).default("upcoming"),
   order: z.string().default("0"),
 });
 
@@ -166,6 +168,7 @@ export const updateProgramSchema = z.object({
   gradient: z.enum(["purple", "blue", "teal", "orange"]).optional(),
   bannerImage: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
+  programStatus: z.enum(["past", "live", "upcoming"]).optional(),
   order: z.string().optional(),
 });
 
