@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { useRegistrationStatus } from "@/hooks/use-registration-status";
 import bootcampImage from "@assets/kef_bootcamp.png";
 
 interface PopupSettings {
@@ -23,6 +24,7 @@ export function BootcampModal() {
   const [isMounted, setIsMounted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const preloadedImageRef = useRef<string | null>(null);
+  const { dismissModal } = useRegistrationStatus();
 
   const { data: settings, isLoading } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
@@ -81,6 +83,7 @@ export function BootcampModal() {
 
   const handleClose = () => {
     setIsOpen(false);
+    dismissModal(); // Show floating invitation button
   };
 
   const buttonText = settings?.buttonText || "Register Now";
