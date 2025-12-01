@@ -1,8 +1,13 @@
-import { Resend } from 'resend';
+// Gmail Integration for sending notification emails
+import { google } from 'googleapis';
 
 let connectionSettings: any;
 
-async function getCredentials() {
+async function getAccessToken() {
+  if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
+    return connectionSettings.settings.access_token;
+  }
+  
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY 
     ? 'repl ' + process.env.REPL_IDENTITY 
@@ -15,7 +20,7 @@ async function getCredentials() {
   }
 
   connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=google-mail',
     {
       headers: {
         'Accept': 'application/json',
@@ -24,18 +29,37 @@ async function getCredentials() {
     }
   ).then(res => res.json()).then(data => data.items?.[0]);
 
-  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
-    throw new Error('Resend not connected');
+  const accessToken = connectionSettings?.settings?.access_token || connectionSettings.settings?.oauth?.credentials?.access_token;
+
+  if (!connectionSettings || !accessToken) {
+    throw new Error('Gmail not connected');
   }
-  return { apiKey: connectionSettings.settings.api_key, fromEmail: connectionSettings.settings.from_email };
+  return accessToken;
 }
 
-async function getResendClient() {
-  const { apiKey, fromEmail } = await getCredentials();
-  return {
-    client: new Resend(apiKey),
-    fromEmail: fromEmail || 'onboarding@resend.dev'
-  };
+async function getGmailClient() {
+  const accessToken = await getAccessToken();
+
+  const oauth2Client = new google.auth.OAuth2();
+  oauth2Client.setCredentials({
+    access_token: accessToken
+  });
+
+  return google.gmail({ version: 'v1', auth: oauth2Client });
+}
+
+function createEmail(to: string, subject: string, htmlBody: string): string {
+  const emailLines = [
+    `To: ${to}`,
+    'Content-Type: text/html; charset=utf-8',
+    'MIME-Version: 1.0',
+    `Subject: ${subject}`,
+    '',
+    htmlBody
+  ];
+  
+  const email = emailLines.join('\r\n');
+  return Buffer.from(email).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 export async function sendBootcampRegistrationEmail(registration: {
@@ -51,7 +75,7 @@ export async function sendBootcampRegistrationEmail(registration: {
   createdAt: Date;
 }) {
   try {
-    const { client, fromEmail } = await getResendClient();
+    const gmail = await getGmailClient();
     
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -116,17 +140,23 @@ export async function sendBootcampRegistrationEmail(registration: {
       </div>
     `;
 
-    const result = await client.emails.send({
-      from: fromEmail,
-      to: 'keralaeconomicforum@gmail.com',
-      subject: `New Bootcamp Registration: ${registration.fullName}`,
-      html: emailHtml,
+    const rawEmail = createEmail(
+      'keralaeconomicforum@gmail.com',
+      `New Bootcamp Registration: ${registration.fullName}`,
+      emailHtml
+    );
+
+    const result = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: rawEmail
+      }
     });
 
-    console.log('Email sent successfully:', result);
-    return { success: true, result };
+    console.log('Email sent successfully via Gmail:', result.data);
+    return { success: true, result: result.data };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('Failed to send email via Gmail:', error);
     return { success: false, error };
   }
 }
@@ -142,7 +172,7 @@ export async function sendMembershipApplicationEmail(application: {
   createdAt: Date;
 }) {
   try {
-    const { client, fromEmail } = await getResendClient();
+    const gmail = await getGmailClient();
     
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -201,17 +231,23 @@ export async function sendMembershipApplicationEmail(application: {
       </div>
     `;
 
-    const result = await client.emails.send({
-      from: fromEmail,
-      to: 'keralaeconomicforum@gmail.com',
-      subject: `New Membership Application: ${application.fullName}`,
-      html: emailHtml,
+    const rawEmail = createEmail(
+      'keralaeconomicforum@gmail.com',
+      `New Membership Application: ${application.fullName}`,
+      emailHtml
+    );
+
+    const result = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: rawEmail
+      }
     });
 
-    console.log('Email sent successfully:', result);
-    return { success: true, result };
+    console.log('Email sent successfully via Gmail:', result.data);
+    return { success: true, result: result.data };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('Failed to send email via Gmail:', error);
     return { success: false, error };
   }
 }
@@ -225,7 +261,7 @@ export async function sendContactFormEmail(contact: {
   createdAt: Date;
 }) {
   try {
-    const { client, fromEmail } = await getResendClient();
+    const gmail = await getGmailClient();
     
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -275,17 +311,23 @@ export async function sendContactFormEmail(contact: {
       </div>
     `;
 
-    const result = await client.emails.send({
-      from: fromEmail,
-      to: 'keralaeconomicforum@gmail.com',
-      subject: `Contact Form: ${contact.subject}`,
-      html: emailHtml,
+    const rawEmail = createEmail(
+      'keralaeconomicforum@gmail.com',
+      `Contact Form: ${contact.subject}`,
+      emailHtml
+    );
+
+    const result = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: rawEmail
+      }
     });
 
-    console.log('Email sent successfully:', result);
-    return { success: true, result };
+    console.log('Email sent successfully via Gmail:', result.data);
+    return { success: true, result: result.data };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('Failed to send email via Gmail:', error);
     return { success: false, error };
   }
 }
