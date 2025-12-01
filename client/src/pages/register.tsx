@@ -19,10 +19,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
-import { Info } from "lucide-react";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 
@@ -49,7 +47,6 @@ export default function Register() {
       age: "",
       organization: "",
       paymentProof: "",
-      source: "",
     },
   });
 
@@ -802,46 +799,6 @@ export default function Register() {
                               </label>
                             </motion.div>
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.95, duration: 0.4 }}
-                  >
-                    <FormField
-                      control={form.control}
-                      name="source"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <Info className="w-4 h-4" />
-                            How did you hear about us?
-                          </FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                            <FormControl>
-                              <SelectTrigger className="transition-all duration-300 focus:scale-[1.01] focus:shadow-md" data-testid="select-source">
-                                <SelectValue placeholder="Select an option" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="instagram">Instagram</SelectItem>
-                              <SelectItem value="facebook">Facebook</SelectItem>
-                              <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                              <SelectItem value="youtube">YouTube</SelectItem>
-                              <SelectItem value="telegram">Telegram</SelectItem>
-                              <SelectItem value="friend">Friend / Family</SelectItem>
-                              <SelectItem value="school">School / College</SelectItem>
-                              <SelectItem value="teacher">Teacher / Mentor</SelectItem>
-                              <SelectItem value="poster">Poster / Banner</SelectItem>
-                              <SelectItem value="website">Website</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
