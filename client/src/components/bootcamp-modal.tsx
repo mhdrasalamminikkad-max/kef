@@ -24,7 +24,7 @@ export function BootcampModal() {
   const [isMounted, setIsMounted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const preloadedImageRef = useRef<string | null>(null);
-  const { dismissModal } = useRegistrationStatus();
+  const { dismissModal, shouldShowModal } = useRegistrationStatus();
 
   const { data: settings, isLoading } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
@@ -81,9 +81,15 @@ export function BootcampModal() {
     }
   }, [settings, isMounted, isLoading, imageLoaded]);
 
+  useEffect(() => {
+    if (shouldShowModal && settings?.isEnabled && imageLoaded) {
+      setIsOpen(true);
+    }
+  }, [shouldShowModal, settings?.isEnabled, imageLoaded]);
+
   const handleClose = () => {
     setIsOpen(false);
-    dismissModal(); // Show floating invitation button
+    dismissModal();
   };
 
   const buttonText = settings?.buttonText || "Register Now";

@@ -1,97 +1,129 @@
-import { useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Gift, Sparkles } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
-import bootcampImage from "@assets/kef_bootcamp.png";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+
+interface PopupSettings {
+  id: number;
+  isEnabled: boolean;
+  title: string;
+  bannerImage: string;
+  buttonText: string;
+  buttonLink: string;
+  delaySeconds: string;
+  showOnce: boolean;
+}
 
 export function FloatingInvitationButton() {
-  const { isModalDismissed, isRegistered, isLoaded } = useRegistrationStatus();
-  const [showModal, setShowModal] = useState(false);
+  const { isModalDismissed, isRegistered, isLoaded, reopenModal, shouldShowModal } = useRegistrationStatus();
+  const [isMounted, setIsMounted] = useState(false);
 
-  const shouldShowButton = isLoaded && isModalDismissed && !isRegistered;
+  const { data: settings } = useQuery<PopupSettings>({
+    queryKey: ["/api/popup-settings"],
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  });
 
-  if (!shouldShowButton) {
-    return null;
-  }
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  return (
-    <>
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0, opacity: 0 }}
-        className="fixed bottom-6 right-6 z-50"
-        data-testid="floating-invitation-container"
-      >
-        <Button
-          size="lg"
-          className="rounded-full shadow-lg h-14 w-14 p-0 bg-gradient-to-r from-red-500 to-yellow-500"
-          onClick={() => setShowModal(true)}
+  const shouldShowButton = 
+    isMounted && 
+    isLoaded && 
+    isModalDismissed && 
+    !isRegistered && 
+    settings?.isEnabled && 
+    !shouldShowModal;
+
+  if (!isMounted) return null;
+
+  const buttonContent = (
+    <AnimatePresence>
+      {shouldShowButton && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 260, 
+            damping: 20,
+            delay: 0.3
+          }}
+          onClick={reopenModal}
+          className="fixed bottom-6 right-6 z-[9999] group"
           data-testid="button-floating-invitation"
+          aria-label="Open invitation"
         >
-          <Mail className="h-6 w-6 text-white" />
-        </Button>
-        <span className="absolute -top-1 -right-1 flex h-4 w-4">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-4 w-4 bg-yellow-500"></span>
-        </span>
-      </motion.div>
-
-      <AnimatePresence>
-        {showModal && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-            onClick={() => setShowModal(false)}
-            data-testid="invitation-modal-overlay"
+            animate={{ 
+              scale: [1, 1.05, 1],
+            }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="relative"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full max-w-lg flex flex-col items-center"
-              style={{ maxHeight: '95vh' }}
-              onClick={(e) => e.stopPropagation()}
-              data-testid="invitation-modal"
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute -top-2 -right-2 z-10 h-8 w-8 bg-white text-gray-600 hover:bg-gray-100 rounded-full shadow-lg"
-                onClick={() => setShowModal(false)}
-                data-testid="button-close-invitation-modal"
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 rounded-full blur-lg opacity-75 group-hover:opacity-100 transition-opacity" />
+            
+            <div className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 via-red-600 to-red-700 rounded-full shadow-xl border-2 border-white/20">
+              <motion.div
+                animate={{ rotate: [0, -10, 10, -10, 0] }}
+                transition={{ 
+                  duration: 0.5,
+                  repeat: Infinity,
+                  repeatDelay: 3
+                }}
               >
-                <X className="w-4 h-4" />
-              </Button>
-
-              <div className="rounded-xl overflow-hidden shadow-2xl">
-                <img 
-                  src={bootcampImage} 
-                  alt="Startup Boot Camp" 
-                  className="w-full h-auto object-contain"
-                  style={{ maxHeight: 'calc(95vh - 70px)' }}
-                  data-testid="img-invitation-poster"
-                />
-              </div>
+                <Gift className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </motion.div>
               
-              <Link href="/register" className="w-full mt-3" onClick={() => setShowModal(false)}>
-                <Button 
-                  className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-base py-6 rounded-xl shadow-lg"
-                  data-testid="button-invitation-register"
-                >
-                  Register Now
-                </Button>
-              </Link>
+              <motion.div
+                animate={{ 
+                  opacity: [0, 1, 0],
+                  scale: [0.8, 1.2, 0.8]
+                }}
+                transition={{ 
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className="absolute -top-1 -right-1"
+              >
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: "spring" }}
+              className="absolute -top-1 -left-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center shadow-md border border-white/50"
+            >
+              <span className="text-[10px] font-bold text-red-700">!</span>
             </motion.div>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8 }}
+            className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+          >
+            <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+              View Invitation
+            </span>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 bg-white dark:bg-gray-800 rotate-45" />
+          </motion.div>
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
+
+  return createPortal(buttonContent, document.body);
 }
