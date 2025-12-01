@@ -433,6 +433,72 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async initDefaultPrograms() {
+    try {
+      const existing = await this.getPrograms();
+      
+      if (existing.length === 0) {
+        const defaultPrograms = [
+          { 
+            title: "Startup Boot Camp", 
+            description: "Both residential and Day camps where participants learn to think like entrepreneurs. The camp includes powerful workshops, business model creation, idea validation, field assignments, pitching sessions, and mentor interactions.",
+            icon: "Rocket", 
+            gradient: "orange" as const,
+            isActive: true,
+            order: "0"
+          },
+          { 
+            title: "Business Conclaves", 
+            description: "Large-scale gatherings where founders, investors, mentors, thought leaders, and students connect and collaborate.",
+            icon: "Building2", 
+            gradient: "blue" as const,
+            isActive: true,
+            order: "1"
+          },
+          { 
+            title: "Founder Circles", 
+            description: "Exclusive curated networking dinners and tea sessions bringing entrepreneurs and experts for honest conversations and opportunities.",
+            icon: "Users", 
+            gradient: "purple" as const,
+            isActive: true,
+            order: "2"
+          },
+          { 
+            title: "Advisory Clinics", 
+            description: "One-on-one mentoring and business advisory sessions in finance, branding, HR, legal, marketing, and operations.",
+            icon: "Briefcase", 
+            gradient: "teal" as const,
+            isActive: true,
+            order: "3"
+          },
+          { 
+            title: "Campus Innovation Labs", 
+            description: "Building entrepreneurship clubs, innovation cells, startup labs, and student incubators in colleges across Kerala.",
+            icon: "Lightbulb", 
+            gradient: "blue" as const,
+            isActive: true,
+            order: "4"
+          },
+          { 
+            title: "KEF Student Entrepreneurs Forum", 
+            description: "Vibrant club of student entrepreneurs and entrepreneurship aspirants.",
+            icon: "GraduationCap", 
+            gradient: "orange" as const,
+            isActive: true,
+            order: "5"
+          },
+        ];
+
+        for (const prog of defaultPrograms) {
+          await this.createProgram(prog);
+        }
+        console.log("Default programs created successfully");
+      }
+    } catch (error) {
+      console.error("Error seeding default programs:", error);
+    }
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id));
     return result[0];
