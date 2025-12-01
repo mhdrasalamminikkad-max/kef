@@ -12,6 +12,7 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import Programs from "@/pages/programs";
+import ProgramDetail from "@/pages/program-detail";
 import Membership from "@/pages/membership";
 import Partners from "@/pages/partners";
 import Contact from "@/pages/contact";
@@ -35,6 +36,7 @@ function Router() {
               <Route path="/" component={Home} />
               <Route path="/about" component={About} />
               <Route path="/programs" component={Programs} />
+              <Route path="/programs/:id" component={ProgramDetail} />
               <Route path="/membership" component={Membership} />
               <Route path="/partners" component={Partners} />
               <Route path="/contact" component={Contact} />

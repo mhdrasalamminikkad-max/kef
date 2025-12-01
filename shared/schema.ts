@@ -136,6 +136,7 @@ export const programs = pgTable("programs", {
   icon: text("icon").notNull(),
   features: text("features").array(),
   gradient: text("gradient").default("purple").notNull(),
+  bannerImage: text("banner_image"),
   isActive: boolean("is_active").default(true).notNull(),
   order: text("order").default("0").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -152,6 +153,7 @@ export const insertProgramSchema = createInsertSchema(programs).omit({
   icon: z.string().min(1, "Icon is required"),
   features: z.array(z.string()).optional(),
   gradient: z.enum(["purple", "blue", "teal", "orange"]).default("purple"),
+  bannerImage: z.string().optional(),
   isActive: z.boolean().default(true),
   order: z.string().default("0"),
 });
@@ -162,6 +164,7 @@ export const updateProgramSchema = z.object({
   icon: z.string().min(1, "Icon is required").optional(),
   features: z.array(z.string()).optional(),
   gradient: z.enum(["purple", "blue", "teal", "orange"]).optional(),
+  bannerImage: z.string().optional().nullable(),
   isActive: z.boolean().optional(),
   order: z.string().optional(),
 });

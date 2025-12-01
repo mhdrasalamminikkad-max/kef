@@ -12,12 +12,16 @@ import {
   type Program,
   type InsertProgram,
   type UpdateProgram,
+  type Partner,
+  type InsertPartner,
+  type UpdatePartner,
   users,
   contactSubmissions,
   membershipApplications,
   bootcampRegistrations,
   adminUsers,
-  programs
+  programs,
+  partners
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
@@ -65,6 +69,13 @@ export interface IStorage {
   createProgram(program: InsertProgram): Promise<Program>;
   updateProgram(id: string, program: UpdateProgram): Promise<Program | undefined>;
   deleteProgram(id: string): Promise<boolean>;
+  
+  getPartners(): Promise<Partner[]>;
+  getActivePartners(): Promise<Partner[]>;
+  getPartnerById(id: string): Promise<Partner | undefined>;
+  createPartner(partner: InsertPartner): Promise<Partner>;
+  updatePartner(id: string, partner: UpdatePartner): Promise<Partner | undefined>;
+  deletePartner(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -74,6 +85,7 @@ export class MemStorage implements IStorage {
   private bootcamps: Map<string, Bootcamp>;
   private admins: Map<string, Admin>;
   private programsMap: Map<string, Program>;
+  private partnersMap: Map<string, Partner>;
 
   constructor() {
     this.users = new Map();
@@ -82,6 +94,7 @@ export class MemStorage implements IStorage {
     this.bootcamps = new Map();
     this.admins = new Map();
     this.programsMap = new Map();
+    this.partnersMap = new Map();
     
     this.initDefaultAdmin();
     this.initDefaultPrograms();
@@ -324,6 +337,7 @@ export class MemStorage implements IStorage {
       icon: insertProgram.icon,
       features: insertProgram.features ?? null,
       gradient: insertProgram.gradient ?? "purple",
+      bannerImage: insertProgram.bannerImage ?? null,
       isActive: insertProgram.isActive ?? true,
       order: insertProgram.order ?? "0",
       createdAt: new Date(),
@@ -348,6 +362,55 @@ export class MemStorage implements IStorage {
 
   async deleteProgram(id: string): Promise<boolean> {
     return this.programsMap.delete(id);
+  }
+
+  async getPartners(): Promise<Partner[]> {
+    return Array.from(this.partnersMap.values()).sort(
+      (a, b) => parseInt(a.order) - parseInt(b.order)
+    );
+  }
+
+  async getActivePartners(): Promise<Partner[]> {
+    return (await this.getPartners()).filter(p => p.isActive);
+  }
+
+  async getPartnerById(id: string): Promise<Partner | undefined> {
+    return this.partnersMap.get(id);
+  }
+
+  async createPartner(insertPartner: InsertPartner): Promise<Partner> {
+    const id = randomUUID();
+    const partner: Partner = {
+      id,
+      name: insertPartner.name,
+      logo: insertPartner.logo,
+      description: insertPartner.description ?? null,
+      website: insertPartner.website ?? null,
+      category: insertPartner.category ?? "partner",
+      isActive: insertPartner.isActive ?? true,
+      order: insertPartner.order ?? "0",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.partnersMap.set(id, partner);
+    return partner;
+  }
+
+  async updatePartner(id: string, updateData: UpdatePartner): Promise<Partner | undefined> {
+    const partner = this.partnersMap.get(id);
+    if (!partner) return undefined;
+    
+    const updated: Partner = {
+      ...partner,
+      ...updateData,
+      updatedAt: new Date(),
+    };
+    this.partnersMap.set(id, updated);
+    return updated;
+  }
+
+  async deletePartner(id: string): Promise<boolean> {
+    return this.partnersMap.delete(id);
   }
 }
 
@@ -540,6 +603,37 @@ export class DatabaseStorage implements IStorage {
 
   async deleteProgram(id: string): Promise<boolean> {
     const result = await db.delete(programs).where(eq(programs.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getPartners(): Promise<Partner[]> {
+    return await db.select().from(partners).orderBy(partners.order);
+  }
+
+  async getActivePartners(): Promise<Partner[]> {
+    return await db.select().from(partners).where(eq(partners.isActive, true)).orderBy(partners.order);
+  }
+
+  async getPartnerById(id: string): Promise<Partner | undefined> {
+    const result = await db.select().from(partners).where(eq(partners.id, id));
+    return result[0];
+  }
+
+  async createPartner(insertPartner: InsertPartner): Promise<Partner> {
+    const result = await db.insert(partners).values(insertPartner).returning();
+    return result[0];
+  }
+
+  async updatePartner(id: string, updateData: UpdatePartner): Promise<Partner | undefined> {
+    const result = await db.update(partners)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(partners.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deletePartner(id: string): Promise<boolean> {
+    const result = await db.delete(partners).where(eq(partners.id, id)).returning();
     return result.length > 0;
   }
 }

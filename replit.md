@@ -69,9 +69,28 @@ Preferred communication style: Simple, everyday language.
   - `contact_submissions` - Contact form submissions
   - `membership_applications` - Membership applications with status tracking
   - `bootcamp_registrations` - Startup Boot Camp registration data
-  - `programs` - Dynamic programs management (title, description, icon, gradient, active status)
+  - `programs` - Dynamic programs management (title, description, icon, gradient, banner image, features, active status)
+  - `partners` - Partner organizations (name, logo, website, priority order, active status)
 - Zod schemas derived from Drizzle tables for runtime validation
 - Migration system configured via `drizzle-kit` (migrations output to `/migrations/`)
+
+## Recent Changes (December 2025)
+
+### Programs Enhancement
+- Programs now open in full-screen detail pages instead of modals
+- Added banner image support for programs (displays as hero background on detail page)
+- Added features field to programs (comma-separated list displayed as badges)
+- Programs fetched dynamically from database via API
+
+### Partner Management
+- Added complete partner management infrastructure
+- Partners table in database with name, logo URL, website, priority order, active status
+- Admin panel includes Partners tab for CRUD operations
+- Partners API endpoints: GET/POST/PATCH/DELETE under `/api/admin/partners`
+
+### Navigation Updates
+- Reorganized navigation: Home, Programs, Membership, Partners, About Us, Contact
+- Programs link to individual detail pages (/programs/:id)
 
 **Production Database**
 - Application uses PostgreSQL database for all data persistence

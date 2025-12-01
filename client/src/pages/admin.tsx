@@ -63,7 +63,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Bootcamp, Membership, Contact, Program } from "@shared/schema";
+import type { Bootcamp, Membership, Contact, Program, Partner } from "@shared/schema";
+import { Handshake } from "lucide-react";
 import bootcampPoster from "@assets/kef a_1764492076701.png";
 
 interface DashboardStats {
@@ -91,7 +92,7 @@ export default function AdminDashboard() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
-    type: "bootcamp" | "membership" | "contact" | "program";
+    type: "bootcamp" | "membership" | "contact" | "program" | "partner";
     id: string;
   }>({ open: false, type: "bootcamp", id: "" });
   const [showPoster, setShowPoster] = useState(false);
@@ -107,6 +108,20 @@ export default function AdminDashboard() {
     gradient: "purple" as "purple" | "blue" | "teal" | "orange",
     isActive: true,
     order: "0",
+    bannerImage: "",
+    features: "",
+  });
+  const [partnerDialog, setPartnerDialog] = useState<{
+    open: boolean;
+    mode: "add" | "edit";
+    partner?: Partner;
+  }>({ open: false, mode: "add" });
+  const [partnerForm, setPartnerForm] = useState({
+    name: "",
+    logo: "",
+    website: "",
+    order: "0",
+    isActive: true,
   });
 
   const sessionQuery = useQuery<SessionData>({
@@ -135,6 +150,11 @@ export default function AdminDashboard() {
 
   const programsQuery = useQuery<Program[]>({
     queryKey: ["/api/admin/programs"],
+    enabled: !!sessionQuery.data?.authenticated,
+  });
+
+  const partnersQuery = useQuery<Partner[]>({
+    queryKey: ["/api/admin/partners"],
     enabled: !!sessionQuery.data?.authenticated,
   });
 
@@ -274,6 +294,58 @@ export default function AdminDashboard() {
     },
   });
 
+  const createPartner = useMutation({
+    mutationFn: async (data: typeof partnerForm) => {
+      const response = await apiRequest("POST", "/api/admin/partners", {
+        ...data,
+        order: parseInt(data.order) || 0,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/partners"] });
+      setPartnerDialog({ open: false, mode: "add" });
+      resetPartnerForm();
+      toast({
+        title: "Partner Created",
+        description: "New partner has been added successfully",
+      });
+    },
+  });
+
+  const updatePartner = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: typeof partnerForm }) => {
+      const response = await apiRequest("PATCH", `/api/admin/partners/${id}`, {
+        ...data,
+        order: parseInt(data.order) || 0,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/partners"] });
+      setPartnerDialog({ open: false, mode: "add" });
+      resetPartnerForm();
+      toast({
+        title: "Partner Updated",
+        description: "Partner has been updated successfully",
+      });
+    },
+  });
+
+  const deletePartner = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/partners/${id}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/partners"] });
+      toast({
+        title: "Deleted",
+        description: "Partner has been deleted",
+      });
+    },
+  });
+
   const resetProgramForm = () => {
     setProgramForm({
       title: "",
@@ -282,6 +354,18 @@ export default function AdminDashboard() {
       gradient: "purple",
       isActive: true,
       order: "0",
+      bannerImage: "",
+      features: "",
+    });
+  };
+
+  const resetPartnerForm = () => {
+    setPartnerForm({
+      name: "",
+      logo: "",
+      website: "",
+      order: "0",
+      isActive: true,
     });
   };
 
@@ -293,15 +377,40 @@ export default function AdminDashboard() {
       gradient: program.gradient as "purple" | "blue" | "teal" | "orange",
       isActive: program.isActive,
       order: program.order,
+      bannerImage: program.bannerImage || "",
+      features: program.features?.join(", ") || "",
     });
     setProgramDialog({ open: true, mode: "edit", program });
   };
 
+  const openEditPartner = (partner: Partner) => {
+    setPartnerForm({
+      name: partner.name,
+      logo: partner.logo || "",
+      website: partner.website || "",
+      order: String(partner.order),
+      isActive: partner.isActive,
+    });
+    setPartnerDialog({ open: true, mode: "edit", partner });
+  };
+
   const handleProgramSubmit = () => {
+    const submitData = {
+      ...programForm,
+      features: programForm.features.split(",").map(f => f.trim()).filter(f => f.length > 0),
+    };
     if (programDialog.mode === "add") {
-      createProgram.mutate(programForm);
+      createProgram.mutate(submitData);
     } else if (programDialog.program) {
-      updateProgram.mutate({ id: programDialog.program.id, data: programForm });
+      updateProgram.mutate({ id: programDialog.program.id, data: submitData });
+    }
+  };
+
+  const handlePartnerSubmit = () => {
+    if (partnerDialog.mode === "add") {
+      createPartner.mutate(partnerForm);
+    } else if (partnerDialog.partner) {
+      updatePartner.mutate({ id: partnerDialog.partner.id, data: partnerForm });
     }
   };
 
@@ -320,6 +429,8 @@ export default function AdminDashboard() {
       deleteContact.mutate(deleteDialog.id);
     } else if (deleteDialog.type === "program") {
       deleteProgram.mutate(deleteDialog.id);
+    } else if (deleteDialog.type === "partner") {
+      deletePartner.mutate(deleteDialog.id);
     }
     setDeleteDialog({ open: false, type: "bootcamp", id: "" });
   };
@@ -330,6 +441,7 @@ export default function AdminDashboard() {
     queryClient.invalidateQueries({ queryKey: ["/api/admin/membership"] });
     queryClient.invalidateQueries({ queryKey: ["/api/admin/contact"] });
     queryClient.invalidateQueries({ queryKey: ["/api/admin/programs"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/partners"] });
     toast({
       title: "Refreshed",
       description: "All data has been refreshed",
@@ -386,7 +498,7 @@ export default function AdminDashboard() {
 
       <main className="container py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="mb-6 grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto lg:inline-grid">
             <TabsTrigger value="dashboard" data-testid="tab-dashboard">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               Dashboard
@@ -406,6 +518,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="programs" data-testid="tab-programs">
               <Layers className="mr-2 h-4 w-4" />
               Programs
+            </TabsTrigger>
+            <TabsTrigger value="partners" data-testid="tab-partners">
+              <Handshake className="mr-2 h-4 w-4" />
+              Partners
             </TabsTrigger>
           </TabsList>
 
@@ -830,6 +946,104 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="partners">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <div>
+                  <CardTitle>Partner Organizations</CardTitle>
+                  <CardDescription>
+                    Manage partner logos and display order
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={() => {
+                    resetPartnerForm();
+                    setPartnerDialog({ open: true, mode: "add" });
+                  }}
+                  data-testid="button-add-partner"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Partner
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {partnersQuery.isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : partnersQuery.data?.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No partners yet. Add your first partner!
+                  </div>
+                ) : (
+                  <ScrollArea className="h-[500px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Order</TableHead>
+                          <TableHead>Logo</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Website</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {partnersQuery.data?.map((partner) => (
+                          <TableRow key={partner.id} data-testid={`row-partner-${partner.id}`}>
+                            <TableCell>{partner.order}</TableCell>
+                            <TableCell>
+                              {partner.logo ? (
+                                <img 
+                                  src={partner.logo} 
+                                  alt={partner.name} 
+                                  className="h-10 w-auto object-contain"
+                                />
+                              ) : (
+                                <span className="text-muted-foreground text-sm">No logo</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="font-medium">{partner.name}</TableCell>
+                            <TableCell className="max-w-[200px] truncate">
+                              {partner.website || "—"}
+                            </TableCell>
+                            <TableCell>
+                              {partner.isActive ? (
+                                <Badge className="bg-green-500/20 text-green-600 dark:text-green-400">Active</Badge>
+                              ) : (
+                                <Badge className="bg-gray-500/20 text-gray-600 dark:text-gray-400">Inactive</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openEditPartner(partner)}
+                                  data-testid={`button-edit-partner-${partner.id}`}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setDeleteDialog({ open: true, type: "partner", id: partner.id })}
+                                  data-testid={`button-delete-partner-${partner.id}`}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </main>
 
@@ -1119,6 +1333,26 @@ export default function AdminDashboard() {
                 data-testid="input-program-order"
               />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="bannerImage">Banner Image URL (optional)</Label>
+              <Input
+                id="bannerImage"
+                value={programForm.bannerImage}
+                onChange={(e) => setProgramForm({ ...programForm, bannerImage: e.target.value })}
+                placeholder="https://example.com/image.jpg"
+                data-testid="input-program-banner"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="features">Features (comma-separated, optional)</Label>
+              <Input
+                id="features"
+                value={programForm.features}
+                onChange={(e) => setProgramForm({ ...programForm, features: e.target.value })}
+                placeholder="Feature 1, Feature 2, Feature 3"
+                data-testid="input-program-features"
+              />
+            </div>
             <div className="flex items-center gap-2">
               <Switch
                 id="isActive"
@@ -1149,6 +1383,107 @@ export default function AdminDashboard() {
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               {programDialog.mode === "add" ? "Create Program" : "Save Changes"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={partnerDialog.open} onOpenChange={(open) => {
+        if (!open) {
+          setPartnerDialog({ open: false, mode: "add" });
+          resetPartnerForm();
+        }
+      }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{partnerDialog.mode === "add" ? "Add New Partner" : "Edit Partner"}</DialogTitle>
+            <DialogDescription>
+              {partnerDialog.mode === "add" 
+                ? "Add a new partner organization"
+                : "Update the partner details"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="partnerName">Name</Label>
+              <Input
+                id="partnerName"
+                value={partnerForm.name}
+                onChange={(e) => setPartnerForm({ ...partnerForm, name: e.target.value })}
+                placeholder="Partner Organization Name"
+                data-testid="input-partner-name"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="partnerLogo">Logo URL</Label>
+              <Input
+                id="partnerLogo"
+                value={partnerForm.logo}
+                onChange={(e) => setPartnerForm({ ...partnerForm, logo: e.target.value })}
+                placeholder="https://example.com/logo.png"
+                data-testid="input-partner-logo"
+              />
+              {partnerForm.logo && (
+                <div className="mt-2 p-2 bg-muted rounded-md">
+                  <img 
+                    src={partnerForm.logo} 
+                    alt="Logo preview" 
+                    className="h-12 w-auto object-contain"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="partnerWebsite">Website URL (optional)</Label>
+              <Input
+                id="partnerWebsite"
+                value={partnerForm.website}
+                onChange={(e) => setPartnerForm({ ...partnerForm, website: e.target.value })}
+                placeholder="https://example.com"
+                data-testid="input-partner-website"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="partnerOrder">Display Order (lower = first)</Label>
+              <Input
+                id="partnerOrder"
+                type="number"
+                value={partnerForm.order}
+                onChange={(e) => setPartnerForm({ ...partnerForm, order: e.target.value })}
+                placeholder="0"
+                data-testid="input-partner-order"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="partnerIsActive"
+                checked={partnerForm.isActive}
+                onCheckedChange={(checked) => setPartnerForm({ ...partnerForm, isActive: checked })}
+                data-testid="switch-partner-active"
+              />
+              <Label htmlFor="partnerIsActive">Active (visible on website)</Label>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPartnerDialog({ open: false, mode: "add" });
+                resetPartnerForm();
+              }}
+              data-testid="button-cancel-partner"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handlePartnerSubmit}
+              disabled={!partnerForm.name || createPartner.isPending || updatePartner.isPending}
+              data-testid="button-save-partner"
+            >
+              {(createPartner.isPending || updatePartner.isPending) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {partnerDialog.mode === "add" ? "Add Partner" : "Save Changes"}
             </Button>
           </div>
         </DialogContent>

@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema } from "@shared/schema";
+import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema, insertPartnerSchema, updatePartnerSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 
 declare module 'express-session' {
@@ -448,6 +448,107 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting program:", error);
       res.status(500).json({ error: "Failed to delete program" });
+    }
+  });
+
+  // Get single program by ID (public)
+  app.get("/api/programs/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const program = await storage.getProgramById(id);
+      
+      if (!program) {
+        return res.status(404).json({ error: "Program not found" });
+      }
+      
+      res.json(program);
+    } catch (error) {
+      console.error("Error fetching program:", error);
+      res.status(500).json({ error: "Failed to fetch program" });
+    }
+  });
+
+  // Partners API routes (public)
+  app.get("/api/partners", async (req, res) => {
+    try {
+      const allPartners = await storage.getActivePartners();
+      res.json(allPartners);
+    } catch (error) {
+      console.error("Error fetching partners:", error);
+      res.status(500).json({ error: "Failed to fetch partners" });
+    }
+  });
+
+  // Admin Partners API routes
+  app.get("/api/admin/partners", requireAdmin, async (req, res) => {
+    try {
+      const allPartners = await storage.getPartners();
+      res.json(allPartners);
+    } catch (error) {
+      console.error("Error fetching partners:", error);
+      res.status(500).json({ error: "Failed to fetch partners" });
+    }
+  });
+
+  app.post("/api/admin/partners", requireAdmin, async (req, res) => {
+    try {
+      const result = insertPartnerSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: validationError.message 
+        });
+      }
+      
+      const partner = await storage.createPartner(result.data);
+      res.status(201).json(partner);
+    } catch (error) {
+      console.error("Error creating partner:", error);
+      res.status(500).json({ error: "Failed to create partner" });
+    }
+  });
+
+  app.patch("/api/admin/partners/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = updatePartnerSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: validationError.message 
+        });
+      }
+      
+      const updated = await storage.updatePartner(id, result.data);
+      
+      if (!updated) {
+        return res.status(404).json({ error: "Partner not found" });
+      }
+      
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating partner:", error);
+      res.status(500).json({ error: "Failed to update partner" });
+    }
+  });
+
+  app.delete("/api/admin/partners/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deletePartner(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Partner not found" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting partner:", error);
+      res.status(500).json({ error: "Failed to delete partner" });
     }
   });
 

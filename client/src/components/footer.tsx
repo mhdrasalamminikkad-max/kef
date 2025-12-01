@@ -12,10 +12,10 @@ import { Button } from "@/components/ui/button";
 const footerLinks = {
   pages: [
     { label: "Home", href: "/" },
-    { label: "About Us", href: "/about" },
     { label: "Programs", href: "/programs" },
     { label: "Membership", href: "/membership" },
     { label: "Partners", href: "/partners" },
+    { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],
 };
