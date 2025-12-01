@@ -31,13 +31,15 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (_req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp|svg/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    // Removed SVG to prevent XSS attacks - only allow raster images
+    const allowedExtensions = /jpeg|jpg|png|gif|webp/;
+    const allowedMimes = /image\/(jpeg|jpg|png|gif|webp)/;
+    const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedMimes.test(file.mimetype);
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error("Only image files are allowed!"));
+    cb(new Error("Only image files are allowed (JPG, PNG, GIF, WebP)!"));
   },
 });
 

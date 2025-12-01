@@ -33,11 +33,11 @@ export function ImageUpload({
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "image/svg+xml"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
       toast({
         title: "Invalid file type",
-        description: "Please upload an image file (JPG, PNG, GIF, WebP, or SVG)",
+        description: "Please upload an image file (JPG, PNG, GIF, or WebP)",
         variant: "destructive",
       });
       return;
@@ -121,7 +121,7 @@ export function ImageUpload({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml"
+          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
           onChange={handleFileSelect}
           className="hidden"
           disabled={disabled || isUploading}
@@ -177,7 +177,7 @@ export function ImageUpload({
       )}
 
       <p className="text-xs text-muted-foreground">
-        Upload an image or paste a URL. Max 10MB. Supported: JPG, PNG, GIF, WebP, SVG
+        Upload an image or paste a URL. Max 10MB. Supported: JPG, PNG, GIF, WebP
       </p>
     </div>
   );
