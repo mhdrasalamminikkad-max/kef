@@ -158,7 +158,7 @@ export function ImageUpload({
       </div>
 
       {value && (
-        <div className="mt-2 rounded-lg overflow-hidden border border-border bg-muted/50">
+        <div className="mt-2 rounded-lg border border-border bg-muted/50 max-h-80 overflow-y-auto">
           {previewError ? (
             <div className="flex items-center justify-center h-32 text-muted-foreground">
               <ImageIcon className="h-8 w-8 mr-2" />
@@ -168,7 +168,7 @@ export function ImageUpload({
             <img
               src={value}
               alt="Preview"
-              className="w-full h-auto max-h-48 object-contain"
+              className="w-full h-auto object-contain"
               onError={() => setPreviewError(true)}
               data-testid={testId ? `${testId}-preview` : undefined}
             />
