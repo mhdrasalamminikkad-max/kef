@@ -1,6 +1,9 @@
 // Gmail Integration for sending notification emails
 import { google } from 'googleapis';
 
+// HARDCODED: All registration emails will be sent to this address
+const ADMIN_EMAIL = 'keralaeconomicforum@gmail.com';
+
 let connectionSettings: any;
 
 async function getAccessToken() {
@@ -141,7 +144,7 @@ export async function sendBootcampRegistrationEmail(registration: {
     `;
 
     const rawEmail = createEmail(
-      'keralaeconomicforum@gmail.com',
+      ADMIN_EMAIL,
       `New Bootcamp Registration: ${registration.fullName}`,
       emailHtml
     );
@@ -232,7 +235,7 @@ export async function sendMembershipApplicationEmail(application: {
     `;
 
     const rawEmail = createEmail(
-      'keralaeconomicforum@gmail.com',
+      ADMIN_EMAIL,
       `New Membership Application: ${application.fullName}`,
       emailHtml
     );
@@ -312,7 +315,7 @@ export async function sendContactFormEmail(contact: {
     `;
 
     const rawEmail = createEmail(
-      'keralaeconomicforum@gmail.com',
+      ADMIN_EMAIL,
       `Contact Form: ${contact.subject}`,
       emailHtml
     );
