@@ -8,6 +8,7 @@ import { RegistrationProvider } from "@/contexts/registration-context";
 import { Layout } from "@/components/layout";
 import { useSecretCode } from "@/hooks/use-secret-code";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { useEffect } from "react";
 
 import Home from "@/pages/home";
 import About from "@/pages/about";
@@ -55,10 +56,21 @@ function SecretCodeListener({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function PopupPrefetcher() {
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["/api/popup-settings"],
+      staleTime: 1000 * 60 * 5,
+    });
+  }, []);
+  return null;
+}
+
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="kef-theme">
       <QueryClientProvider client={queryClient}>
+        <PopupPrefetcher />
         <TooltipProvider>
           <RegistrationProvider>
             <SecretCodeListener>

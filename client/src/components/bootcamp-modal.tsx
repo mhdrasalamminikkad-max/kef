@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,18 +21,52 @@ interface PopupSettings {
 export function BootcampModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const preloadedImageRef = useRef<string | null>(null);
 
   const { data: settings, isLoading } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
   });
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  const [finalImageUrl, setFinalImageUrl] = useState<string>(bootcampImage);
+
+  useEffect(() => {
+    if (!settings) return;
+    
+    setImageLoaded(false);
+
+    const dynamicUrl = settings.bannerImage;
+    
+    if (dynamicUrl && dynamicUrl.trim()) {
+      const img = new Image();
+      img.onload = () => {
+        setFinalImageUrl(dynamicUrl);
+        preloadedImageRef.current = dynamicUrl;
+        setImageLoaded(true);
+      };
+      img.onerror = () => {
+        setFinalImageUrl(bootcampImage);
+        preloadedImageRef.current = bootcampImage;
+        setImageLoaded(true);
+      };
+      img.src = dynamicUrl;
+    } else {
+      setFinalImageUrl(bootcampImage);
+      preloadedImageRef.current = bootcampImage;
+      setImageLoaded(true);
+    }
+  }, [settings?.bannerImage, settings?.isEnabled]);
+
   useEffect(() => {
     if (!isMounted || isLoading) return;
     if (!settings?.isEnabled) return;
+    if (!imageLoaded) return;
 
     const sessionKey = "popup_shown";
     if (settings.showOnce && sessionStorage.getItem(sessionKey)) {
@@ -43,13 +77,12 @@ export function BootcampModal() {
     if (settings.showOnce) {
       sessionStorage.setItem(sessionKey, "true");
     }
-  }, [settings, isMounted, isLoading]);
+  }, [settings, isMounted, isLoading, imageLoaded]);
 
   const handleClose = () => {
     setIsOpen(false);
   };
 
-  const imageToShow = bootcampImage;
   const buttonText = settings?.buttonText || "Register Now";
   const buttonLink = settings?.buttonLink || "/register";
 
@@ -62,7 +95,7 @@ export function BootcampModal() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
           className="fixed inset-0 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
           style={{ 
             zIndex: 99999,
@@ -77,10 +110,10 @@ export function BootcampModal() {
           data-testid="bootcamp-modal-overlay"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className="relative w-full max-w-[92vw] sm:max-w-md md:max-w-lg flex flex-col items-center"
             style={{ maxHeight: '88vh' }}
             onClick={(e) => e.stopPropagation()}
@@ -98,7 +131,7 @@ export function BootcampModal() {
 
             <div className="rounded-lg sm:rounded-xl overflow-hidden shadow-2xl w-full">
               <img 
-                src={imageToShow} 
+                src={finalImageUrl} 
                 alt={settings?.title || "Startup Boot Camp"}
                 className="w-full h-auto object-contain"
                 style={{ maxHeight: 'calc(82vh - 70px)' }}
