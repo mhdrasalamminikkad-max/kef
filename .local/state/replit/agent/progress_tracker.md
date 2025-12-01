@@ -121,3 +121,7 @@
 [x] 121. Email notifications configured to send to keralaeconomicforum@gmail.com
 [x] 122. Bootcamp registrations, membership applications, and contact forms all send emails
 [x] 123. Gmail API connected via Replit integrations (secure OAuth)
+[x] 124. Updated email.ts to support both Gmail (Replit) and Resend (Railway)
+[x] 125. Email system now works in both environments automatically
+[x] 126. Replit uses Gmail connector, Railway uses Resend API
+[x] 127. User needs to add RESEND_API_KEY in Railway for emails to work there

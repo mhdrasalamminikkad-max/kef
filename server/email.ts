@@ -1,10 +1,19 @@
-// Gmail Integration for sending notification emails
+// Email Integration - Gmail for Replit, Resend for Railway
 import { google } from 'googleapis';
+import { Resend } from 'resend';
 
-// HARDCODED: All registration emails will be sent to this address
+// All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaeconomicforum@gmail.com';
 
+// Resend client for Railway deployment
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
 let connectionSettings: any;
+
+// Check if we're in Replit environment
+function isReplitEnvironment(): boolean {
+  return !!(process.env.REPLIT_CONNECTORS_HOSTNAME && (process.env.REPL_IDENTITY || process.env.WEB_REPL_RENEWAL));
+}
 
 async function getAccessToken() {
   if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
@@ -65,6 +74,63 @@ function createEmail(to: string, subject: string, htmlBody: string): string {
   return Buffer.from(email).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
+// Send email via Gmail (Replit)
+async function sendViaGmail(to: string, subject: string, htmlBody: string) {
+  const gmail = await getGmailClient();
+  const rawEmail = createEmail(to, subject, htmlBody);
+  
+  const result = await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: rawEmail
+    }
+  });
+  
+  console.log('Email sent successfully via Gmail:', result.data);
+  return { success: true, result: result.data };
+}
+
+// Send email via Resend (Railway)
+async function sendViaResend(to: string, subject: string, htmlBody: string) {
+  if (!resend) {
+    throw new Error('Resend API key not configured');
+  }
+  
+  const result = await resend.emails.send({
+    from: 'Kerala Economic Forum <noreply@keralaeconomicforum.com>',
+    to: to,
+    subject: subject,
+    html: htmlBody
+  });
+  
+  console.log('Email sent successfully via Resend:', result);
+  return { success: true, result };
+}
+
+// Universal email sender - tries Gmail first, then Resend
+async function sendEmail(to: string, subject: string, htmlBody: string) {
+  // Try Gmail first if in Replit environment
+  if (isReplitEnvironment()) {
+    try {
+      return await sendViaGmail(to, subject, htmlBody);
+    } catch (gmailError) {
+      console.log('Gmail failed, trying Resend...', gmailError);
+    }
+  }
+  
+  // Try Resend (for Railway or if Gmail fails)
+  if (resend) {
+    try {
+      return await sendViaResend(to, subject, htmlBody);
+    } catch (resendError) {
+      console.error('Resend also failed:', resendError);
+      throw resendError;
+    }
+  }
+  
+  throw new Error('No email provider available');
+}
+
 export async function sendBootcampRegistrationEmail(registration: {
   fullName: string;
   email: string;
@@ -78,8 +144,6 @@ export async function sendBootcampRegistrationEmail(registration: {
   createdAt: Date;
 }) {
   try {
-    const gmail = await getGmailClient();
-    
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #dc2626, #f59e0b); padding: 20px; border-radius: 10px 10px 0 0;">
@@ -143,23 +207,13 @@ export async function sendBootcampRegistrationEmail(registration: {
       </div>
     `;
 
-    const rawEmail = createEmail(
+    return await sendEmail(
       ADMIN_EMAIL,
       `New Bootcamp Registration: ${registration.fullName}`,
       emailHtml
     );
-
-    const result = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: {
-        raw: rawEmail
-      }
-    });
-
-    console.log('Email sent successfully via Gmail:', result.data);
-    return { success: true, result: result.data };
   } catch (error) {
-    console.error('Failed to send email via Gmail:', error);
+    console.error('Failed to send bootcamp registration email:', error);
     return { success: false, error };
   }
 }
@@ -175,8 +229,6 @@ export async function sendMembershipApplicationEmail(application: {
   createdAt: Date;
 }) {
   try {
-    const gmail = await getGmailClient();
-    
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #dc2626, #f59e0b); padding: 20px; border-radius: 10px 10px 0 0;">
@@ -234,23 +286,13 @@ export async function sendMembershipApplicationEmail(application: {
       </div>
     `;
 
-    const rawEmail = createEmail(
+    return await sendEmail(
       ADMIN_EMAIL,
       `New Membership Application: ${application.fullName}`,
       emailHtml
     );
-
-    const result = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: {
-        raw: rawEmail
-      }
-    });
-
-    console.log('Email sent successfully via Gmail:', result.data);
-    return { success: true, result: result.data };
   } catch (error) {
-    console.error('Failed to send email via Gmail:', error);
+    console.error('Failed to send membership application email:', error);
     return { success: false, error };
   }
 }
@@ -264,8 +306,6 @@ export async function sendContactFormEmail(contact: {
   createdAt: Date;
 }) {
   try {
-    const gmail = await getGmailClient();
-    
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="background: linear-gradient(135deg, #dc2626, #f59e0b); padding: 20px; border-radius: 10px 10px 0 0;">
@@ -314,23 +354,13 @@ export async function sendContactFormEmail(contact: {
       </div>
     `;
 
-    const rawEmail = createEmail(
+    return await sendEmail(
       ADMIN_EMAIL,
       `Contact Form: ${contact.subject}`,
       emailHtml
     );
-
-    const result = await gmail.users.messages.send({
-      userId: 'me',
-      requestBody: {
-        raw: rawEmail
-      }
-    });
-
-    console.log('Email sent successfully via Gmail:', result.data);
-    return { success: true, result: result.data };
   } catch (error) {
-    console.error('Failed to send email via Gmail:', error);
+    console.error('Failed to send contact form email:', error);
     return { success: false, error };
   }
 }
