@@ -125,11 +125,11 @@ export class MemStorage implements IStorage {
 
   private async initDefaultPrograms() {
     const defaultPrograms = [
-      { title: "Startup Boot Camp", description: "Residential camps with workshops, business model creation, and pitching sessions.", icon: "Rocket", gradient: "orange" as const },
-      { title: "Business Conclaves", description: "Large-scale gatherings connecting founders, investors, and thought leaders.", icon: "Building2", gradient: "blue" as const },
-      { title: "Founder Circle", description: "Exclusive networking dinners for honest entrepreneur conversations.", icon: "Users", gradient: "purple" as const },
-      { title: "Advisory Clinics", description: "One-on-one mentoring in finance, branding, legal, and marketing.", icon: "Briefcase", gradient: "teal" as const },
-      { title: "Campus Labs", description: "Innovation cells and student incubators in colleges across Kerala.", icon: "GraduationCap", gradient: "blue" as const },
+      { title: "Startup Boot Camp", description: "Residential camps with workshops, business model creation, and pitching sessions.", icon: "Rocket", gradient: "orange" as const, programStatus: "live" as const },
+      { title: "Business Conclaves", description: "Large-scale gatherings connecting founders, investors, and thought leaders.", icon: "Building2", gradient: "blue" as const, programStatus: "upcoming" as const },
+      { title: "Founder Circle", description: "Exclusive networking dinners for honest entrepreneur conversations.", icon: "Users", gradient: "purple" as const, programStatus: "upcoming" as const },
+      { title: "Advisory Clinics", description: "One-on-one mentoring in finance, branding, legal, and marketing.", icon: "Briefcase", gradient: "teal" as const, programStatus: "upcoming" as const },
+      { title: "Campus Labs", description: "Innovation cells and student incubators in colleges across Kerala.", icon: "GraduationCap", gradient: "blue" as const, programStatus: "upcoming" as const },
     ];
 
     for (let i = 0; i < defaultPrograms.length; i++) {
@@ -361,6 +361,7 @@ export class MemStorage implements IStorage {
       gradient: insertProgram.gradient ?? "purple",
       bannerImage: insertProgram.bannerImage ?? null,
       isActive: insertProgram.isActive ?? true,
+      programStatus: insertProgram.programStatus ?? "upcoming",
       order: insertProgram.order ?? "0",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -455,6 +456,7 @@ export class MemStorage implements IStorage {
 export class DatabaseStorage implements IStorage {
   constructor() {
     this.initDefaultAdmin();
+    this.initDefaultPrograms();
   }
 
   private async initDefaultAdmin() {
@@ -483,6 +485,7 @@ export class DatabaseStorage implements IStorage {
             icon: "Rocket", 
             gradient: "orange" as const,
             isActive: true,
+            programStatus: "live" as const,
             order: "0"
           },
           { 
@@ -491,6 +494,7 @@ export class DatabaseStorage implements IStorage {
             icon: "Building2", 
             gradient: "blue" as const,
             isActive: true,
+            programStatus: "upcoming" as const,
             order: "1"
           },
           { 
@@ -499,6 +503,7 @@ export class DatabaseStorage implements IStorage {
             icon: "Users", 
             gradient: "purple" as const,
             isActive: true,
+            programStatus: "upcoming" as const,
             order: "2"
           },
           { 
@@ -507,6 +512,7 @@ export class DatabaseStorage implements IStorage {
             icon: "Briefcase", 
             gradient: "teal" as const,
             isActive: true,
+            programStatus: "upcoming" as const,
             order: "3"
           },
           { 
@@ -515,6 +521,7 @@ export class DatabaseStorage implements IStorage {
             icon: "Lightbulb", 
             gradient: "blue" as const,
             isActive: true,
+            programStatus: "upcoming" as const,
             order: "4"
           },
           { 
@@ -523,6 +530,7 @@ export class DatabaseStorage implements IStorage {
             icon: "GraduationCap", 
             gradient: "orange" as const,
             isActive: true,
+            programStatus: "upcoming" as const,
             order: "5"
           },
         ];
