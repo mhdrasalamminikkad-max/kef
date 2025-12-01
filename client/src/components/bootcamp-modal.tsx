@@ -66,20 +66,12 @@ export function BootcampModal() {
   }, [settings?.bannerImage, settings?.isEnabled]);
 
   useEffect(() => {
-    if (!isMounted || isLoading) return;
-    if (!settings?.isEnabled) return;
+    if (!isMounted) return;
     if (!imageLoaded) return;
 
-    const sessionKey = "popup_shown";
-    if (settings.showOnce && sessionStorage.getItem(sessionKey)) {
-      return;
-    }
-
+    // Always show the popup on page load
     setIsOpen(true);
-    if (settings.showOnce) {
-      sessionStorage.setItem(sessionKey, "true");
-    }
-  }, [settings, isMounted, isLoading, imageLoaded]);
+  }, [isMounted, imageLoaded]);
 
   useEffect(() => {
     if (shouldShowModal && settings?.isEnabled && imageLoaded) {
