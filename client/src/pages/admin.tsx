@@ -58,6 +58,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { ImageUpload } from "@/components/ui/image-upload";
 import {
   Select,
   SelectContent,
@@ -1181,35 +1182,13 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="popup-banner-image">Banner Image URL</Label>
-                      <Input
-                        id="popup-banner-image"
-                        value={popupForm.bannerImage}
-                        onChange={(e) => setPopupForm({ ...popupForm, bannerImage: e.target.value })}
-                        placeholder="https://example.com/banner.png or /assets/image.png"
-                        data-testid="input-popup-banner-image"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Enter the URL of the banner image to display in the popup
-                      </p>
-                    </div>
-
-                    {popupForm.bannerImage && (
-                      <div className="space-y-2">
-                        <Label>Preview</Label>
-                        <div className="rounded-lg overflow-hidden border border-border max-w-md">
-                          <img 
-                            src={popupForm.bannerImage} 
-                            alt="Banner Preview" 
-                            className="w-full h-auto object-contain bg-muted"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <ImageUpload
+                      value={popupForm.bannerImage}
+                      onChange={(url) => setPopupForm({ ...popupForm, bannerImage: url })}
+                      label="Banner Image"
+                      placeholder="Upload or enter image URL"
+                      data-testid="input-popup-banner-image"
+                    />
 
                     <div className="flex items-center justify-between rounded-lg border p-4">
                       <div className="space-y-0.5">
