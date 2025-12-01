@@ -1435,7 +1435,7 @@ export default function AdminDashboard() {
           resetProgramForm();
         }
       }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>{programDialog.mode === "add" ? "Add New Program" : "Edit Program"}</DialogTitle>
             <DialogDescription>
@@ -1444,7 +1444,7 @@ export default function AdminDashboard() {
                 : "Update the program details"}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4 overflow-y-auto flex-1 pr-2">
             <div className="grid gap-2">
               <Label htmlFor="title">Title</Label>
               <Input
@@ -1574,7 +1574,7 @@ export default function AdminDashboard() {
           resetPartnerForm();
         }
       }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>{partnerDialog.mode === "add" ? "Add New Partner" : "Edit Partner"}</DialogTitle>
             <DialogDescription>
@@ -1583,7 +1583,7 @@ export default function AdminDashboard() {
                 : "Update the partner details"}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4 overflow-y-auto flex-1 pr-2">
             <div className="grid gap-2">
               <Label htmlFor="partnerName">Name</Label>
               <Input
