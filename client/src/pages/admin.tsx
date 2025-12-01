@@ -695,6 +695,7 @@ export default function AdminDashboard() {
                           <TableHead>Email</TableHead>
                           <TableHead>Phone</TableHead>
                           <TableHead>Age</TableHead>
+                          <TableHead>Source</TableHead>
                           <TableHead>Date</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Actions</TableHead>
@@ -707,6 +708,7 @@ export default function AdminDashboard() {
                             <TableCell>{registration.email}</TableCell>
                             <TableCell>{registration.phone}</TableCell>
                             <TableCell>{registration.age}</TableCell>
+                            <TableCell className="capitalize">{registration.source || "-"}</TableCell>
                             <TableCell>
                               {format(new Date(registration.createdAt), "MMM d, yyyy")}
                             </TableCell>
@@ -1269,6 +1271,10 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Experience</p>
                   <p className="text-base" data-testid="text-detail-experience">{selectedBootcamp.experience || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Source</p>
+                  <p className="text-base capitalize" data-testid="text-detail-source">{selectedBootcamp.source || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Status</p>
