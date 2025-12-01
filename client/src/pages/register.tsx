@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import qrCodeImage from "@assets/qrm_1764493231811.png";
+import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.PNG";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 
@@ -1016,7 +1017,7 @@ export default function Register() {
                   <p className="text-sm font-semibold text-foreground mb-4">Or Scan QR Code</p>
                   <div className="bg-white p-4 rounded-lg border-4 border-yellow-400 shadow-lg">
                     <img 
-                      src={qrCodeImage}
+                      src={newQrCodeImage}
                       alt="UPI Payment QR Code" 
                       className="w-40 h-40 object-contain"
                       data-testid="img-qr-code"
