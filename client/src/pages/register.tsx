@@ -26,6 +26,22 @@ import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.png";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 
+const UPI_PAYMENT_URL = "upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph%20World%20Foundation&am=4999&tn=Startup%20Boot%20Camp%20Registration&cu=INR";
+
+const handleUPIPayment = (e: React.MouseEvent) => {
+  e.preventDefault();
+  
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(userAgent);
+  const isAndroid = /android/.test(userAgent);
+  
+  if (isIOS || isAndroid) {
+    window.location.href = UPI_PAYMENT_URL;
+  } else {
+    window.open(UPI_PAYMENT_URL, '_blank');
+  }
+};
+
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -295,19 +311,16 @@ export default function Register() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center pt-0">
-                <a 
-                  href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=4999&tn=Event+Entry&cu=INR"
-                  className="w-full max-w-md"
-                  data-testid="link-upi-payment-success"
-                >
+                <div className="w-full max-w-md">
                   <Button 
+                    onClick={handleUPIPayment}
                     className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-6 text-base shadow-lg shadow-green-500/30 rounded-xl"
                     data-testid="button-upi-payment-success"
                   >
                     <Wallet className="w-5 h-5 mr-3" />
                     <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹4999</span> Pay Now
                   </Button>
-                </a>
+                </div>
                 <p className="text-sm text-muted-foreground mt-4 mb-6">
                   Opens Google Pay, PhonePe, Paytm or any UPI app
                 </p>
@@ -1183,10 +1196,8 @@ export default function Register() {
               </motion.div>
             </CardHeader>
             <CardContent className="flex flex-col items-center text-center">
-              <motion.a 
-                href="upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph+World+Foundation&am=4999&tn=Event+Entry&cu=INR"
+              <motion.div 
                 className="w-full max-w-md"
-                data-testid="link-upi-payment"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.4 }}
@@ -1205,6 +1216,7 @@ export default function Register() {
                   className="rounded-xl"
                 >
                   <Button 
+                    onClick={handleUPIPayment}
                     className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-6 text-base md:text-lg rounded-xl"
                     data-testid="button-upi-payment"
                   >
@@ -1217,7 +1229,7 @@ export default function Register() {
                     <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹4999</span> Pay Now
                   </Button>
                 </motion.div>
-              </motion.a>
+              </motion.div>
               <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-6" data-testid="text-upi-description">
                 Opens Google Pay, PhonePe, Paytm or any UPI app
               </p>

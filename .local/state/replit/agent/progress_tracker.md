@@ -161,3 +161,6 @@
 [x] 161. Changed floating icon from Gift/Ticket to Mail/MailOpen (invitation letter style)
 [x] 162. Updated phone number in invitation page from XXXXXXXXXX to 9072344431
 [x] 163. Made photo upload required in registration form (schema validation updated)
+[x] 164. Fixed UPI payment button - now properly triggers device payment app chooser
+[x] 165. Added handleUPIPayment function with proper URL encoding for cross-platform support
+[x] 166. Works on both iPhone and Android - opens installed UPI apps (GPay, PhonePe, Paytm, etc.)
