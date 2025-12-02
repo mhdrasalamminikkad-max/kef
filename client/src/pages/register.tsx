@@ -26,19 +26,43 @@ import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.png";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 
-const UPI_PAYMENT_URL = "upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Caliph%20World%20Foundation&am=4999&tn=Startup%20Boot%20Camp%20Registration&cu=INR";
+const UPI_ID = "caliphworldfoundation.9605399676.ibz@icici";
+const UPI_NAME = "Caliph World Foundation";
+const UPI_AMOUNT = "4999";
+const UPI_NOTE = "Startup Boot Camp Registration";
 
-const handleUPIPayment = (e: React.MouseEvent) => {
+const UPI_APPS = [
+  { name: "Google Pay", scheme: "tez://upi/pay", icon: "GPay", color: "from-blue-500 to-blue-600" },
+  { name: "PhonePe", scheme: "phonepe://pay", icon: "PhonePe", color: "from-purple-500 to-purple-600" },
+  { name: "Paytm", scheme: "paytmmp://pay", icon: "Paytm", color: "from-sky-400 to-sky-500" },
+  { name: "BHIM", scheme: "bhim://upi/pay", icon: "BHIM", color: "from-green-600 to-green-700" },
+  { name: "Amazon Pay", scheme: "amazonpay://pay", icon: "Amazon", color: "from-orange-500 to-orange-600" },
+];
+
+const buildUPIUrl = (scheme: string) => {
+  const params = new URLSearchParams({
+    pa: UPI_ID,
+    pn: UPI_NAME,
+    am: UPI_AMOUNT,
+    tn: UPI_NOTE,
+    cu: "INR"
+  });
+  return `${scheme}?${params.toString()}`;
+};
+
+const handleUPIPayment = (e: React.MouseEvent, appScheme?: string) => {
   e.preventDefault();
   
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
-  const isAndroid = /android/.test(userAgent);
   
-  if (isIOS || isAndroid) {
-    window.location.href = UPI_PAYMENT_URL;
+  if (appScheme) {
+    window.location.href = buildUPIUrl(appScheme);
+  } else if (isIOS) {
+    return;
   } else {
-    window.open(UPI_PAYMENT_URL, '_blank');
+    const genericUrl = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${UPI_AMOUNT}&tn=${encodeURIComponent(UPI_NOTE)}&cu=INR`;
+    window.location.href = genericUrl;
   }
 };
 
@@ -312,17 +336,27 @@ export default function Register() {
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center pt-0">
                 <div className="w-full max-w-md">
-                  <Button 
-                    onClick={handleUPIPayment}
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-6 text-base shadow-lg shadow-green-500/30 rounded-xl"
-                    data-testid="button-upi-payment-success"
-                  >
-                    <Wallet className="w-5 h-5 mr-3" />
-                    <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹4999</span> Pay Now
-                  </Button>
+                  <p className="text-lg font-bold text-foreground mb-3">
+                    <span className="line-through opacity-50 text-muted-foreground">₹7999</span> <span className="text-green-600">₹4999</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Choose your payment app:
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {UPI_APPS.map((app) => (
+                      <Button 
+                        key={app.name}
+                        onClick={(e) => handleUPIPayment(e, app.scheme)}
+                        className={`w-full bg-gradient-to-r ${app.color} text-white font-semibold py-5 text-sm shadow-md rounded-xl`}
+                        data-testid={`button-upi-${app.name.toLowerCase().replace(' ', '-')}`}
+                      >
+                        {app.icon}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-4 mb-6">
-                  Opens Google Pay, PhonePe, Paytm or any UPI app
+                <p className="text-xs text-muted-foreground mt-4 mb-6">
+                  Tap on your preferred UPI app to pay
                 </p>
 
                 {/* Manual Payment Details */}
@@ -1201,37 +1235,37 @@ export default function Register() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.4 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
               >
-                <motion.div
-                  animate={{
-                    boxShadow: [
-                      "0 10px 30px rgba(34, 197, 94, 0.3)",
-                      "0 15px 40px rgba(34, 197, 94, 0.5)",
-                      "0 10px 30px rgba(34, 197, 94, 0.3)"
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="rounded-xl"
-                >
-                  <Button 
-                    onClick={handleUPIPayment}
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-6 text-base md:text-lg rounded-xl"
-                    data-testid="button-upi-payment"
-                  >
+                <p className="text-xl font-bold text-foreground mb-2">
+                  <span className="line-through opacity-50 text-muted-foreground">₹7999</span> <span className="text-green-600">₹4999</span>
+                </p>
+                <p className="text-sm text-muted-foreground mb-5">
+                  Choose your payment app:
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {UPI_APPS.map((app, index) => (
                     <motion.div
-                      animate={{ x: [-2, 2, -2] }}
-                      transition={{ duration: 0.5, repeat: Infinity }}
+                      key={app.name}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.0 + (index * 0.1), duration: 0.3 }}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
                     >
-                      <Wallet className="w-5 h-5 mr-3" />
+                      <Button 
+                        onClick={(e) => handleUPIPayment(e, app.scheme)}
+                        className={`w-full bg-gradient-to-r ${app.color} text-white font-semibold py-5 text-sm shadow-lg rounded-xl`}
+                        data-testid={`button-upi-${app.name.toLowerCase().replace(' ', '-')}`}
+                      >
+                        <Wallet className="w-4 h-4 mr-2" />
+                        {app.icon}
+                      </Button>
                     </motion.div>
-                    <span className="line-through opacity-75">₹7999</span> Only <span className="font-bold">₹4999</span> Pay Now
-                  </Button>
-                </motion.div>
+                  ))}
+                </div>
               </motion.div>
-              <p className="text-xs md:text-sm text-muted-foreground mt-4 mb-6" data-testid="text-upi-description">
-                Opens Google Pay, PhonePe, Paytm or any UPI app
+              <p className="text-xs md:text-sm text-muted-foreground mt-5 mb-6" data-testid="text-upi-description">
+                Tap on your preferred UPI app to pay
               </p>
 
               {/* Manual Payment Details */}

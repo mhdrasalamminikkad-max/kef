@@ -170,3 +170,9 @@
 [x] 170. Screenshot verified - Startup Boot Camp popup displaying correctly
 [x] 171. All features working (navigation, API endpoints, database connection)
 [x] 172. FINAL IMPORT COMPLETED ✓✓✓✓ - PROJECT READY FOR DEVELOPMENT
+[x] 173. Fixed iOS UPI payment - was opening WhatsApp instead of payment apps
+[x] 174. Replaced single generic upi:// button with individual app buttons
+[x] 175. Added 5 UPI app options: Google Pay, PhonePe, Paytm, BHIM, Amazon Pay
+[x] 176. Each button uses app-specific deep link scheme (tez://, phonepe://, etc.)
+[x] 177. iOS now correctly opens the selected payment app directly
+[x] 178. Payment buttons show in a nice 2-column grid layout with colors
