@@ -370,15 +370,6 @@ export async function registerRoutes(
              .text(reg.expectations || 'N/A', { width: 500 });
           doc.moveDown(0.5);
           
-          // Media Links
-          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
-             .text('Uploaded Files');
-          doc.moveDown(0.3);
-          
-          addField('Photo', reg.photo ? `${req.protocol}://${req.get('host')}${reg.photo}` : 'Not uploaded');
-          addField('Payment Proof', reg.paymentProof ? `${req.protocol}://${req.get('host')}${reg.paymentProof}` : 'Not uploaded');
-          doc.moveDown(0.3);
-          
           // Registration Date
           doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
              .text('Registered On: ', { continued: true });
