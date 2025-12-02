@@ -131,7 +131,7 @@ export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).om
   paymentProof: z.string().min(1, "Payment proof is required"),
   place: z.string().optional(),
   address: z.string().optional(),
-  photo: z.string().optional(),
+  photo: z.string().min(1, "Photo is required"),
 });
 
 export type InsertBootcamp = z.infer<typeof insertBootcampSchema>;

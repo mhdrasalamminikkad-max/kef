@@ -236,7 +236,7 @@ export default function Invitation() {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Phone className="w-4 h-4" />
-                    <span>+91 XXXXXXXXXX</span>
+                    <span>+91 9072344431</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />

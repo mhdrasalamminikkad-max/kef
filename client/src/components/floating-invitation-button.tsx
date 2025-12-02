@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gift, Sparkles, Ticket } from "lucide-react";
+import { Mail, MailOpen, Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
 import { useState, useEffect } from "react";
@@ -97,9 +97,9 @@ export function FloatingInvitationButton() {
                 }}
               >
                 {hasInvitation ? (
-                  <Ticket className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                  <MailOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 ) : (
-                  <Gift className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                  <Mail className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 )}
               </motion.div>
               

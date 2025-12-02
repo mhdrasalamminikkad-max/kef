@@ -158,3 +158,6 @@
 [x] 158. All 6 programs loading successfully from database
 [x] 159. DATABASE CONNECTED - All data persisted and accessible
 [x] 160. PROJECT IMPORT FULLY COMPLETED ✓✓✓ - READY FOR DEVELOPMENT
+[x] 161. Changed floating icon from Gift/Ticket to Mail/MailOpen (invitation letter style)
+[x] 162. Updated phone number in invitation page from XXXXXXXXXX to 9072344431
+[x] 163. Made photo upload required in registration form (schema validation updated)
