@@ -45,27 +45,27 @@ const iconMap: Record<string, LucideIcon> = {
 const fallbackPrograms = [
   {
     title: "Startup Boot Camp",
-    description: "Residential camps with workshops, business model creation, and pitching sessions.",
+    shortDesc: "3-day entrepreneurship experience",
     icon: "Rocket",
   },
   {
     title: "Business Conclaves",
-    description: "Large-scale gatherings connecting founders, investors, and thought leaders.",
+    shortDesc: "Connect with industry leaders",
     icon: "Building2",
   },
   {
     title: "Founder Circle",
-    description: "Exclusive networking dinners for honest entrepreneur conversations.",
+    shortDesc: "Exclusive networking meets",
     icon: "Users",
   },
   {
     title: "Advisory Clinics",
-    description: "One-on-one mentoring in finance, branding, legal, and marketing.",
+    shortDesc: "Expert mentoring sessions",
     icon: "Briefcase",
   },
   {
     title: "Campus Labs",
-    description: "Innovation cells and student incubators in colleges across Kerala.",
+    shortDesc: "Student innovation hubs",
     icon: "GraduationCap",
   },
 ];
@@ -150,10 +150,24 @@ export default function Home() {
     queryKey: ["/api/programs"],
   });
   
+  // Create short descriptions for programs (first 30 chars or use a simple tagline)
+  const getShortDesc = (title: string, desc: string | null) => {
+    const shortDescMap: Record<string, string> = {
+      "Startup Boot Camp": "3-day entrepreneurship experience",
+      "Business Conclaves": "Connect with industry leaders",
+      "Founder Circles": "Exclusive networking meets",
+      "Advisory Clinics": "Expert mentoring sessions",
+      "Campus Innovation Labs": "Student innovation hubs",
+      "KEF Student Entrepreneurs Forum": "Young entrepreneur community",
+      "Kerala Startup Fest": "Grand startup celebration",
+    };
+    return shortDescMap[title] || (desc ? desc.slice(0, 35) + "..." : "Explore more");
+  };
+
   const signaturePrograms = programsQuery.data?.length 
     ? programsQuery.data.map(p => ({
         title: p.title,
-        description: p.description,
+        shortDesc: getShortDesc(p.title, p.description),
         icon: p.icon,
       }))
     : fallbackPrograms;
@@ -354,15 +368,15 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* SIGNATURE PROGRAMS - Mobile Carousel Style */}
+      {/* SIGNATURE PROGRAMS - Compact Cards */}
       <Section className="mobile-section">
         <SectionHeader
           title="Our Signature Programs"
         />
         
-        {/* Mobile horizontal scroll */}
+        {/* Mobile horizontal scroll - Compact */}
         <div className="md:hidden">
-          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+          <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
             {signaturePrograms.map((program, index) => {
               const IconComponent = iconMap[program.icon] || Rocket;
               return (
@@ -372,22 +386,22 @@ export default function Home() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="flex-shrink-0 w-[280px] snap-center"
+                  className="flex-shrink-0 w-[180px] snap-center"
                 >
                   <Card className="h-full mobile-card-shadow">
-                    <CardContent className="p-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${
+                    <CardContent className="p-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${
                         index % 3 === 0 ? 'bg-red-500' :
                         index % 3 === 1 ? 'bg-yellow-400' :
                         'bg-cyan-500'
                       }`}>
-                        <IconComponent className={`w-6 h-6 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
+                        <IconComponent className={`w-4 h-4 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
                       </div>
-                      <h3 className="font-semibold text-foreground text-base mb-2" data-testid={`text-program-title-${index}`}>
+                      <h3 className="font-semibold text-foreground text-sm mb-1" data-testid={`text-program-title-${index}`}>
                         {program.title}
                       </h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed" data-testid={`text-program-desc-${index}`}>
-                        {program.description}
+                      <p className="text-xs text-muted-foreground" data-testid={`text-program-desc-${index}`}>
+                        {program.shortDesc}
                       </p>
                     </CardContent>
                   </Card>
@@ -397,8 +411,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Desktop Grid */}
-        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Desktop Grid - Compact */}
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
           {signaturePrograms.map((program, index) => {
             const IconComponent = iconMap[program.icon] || Rocket;
             return (
@@ -407,22 +421,22 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
               >
                 <Card className="h-full hover-elevate overflow-visible">
-                  <CardContent className="p-6">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                  <CardContent className="p-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
                       index % 3 === 0 ? 'bg-red-500' :
                       index % 3 === 1 ? 'bg-yellow-400' :
                       'bg-cyan-500'
                     }`}>
-                      <IconComponent className={`w-6 h-6 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
+                      <IconComponent className={`w-5 h-5 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
                     </div>
-                    <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-program-title-${index}`}>
+                    <h3 className="font-semibold text-sm text-foreground mb-1" data-testid={`text-program-title-${index}`}>
                       {program.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground" data-testid={`text-program-desc-${index}`}>
-                      {program.description}
+                    <p className="text-xs text-muted-foreground" data-testid={`text-program-desc-${index}`}>
+                      {program.shortDesc}
                     </p>
                   </CardContent>
                 </Card>
