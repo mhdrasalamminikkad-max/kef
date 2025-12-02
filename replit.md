@@ -69,7 +69,7 @@ Preferred communication style: Simple, everyday language.
   - `contact_submissions` - Contact form submissions
   - `membership_applications` - Membership applications with status tracking
   - `bootcamp_registrations` - Startup Boot Camp registration data
-  - `programs` - Dynamic programs management (title, description, icon, gradient, banner image, features, active status)
+  - `programs` - Dynamic programs management (title, description, icon, gradient, banner image, features, active status, eventDate, venue, feeLabel, feeAmount, earlyBirdOffer)
   - `partners` - Partner organizations (name, logo, website, priority order, active status)
 - Zod schemas derived from Drizzle tables for runtime validation
 - Migration system configured via `drizzle-kit` (migrations output to `/migrations/`)
@@ -81,6 +81,9 @@ Preferred communication style: Simple, everyday language.
 - Added banner image support for programs (displays as hero background on detail page)
 - Added features field to programs (comma-separated list displayed as badges)
 - Programs fetched dynamically from database via API
+- Added new program metadata fields: eventDate, venue, feeLabel, feeAmount, earlyBirdOffer
+- Admin panel updated with form inputs for editing program event details
+- Programs display page shows date, venue, and fee information prominently when available
 
 ### Partner Management
 - Added complete partner management infrastructure
