@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -16,12 +15,7 @@ import {
   LucideIcon,
   Play,
   Clock,
-  History,
-  Calendar,
-  MapPin,
-  Tag,
-  Percent,
-  ChevronDown
+  History
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
@@ -77,14 +71,10 @@ const statusConfig = {
 
 function ProgramCard({ 
   program, 
-  index,
-  isExpanded,
-  onToggle
+  index
 }: { 
   program: Program; 
   index: number;
-  isExpanded: boolean;
-  onToggle: () => void;
 }) {
   const IconComponent = iconMap[program.icon] || Rocket;
   const iconBgClass = gradientBgMap[program.gradient] || gradientBgMap.purple;
@@ -99,116 +89,35 @@ function ProgramCard({
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="w-full"
     >
-      <Card 
-        className="overflow-visible"
-        data-testid={`card-program-${program.id}`}
-      >
-        <CardContent className="p-0">
-          <button
-            onClick={onToggle}
-            className="w-full p-4 flex items-center gap-4 hover-elevate active-elevate-2 cursor-pointer text-left rounded-md"
-            data-testid={`button-program-toggle-${program.id}`}
-          >
-            <div className={`w-10 h-10 ${iconBgClass} rotate-45 flex-shrink-0 flex items-center justify-center`}>
-              <IconComponent className={`w-5 h-5 -rotate-45 ${program.gradient === 'orange' ? 'text-black' : 'text-white'}`} />
+      <Link href={`/programs/${program.id}`}>
+        <Card 
+          className="overflow-visible cursor-pointer hover-elevate active-elevate-2"
+          data-testid={`card-program-${program.id}`}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-4">
+              <div className={`w-10 h-10 ${iconBgClass} rotate-45 flex-shrink-0 flex items-center justify-center`}>
+                <IconComponent className={`w-5 h-5 -rotate-45 ${program.gradient === 'orange' ? 'text-black' : 'text-white'}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-semibold text-foreground">
+                  {program.title}
+                </h3>
+              </div>
+              <Badge className={`${status.bgClass} ${status.textClass} border-0 flex-shrink-0`}>
+                <StatusIcon className="w-3 h-3 mr-1" />
+                {status.label}
+              </Badge>
+              <ArrowRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-foreground">
-                {program.title}
-              </h3>
-            </div>
-            <Badge className={`${status.bgClass} ${status.textClass} border-0 flex-shrink-0`}>
-              <StatusIcon className="w-3 h-3 mr-1" />
-              {status.label}
-            </Badge>
-            <ChevronDown 
-              className={`w-5 h-5 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`} 
-            />
-          </button>
-          
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="px-4 pb-4 pt-2 border-t border-border/50">
-                  <p className="text-sm text-muted-foreground mb-4 whitespace-pre-line">
-                    {program.description}
-                  </p>
-                  
-                  {(program.eventDate || program.venue) && (
-                    <div className="space-y-2 mb-4">
-                      {program.eventDate && (
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-red-500 flex-shrink-0" />
-                          <span className="text-sm font-medium text-foreground" data-testid={`text-program-date-${program.id}`}>
-                            {program.eventDate}
-                          </span>
-                        </div>
-                      )}
-                      {program.venue && (
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
-                          <span className="text-sm font-medium text-foreground" data-testid={`text-program-venue-${program.id}`}>
-                            {program.venue}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {(program.feeLabel || program.feeAmount) && (
-                    <div className="flex items-center gap-2 mb-4">
-                      <Tag className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm font-medium text-foreground" data-testid={`text-program-fee-${program.id}`}>
-                        {program.feeLabel || "Fee"}: Rs {program.feeAmount}/-
-                      </span>
-                    </div>
-                  )}
-
-                  {program.earlyBirdOffer && (
-                    <div className="mb-4">
-                      <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-0" data-testid={`badge-program-early-bird-${program.id}`}>
-                        <Percent className="w-3 h-3 mr-1" />
-                        {program.earlyBirdOffer}
-                      </Badge>
-                    </div>
-                  )}
-
-                  {program.bannerImage && (
-                    <div className="mb-4">
-                      <img 
-                        src={program.bannerImage} 
-                        alt={`${program.title} banner`}
-                        className="w-full h-auto rounded-md object-cover"
-                        data-testid={`img-program-banner-${program.id}`}
-                      />
-                    </div>
-                  )}
-
-                  <Link href={`/programs/${program.id}`}>
-                    <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
-                      View Details
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Link>
     </motion.div>
   );
 }
 
 export default function Programs() {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  
   const { data: programsList, isLoading } = useQuery<Program[]>({
     queryKey: ["/api/programs"],
   });
@@ -216,10 +125,6 @@ export default function Programs() {
   const livePrograms = programsList?.filter(p => p.programStatus === 'live') || [];
   const upcomingPrograms = programsList?.filter(p => p.programStatus === 'upcoming') || [];
   const pastPrograms = programsList?.filter(p => p.programStatus === 'past') || [];
-
-  const handleToggle = (programId: string) => {
-    setExpandedId(prev => prev === programId ? null : programId);
-  };
 
   return (
     <>
@@ -286,8 +191,6 @@ export default function Programs() {
                     key={program.id}
                     program={program}
                     index={index}
-                    isExpanded={expandedId === program.id}
-                    onToggle={() => handleToggle(program.id)}
                   />
                 ))}
               </div>
@@ -307,8 +210,6 @@ export default function Programs() {
                     key={program.id}
                     program={program}
                     index={index}
-                    isExpanded={expandedId === program.id}
-                    onToggle={() => handleToggle(program.id)}
                   />
                 ))}
               </div>
@@ -328,8 +229,6 @@ export default function Programs() {
                     key={program.id}
                     program={program}
                     index={index}
-                    isExpanded={expandedId === program.id}
-                    onToggle={() => handleToggle(program.id)}
                   />
                 ))}
               </div>
