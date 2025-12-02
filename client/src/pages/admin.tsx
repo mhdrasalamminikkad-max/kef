@@ -709,6 +709,7 @@ export default function AdminDashboard() {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead>Photo</TableHead>
                           <TableHead>Name</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Phone</TableHead>
@@ -721,6 +722,20 @@ export default function AdminDashboard() {
                       <TableBody>
                         {bootcampQuery.data?.map((registration) => (
                           <TableRow key={registration.id} data-testid={`row-bootcamp-${registration.id}`}>
+                            <TableCell>
+                              {registration.photo ? (
+                                <img 
+                                  src={registration.photo} 
+                                  alt={registration.fullName}
+                                  className="w-10 h-10 rounded-full object-cover border"
+                                  data-testid={`img-bootcamp-photo-${registration.id}`}
+                                />
+                              ) : (
+                                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                                  N/A
+                                </div>
+                              )}
+                            </TableCell>
                             <TableCell className="font-medium">{registration.fullName}</TableCell>
                             <TableCell>{registration.email}</TableCell>
                             <TableCell>{registration.phone}</TableCell>
@@ -1259,6 +1274,19 @@ export default function AdminDashboard() {
           {selectedBootcamp && (
             <ScrollArea className="flex-1 pr-4">
             <div className="grid gap-4">
+              {/* Photo Section */}
+              {selectedBootcamp.photo && (
+                <div className="flex justify-center mb-2">
+                  <div className="relative">
+                    <img 
+                      src={selectedBootcamp.photo} 
+                      alt={selectedBootcamp.fullName}
+                      className="w-24 h-24 rounded-full object-cover border-2 border-primary/20"
+                      data-testid="img-detail-photo"
+                    />
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Full Name</p>
@@ -1335,7 +1363,7 @@ export default function AdminDashboard() {
       </Dialog>
 
       <Dialog open={!!selectedMembership} onOpenChange={() => setSelectedMembership(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Membership Application Details</DialogTitle>
             <DialogDescription>
@@ -1343,60 +1371,62 @@ export default function AdminDashboard() {
             </DialogDescription>
           </DialogHeader>
           {selectedMembership && (
-            <div className="grid gap-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Full Name</p>
-                  <p className="text-base">{selectedMembership.fullName}</p>
+            <ScrollArea className="flex-1 pr-4">
+              <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Full Name</p>
+                    <p className="text-base">{selectedMembership.fullName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Email</p>
+                    <p className="text-base">{selectedMembership.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Phone</p>
+                    <p className="text-base">{selectedMembership.phone}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Membership Type</p>
+                    <p className="text-base capitalize">{selectedMembership.membershipType}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Organization</p>
+                    <p className="text-base">{selectedMembership.organization || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Designation</p>
+                    <p className="text-base">{selectedMembership.designation || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Interests</p>
+                    <p className="text-base">{selectedMembership.interests}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Status</p>
+                    <div>{getStatusBadge(selectedMembership.status)}</div>
+                  </div>
                 </div>
+                {selectedMembership.message && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Message</p>
+                    <p className="text-base">{selectedMembership.message}</p>
+                  </div>
+                )}
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Email</p>
-                  <p className="text-base">{selectedMembership.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Phone</p>
-                  <p className="text-base">{selectedMembership.phone}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Membership Type</p>
-                  <p className="text-base capitalize">{selectedMembership.membershipType}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Organization</p>
-                  <p className="text-base">{selectedMembership.organization || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Designation</p>
-                  <p className="text-base">{selectedMembership.designation || "N/A"}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Interests</p>
-                  <p className="text-base">{selectedMembership.interests}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Status</p>
-                  <div>{getStatusBadge(selectedMembership.status)}</div>
+                  <p className="text-sm font-medium text-muted-foreground">Application Date</p>
+                  <p className="text-base">
+                    {format(new Date(selectedMembership.createdAt), "MMMM d, yyyy 'at' h:mm a")}
+                  </p>
                 </div>
               </div>
-              {selectedMembership.message && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Message</p>
-                  <p className="text-base">{selectedMembership.message}</p>
-                </div>
-              )}
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Application Date</p>
-                <p className="text-base">
-                  {format(new Date(selectedMembership.createdAt), "MMMM d, yyyy 'at' h:mm a")}
-                </p>
-              </div>
-            </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
 
       <Dialog open={!!selectedContact} onOpenChange={() => setSelectedContact(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>Contact Submission Details</DialogTitle>
             <DialogDescription>
@@ -1404,7 +1434,8 @@ export default function AdminDashboard() {
             </DialogDescription>
           </DialogHeader>
           {selectedContact && (
-            <div className="grid gap-4">
+            <ScrollArea className="flex-1 pr-4">
+              <div className="grid gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Name</p>
@@ -1433,7 +1464,8 @@ export default function AdminDashboard() {
                   {format(new Date(selectedContact.createdAt), "MMMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
-            </div>
+              </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
