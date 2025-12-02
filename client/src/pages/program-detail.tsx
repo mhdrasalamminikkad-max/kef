@@ -261,14 +261,23 @@ export default function ProgramDetail() {
                       </div>
                     </div>
                     
-                    <div className="mt-6 pt-6 border-t border-border">
-                      <Link href="/register">
-                        <Button className="w-full btn-angular" data-testid="button-register-program">
-                          Register Now
-                          <ArrowRight className="ml-2 w-4 h-4" />
-                        </Button>
-                      </Link>
-                    </div>
+                    {program.programStatus === 'live' && (
+                      <div className="mt-6 pt-6 border-t border-border">
+                        <Link href="/register">
+                          <Button className="w-full btn-angular" data-testid="button-register-program">
+                            Register Now
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                    {program.programStatus === 'upcoming' && (
+                      <div className="mt-6 pt-6 border-t border-border">
+                        <p className="text-center text-muted-foreground text-sm">
+                          Registration opens soon
+                        </p>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>
