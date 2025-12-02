@@ -189,6 +189,11 @@
 [x] 189. Removed bold text (date, venue, fee) and banner from program cards
 [x] 190. Clicking program card navigates to detail page with "About This Program" section
 [x] 191. All program details (description, date, venue, fee, banner) now show on detail page only
+[x] 192. Added "Kerala Startup Fest" program to database (status: upcoming)
+[x] 193. Updated program detail page - hero shows only theme color gradient (no banner)
+[x] 194. Bold details (date, venue, fee) now show below "About This Program" description
+[x] 195. Banner image now shows below the bold details section
+[x] 196. Added early bird offer badge display on detail page
 [x] 188. NEW MIGRATION TO FRESH REPLIT ENVIRONMENT DETECTED
 [x] 189. Reinstalled tsx package to fix workflow startup error
 [x] 190. Restarted workflow successfully - application running on port 5000

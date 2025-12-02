@@ -5,7 +5,6 @@ import {
   ArrowLeft, 
   Calendar, 
   MapPin, 
-  Clock, 
   UserCheck, 
   Target,
   ArrowRight,
@@ -17,7 +16,9 @@ import {
   Briefcase,
   GraduationCap,
   Lightbulb,
-  LucideIcon
+  LucideIcon,
+  Tag,
+  Percent
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -84,103 +85,53 @@ export default function ProgramDetail() {
 
   return (
     <div className="min-h-screen">
-      {program.bannerImage ? (
-        <section className="relative min-h-[50vh] md:min-h-[60vh] flex items-center">
-          <div className="absolute inset-0">
-            <img 
-              src={program.bannerImage} 
-              alt={program.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
-          </div>
-          <div className="absolute inset-0 geometric-grid opacity-20" />
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Link href="/programs">
-                <Button variant="ghost" className="text-white mb-6 hover:bg-white/20" data-testid="button-back">
-                  <ArrowLeft className="mr-2 w-4 h-4" />
-                  Back to Programs
-                </Button>
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex items-center gap-4 mb-6"
-            >
-              <div className={`w-16 h-16 ${iconBgClass} rotate-45 flex items-center justify-center`}>
-                <IconComponent className="w-8 h-8 text-white -rotate-45" />
-              </div>
-              <Badge className="glass-panel text-white border-white/20 py-1.5 px-4">
-                <Sparkles className="w-3 h-3 mr-2" />
-                KEF Program
-              </Badge>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow"
-              data-testid="text-program-title"
-            >
-              {program.title}
-            </motion.h1>
-          </div>
-        </section>
-      ) : (
-        <section className={`relative min-h-[400px] lg:min-h-[450px] flex items-center`}>
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass}`} />
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-0 geometric-grid" />
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
-          </div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Link href="/programs">
-                <Button variant="ghost" className="text-white mb-6 hover:bg-white/20" data-testid="button-back">
-                  <ArrowLeft className="mr-2 w-4 h-4" />
-                  Back to Programs
-                </Button>
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex items-center gap-4 mb-6"
-            >
-              <div className={`w-16 h-16 ${iconBgClass} rotate-45 flex items-center justify-center`}>
-                <IconComponent className="w-8 h-8 text-white -rotate-45" />
-              </div>
-              <Badge className="glass-panel text-white border-white/20 py-1.5 px-4">
-                <Sparkles className="w-3 h-3 mr-2" />
-                KEF Program
-              </Badge>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow max-w-4xl"
-              data-testid="text-program-title"
-            >
-              {program.title}
-            </motion.h1>
-          </div>
-        </section>
-      )}
+      {/* Hero Section - Always show theme color gradient */}
+      <section className={`relative min-h-[300px] lg:min-h-[350px] flex items-center`}>
+        <div className={`absolute inset-0 bg-gradient-to-br ${gradientClass}`} />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 geometric-grid" />
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Link href="/programs">
+              <Button variant="ghost" className="text-white mb-6 hover:bg-white/20" data-testid="button-back">
+                <ArrowLeft className="mr-2 w-4 h-4" />
+                Back to Programs
+              </Button>
+            </Link>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex items-center gap-4 mb-6"
+          >
+            <div className={`w-16 h-16 ${iconBgClass} rotate-45 flex items-center justify-center`}>
+              <IconComponent className="w-8 h-8 text-white -rotate-45" />
+            </div>
+            <Badge className="glass-panel text-white border-white/20 py-1.5 px-4">
+              <Sparkles className="w-3 h-3 mr-2" />
+              KEF Program
+            </Badge>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow max-w-4xl"
+            data-testid="text-program-title"
+          >
+            {program.title}
+          </motion.h1>
+        </div>
+      </section>
 
       <section className="py-12 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -193,10 +144,74 @@ export default function ProgramDetail() {
                 transition={{ duration: 0.5 }}
               >
                 <h2 className="text-2xl font-bold text-foreground mb-4">About This Program</h2>
-                <p className="text-muted-foreground text-lg leading-relaxed mb-8" data-testid="text-program-description">
+                <p className="text-muted-foreground text-lg leading-relaxed mb-6 whitespace-pre-line" data-testid="text-program-description">
                   {program.description}
                 </p>
               </motion.div>
+
+              {/* Bold Details Section */}
+              {(program.eventDate || program.venue || program.feeAmount) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="mb-6"
+                >
+                  <div className="space-y-3">
+                    {program.eventDate && (
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        <span className="text-lg font-bold text-foreground" data-testid="text-program-date">
+                          {program.eventDate}
+                        </span>
+                      </div>
+                    )}
+                    {program.venue && (
+                      <div className="flex items-center gap-3">
+                        <MapPin className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        <span className="text-lg font-bold text-foreground" data-testid="text-program-venue">
+                          {program.venue}
+                        </span>
+                      </div>
+                    )}
+                    {program.feeAmount && (
+                      <div className="flex items-center gap-3">
+                        <Tag className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        <span className="text-lg font-bold text-foreground" data-testid="text-program-fee">
+                          {program.feeLabel || "Fee"}: Rs {program.feeAmount}/-
+                        </span>
+                      </div>
+                    )}
+                    {program.earlyBirdOffer && (
+                      <div className="mt-2">
+                        <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-0 text-sm py-1.5 px-3" data-testid="badge-early-bird">
+                          <Percent className="w-4 h-4 mr-1" />
+                          {program.earlyBirdOffer}
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Banner Image */}
+              {program.bannerImage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="mb-8"
+                >
+                  <img 
+                    src={program.bannerImage} 
+                    alt={`${program.title} banner`}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                    data-testid="img-program-banner"
+                  />
+                </motion.div>
+              )}
 
               {program.features && program.features.length > 0 && (
                 <motion.div
