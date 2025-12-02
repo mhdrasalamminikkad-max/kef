@@ -1279,14 +1279,14 @@ export default function AdminDashboard() {
 
       <Dialog open={!!selectedBootcamp} onOpenChange={() => setSelectedBootcamp(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader>
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>Bootcamp Registration Details</DialogTitle>
             <DialogDescription>
               Full details of the bootcamp registration
             </DialogDescription>
           </DialogHeader>
           {selectedBootcamp && (
-            <ScrollArea className="flex-1 pr-4">
+            <ScrollArea className="flex-1 max-h-[70vh] pr-4">
             <div className="grid gap-4">
               {/* Photo Section */}
               {selectedBootcamp.photo && (
