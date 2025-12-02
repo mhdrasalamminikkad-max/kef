@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Wallet, Rocket, Star, Zap } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Wallet, Rocket, Star, Zap, Camera, Image, Home } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import qrCodeImage from "@assets/qrm_1764493231811.png";
 import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.png";
 
@@ -31,6 +31,11 @@ export default function Register() {
   const { toast } = useToast();
   const { markRegistered, isRegistered, clearRegistered } = useRegistrationStatus();
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [addingAnother, setAddingAnother] = useState(false);
   const [registrationCount, setRegistrationCount] = useState(0);
   const [justRegistered, setJustRegistered] = useState(false);
@@ -49,6 +54,9 @@ export default function Register() {
       age: "",
       organization: "",
       paymentProof: "",
+      place: "",
+      address: "",
+      photo: "",
     },
   });
 
@@ -90,6 +98,86 @@ export default function Register() {
     }
   };
 
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      
+      if (!validTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload an image (JPEG, PNG, GIF).",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload a file smaller than 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setUploadedPhoto(file);
+      const base64 = await convertFileToBase64(file);
+      setPhotoPreview(base64);
+      form.setValue("photo", base64);
+    }
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user", width: 640, height: 480 } 
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setShowCamera(true);
+      }
+    } catch (err) {
+      toast({
+        title: "Camera Access Denied",
+        description: "Please allow camera access to take a photo.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0);
+        const base64 = canvas.toDataURL('image/jpeg', 0.8);
+        setPhotoPreview(base64);
+        form.setValue("photo", base64);
+        stopCamera();
+      }
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setShowCamera(false);
+  };
+
+  const clearPhoto = () => {
+    setUploadedPhoto(null);
+    setPhotoPreview(null);
+    form.setValue("photo", "");
+  };
+
   const mutation = useMutation({
     mutationFn: async (data: InsertBootcamp) => {
       const response = await apiRequest("POST", "/api/bootcamp", data);
@@ -102,6 +190,8 @@ export default function Register() {
       setRegistrationCount(newCount);
       form.reset();
       setUploadedFile(null);
+      setUploadedPhoto(null);
+      setPhotoPreview(null);
       toast({
         title: "Registration Successful!",
         description: "Redirecting to your invitation...",
@@ -125,6 +215,9 @@ export default function Register() {
     clearRegistered();
     setAddingAnother(true);
     setJustRegistered(false);
+    setUploadedFile(null);
+    setUploadedPhoto(null);
+    setPhotoPreview(null);
   };
 
   if ((isRegistered && !addingAnother) || justRegistered) {
@@ -731,7 +824,162 @@ export default function Register() {
                         )}
                       />
                     </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.85, duration: 0.4 }}
+                    >
+                      <FormField
+                        control={form.control}
+                        name="place"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4" />
+                              Place
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="Your city/town" {...field} value={field.value ?? ""} data-testid="input-place" className="transition-all duration-300 focus:scale-[1.02] focus:shadow-md" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.87, duration: 0.4 }}
+                    >
+                      <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="flex items-center gap-2">
+                              <Home className="w-4 h-4" />
+                              Address
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="Your full address" {...field} value={field.value ?? ""} data-testid="input-address" className="transition-all duration-300 focus:scale-[1.02] focus:shadow-md" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
                   </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.88, duration: 0.4 }}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="photo"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Camera className="w-4 h-4" />
+                            Your Photo (Optional)
+                          </FormLabel>
+                          <FormControl>
+                            <div className="space-y-3">
+                              {showCamera ? (
+                                <div className="relative rounded-lg overflow-hidden border-2 border-blue-500">
+                                  <video 
+                                    ref={videoRef} 
+                                    autoPlay 
+                                    playsInline 
+                                    className="w-full max-w-md mx-auto"
+                                    data-testid="video-camera"
+                                  />
+                                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
+                                    <Button 
+                                      type="button" 
+                                      onClick={capturePhoto}
+                                      className="bg-green-500 hover:bg-green-600"
+                                      data-testid="button-capture-photo"
+                                    >
+                                      <Camera className="w-4 h-4 mr-2" />
+                                      Capture
+                                    </Button>
+                                    <Button 
+                                      type="button" 
+                                      variant="outline" 
+                                      onClick={stopCamera}
+                                      data-testid="button-cancel-camera"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : photoPreview ? (
+                                <div className="relative">
+                                  <img 
+                                    src={photoPreview} 
+                                    alt="Preview" 
+                                    className="w-32 h-32 object-cover rounded-lg mx-auto border-2 border-green-500"
+                                    data-testid="img-photo-preview"
+                                  />
+                                  <Button 
+                                    type="button" 
+                                    variant="destructive" 
+                                    size="sm"
+                                    onClick={clearPhoto}
+                                    className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                                    data-testid="button-clear-photo"
+                                  >
+                                    X
+                                  </Button>
+                                  <p className="text-sm text-green-600 text-center mt-2">Photo ready</p>
+                                </div>
+                              ) : (
+                                <div className="flex flex-wrap gap-3 justify-center">
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={startCamera}
+                                    data-testid="button-take-photo"
+                                  >
+                                    <Camera className="w-4 h-4 mr-2" />
+                                    Take Photo
+                                  </Button>
+                                  <div className="relative">
+                                    <input
+                                      type="file"
+                                      accept="image/jpeg,image/png,image/gif"
+                                      onChange={handlePhotoChange}
+                                      className="hidden"
+                                      id="photo-upload"
+                                      data-testid="input-photo-upload"
+                                    />
+                                    <label htmlFor="photo-upload">
+                                      <Button 
+                                        type="button" 
+                                        variant="outline" 
+                                        asChild
+                                      >
+                                        <span data-testid="button-upload-photo">
+                                          <Image className="w-4 h-4 mr-2" />
+                                          Upload Photo
+                                        </span>
+                                      </Button>
+                                    </label>
+                                  </div>
+                                </div>
+                              )}
+                              <canvas ref={canvasRef} className="hidden" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </motion.div>
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}

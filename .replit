@@ -108,4 +108,4 @@ integrations = ["resend:1.0.0", "google-mail:1.0.0"]
 [userenv]
 
 [userenv.development]
-DATABASE_URL = " postgresql://postgres:RtEkSmiOwWNiCSjaGaGXKhLSkqNigzbj@nozomi.proxy.rlwy.net:22161/railway"
+DATABASE_URL = "postgresql://postgres:RtEkSmiOwWNiCSjaGaGXKhLSkqNigzbj@nozomi.proxy.rlwy.net:22161/railway"
