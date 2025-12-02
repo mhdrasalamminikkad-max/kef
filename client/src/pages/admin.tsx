@@ -286,7 +286,7 @@ export default function AdminDashboard() {
   });
 
   const createProgram = useMutation({
-    mutationFn: async (data: typeof programForm) => {
+    mutationFn: async (data: Omit<typeof programForm, 'features'> & { features: string[] }) => {
       const response = await apiRequest("POST", "/api/admin/programs", data);
       return response.json();
     },
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
   });
 
   const updateProgram = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: typeof programForm }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Omit<typeof programForm, 'features'> & { features: string[] } }) => {
       const response = await apiRequest("PATCH", `/api/admin/programs/${id}`, data);
       return response.json();
     },

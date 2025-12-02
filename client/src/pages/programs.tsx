@@ -15,7 +15,11 @@ import {
   LucideIcon,
   Play,
   Clock,
-  History
+  History,
+  Calendar,
+  MapPin,
+  Tag,
+  Percent
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
@@ -107,6 +111,46 @@ function ProgramCard({
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                   {program.description}
                 </p>
+                
+                {(program.eventDate || program.venue) && (
+                  <div className="space-y-1 mb-3">
+                    {program.eventDate && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-sm font-bold text-foreground" data-testid={`text-program-date-${program.id}`}>
+                          {program.eventDate}
+                        </span>
+                      </div>
+                    )}
+                    {program.venue && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-sm font-bold text-foreground" data-testid={`text-program-venue-${program.id}`}>
+                          {program.venue}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {(program.feeLabel || program.feeAmount) && (
+                  <div className="flex items-center gap-2 mb-3">
+                    <Tag className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                    <span className="text-sm font-bold text-foreground" data-testid={`text-program-fee-${program.id}`}>
+                      {program.feeLabel || "Fee"}: {program.feeAmount}
+                    </span>
+                  </div>
+                )}
+
+                {program.earlyBirdOffer && (
+                  <div className="mb-3">
+                    <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-0" data-testid={`badge-program-early-bird-${program.id}`}>
+                      <Percent className="w-3 h-3 mr-1" />
+                      {program.earlyBirdOffer}
+                    </Badge>
+                  </div>
+                )}
+
                 <Badge className={`${status.bgClass} ${status.textClass} border-0 mb-3`}>
                   <StatusIcon className="w-3 h-3 mr-1" />
                   {status.label}
