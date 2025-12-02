@@ -2,7 +2,7 @@
 import nodemailer from 'nodemailer';
 
 // All registration emails will be sent to this address
-const ADMIN_EMAIL = 'keralaeconomicforum@gmail.com';
+const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 
 // Create nodemailer transporter using environment variables
 function createTransporter() {
