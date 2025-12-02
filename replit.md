@@ -161,3 +161,8 @@ Preferred communication style: Simple, everyday language.
 - **date-fns** - Date manipulation and formatting
 - **nanoid** - Unique ID generation
 - **cmdk** - Command palette component
+
+### Email Integration Notes
+- **Gmail Integration**: User dismissed the Gmail connector setup. To enable email notifications in Replit, set up the Gmail connector via Replit integrations.
+- **Resend (Railway)**: For Railway deployment, set the `RESEND_API_KEY` environment variable to enable email notifications via Resend.
+- The email system (`server/email.ts`) automatically detects the environment and uses the appropriate email provider.

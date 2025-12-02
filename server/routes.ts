@@ -63,6 +63,30 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  // Health check endpoint to verify database connection
+  app.get("/api/health", async (_req, res) => {
+    try {
+      // Try to get dashboard stats to verify database connection
+      const stats = await storage.getDashboardStats();
+      res.json({ 
+        status: "healthy", 
+        database: "connected",
+        stats: {
+          bootcampRegistrations: stats.totalBootcampRegistrations,
+          membershipApplications: stats.totalMembershipApplications,
+          contactSubmissions: stats.totalContactSubmissions
+        }
+      });
+    } catch (error: any) {
+      console.error("Health check failed:", error);
+      res.status(503).json({ 
+        status: "unhealthy", 
+        database: "disconnected",
+        error: error?.message || "Database connection failed"
+      });
+    }
+  });
+
   app.post("/api/admin/verify-code", async (req, res) => {
     try {
       const { code } = req.body;
@@ -449,9 +473,15 @@ export async function registerRoutes(
       }).catch(err => console.error("Failed to send bootcamp email:", err));
       
       res.status(201).json(bootcamp);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating bootcamp registration:", error);
-      res.status(500).json({ error: "Failed to submit bootcamp registration" });
+      const errorMessage = error?.message || "Unknown database error";
+      const errorCode = error?.code || "UNKNOWN";
+      res.status(500).json({ 
+        error: "Failed to submit bootcamp registration",
+        details: process.env.NODE_ENV === 'development' ? errorMessage : "Database connection issue. Please try again.",
+        code: errorCode
+      });
     }
   });
 
