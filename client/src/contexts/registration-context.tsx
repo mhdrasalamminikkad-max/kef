@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 
 const STORAGE_KEY = "kef:bootcamp-registered";
 const MODAL_DISMISSED_KEY = "kef:bootcamp-modal-dismissed";
-const REGISTRATION_ID_KEY = "kef:bootcamp-registration-id";
+const REGISTRATION_IDS_KEY = "kef:bootcamp-registration-ids";
 
 interface RegistrationContextType {
   isRegistered: boolean;
@@ -11,6 +11,7 @@ interface RegistrationContextType {
   shouldShowModal: boolean;
   isModalCurrentlyOpen: boolean;
   registrationId: string | null;
+  registrationIds: string[];
   markRegistered: (registrationId?: string) => void;
   dismissModal: () => void;
   reopenModal: () => void;
@@ -26,23 +27,50 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const [isModalCurrentlyOpen, setIsModalCurrentlyOpen] = useState(false);
-  const [registrationId, setRegistrationId] = useState<string | null>(null);
+  const [registrationIds, setRegistrationIds] = useState<string[]>([]);
 
   useEffect(() => {
     const registered = localStorage.getItem(STORAGE_KEY) === "true";
     const dismissed = localStorage.getItem(MODAL_DISMISSED_KEY) === "true";
-    const savedRegId = localStorage.getItem(REGISTRATION_ID_KEY);
+    
+    // Load registration IDs array
+    const savedRegIds = localStorage.getItem(REGISTRATION_IDS_KEY);
+    let ids: string[] = [];
+    if (savedRegIds) {
+      try {
+        ids = JSON.parse(savedRegIds);
+        if (!Array.isArray(ids)) ids = [];
+      } catch {
+        ids = [];
+      }
+    }
+    
     setIsRegistered(registered);
     setIsModalDismissed(dismissed);
-    setRegistrationId(savedRegId);
+    setRegistrationIds(ids);
     setIsLoaded(true);
   }, []);
 
   const markRegistered = useCallback((regId?: string) => {
     localStorage.setItem(STORAGE_KEY, "true");
     if (regId) {
-      localStorage.setItem(REGISTRATION_ID_KEY, regId);
-      setRegistrationId(regId);
+      // Add to array of registration IDs (avoid duplicates)
+      const savedRegIds = localStorage.getItem(REGISTRATION_IDS_KEY);
+      let ids: string[] = [];
+      if (savedRegIds) {
+        try {
+          ids = JSON.parse(savedRegIds);
+          if (!Array.isArray(ids)) ids = [];
+        } catch {
+          ids = [];
+        }
+      }
+      
+      if (!ids.includes(regId)) {
+        ids.push(regId);
+        localStorage.setItem(REGISTRATION_IDS_KEY, JSON.stringify(ids));
+        setRegistrationIds(ids);
+      }
     }
     setIsRegistered(true);
   }, []);
@@ -60,14 +88,17 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
 
   const clearRegistered = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(REGISTRATION_ID_KEY);
+    localStorage.removeItem(REGISTRATION_IDS_KEY);
     setIsRegistered(false);
-    setRegistrationId(null);
+    setRegistrationIds([]);
   }, []);
 
   const setModalOpen = useCallback((open: boolean) => {
     setIsModalCurrentlyOpen(open);
   }, []);
+
+  // For backward compatibility, return the first registration ID
+  const registrationId = registrationIds.length > 0 ? registrationIds[0] : null;
 
   return (
     <RegistrationContext.Provider
@@ -78,6 +109,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         shouldShowModal,
         isModalCurrentlyOpen,
         registrationId,
+        registrationIds,
         markRegistered,
         dismissModal,
         reopenModal,

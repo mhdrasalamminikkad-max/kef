@@ -232,3 +232,9 @@
 [x] 223. Email uses EMAIL_USER and EMAIL_PASS environment variables
 [x] 224. For Railway: add EMAIL_USER (Gmail) and EMAIL_PASS (App Password)
 [x] 225. Nodemailer with Gmail works on both Replit and Railway
+[x] 226. Updated floating icon to support multiple registrations on same device
+[x] 227. Registration IDs now stored as array in localStorage
+[x] 228. Badge shows count of all invitations (1, 2, 3, etc.)
+[x] 229. Single invitation: clicks goes directly to invitation page
+[x] 230. Multiple invitations: shows dropdown list with all invitations
+[x] 231. Each invitation shows name and registration date
