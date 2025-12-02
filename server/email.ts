@@ -1,8 +1,30 @@
-// Email Integration using Nodemailer
+// Email Integration - Supports both Resend (Railway) and Gmail (Nodemailer)
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaeconomicforum@gmail.com';
+
+// Check which email service is available
+function getEmailService(): 'resend' | 'gmail' | null {
+  if (process.env.RESEND_API_KEY) {
+    console.log('Using Resend for email delivery');
+    return 'resend';
+  }
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    console.log('Using Gmail/Nodemailer for email delivery');
+    return 'gmail';
+  }
+  console.warn('No email service configured. Set RESEND_API_KEY or EMAIL_USER/EMAIL_PASS');
+  return null;
+}
+
+// Create Resend client
+function getResendClient(): Resend | null {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+  return new Resend(apiKey);
+}
 
 // Create nodemailer transporter using environment variables
 function createTransporter() {
@@ -10,7 +32,6 @@ function createTransporter() {
   const emailPass = process.env.EMAIL_PASS;
 
   if (!emailUser || !emailPass) {
-    console.warn('EMAIL_USER or EMAIL_PASS not configured. Email sending will be disabled.');
     return null;
   }
 
@@ -23,30 +44,52 @@ function createTransporter() {
   });
 }
 
-// Send email using nodemailer
+// Send email using available service (Resend or Gmail)
 async function sendEmail(to: string, subject: string, htmlBody: string) {
-  const transporter = createTransporter();
+  const service = getEmailService();
   
-  if (!transporter) {
-    console.log('Email transporter not available. Skipping email send.');
+  if (!service) {
+    console.log('Email service not available. Skipping email send.');
     return { success: false, error: 'Email not configured' };
   }
 
-  const emailUser = process.env.EMAIL_USER;
-
   try {
-    const result = await transporter.sendMail({
-      from: `Kerala Economic Forum <${emailUser}>`,
-      to: to,
-      subject: subject,
-      html: htmlBody
-    });
+    if (service === 'resend') {
+      const resend = getResendClient();
+      if (!resend) {
+        return { success: false, error: 'Resend client not available' };
+      }
+      
+      const result = await resend.emails.send({
+        from: 'Kerala Economic Forum <onboarding@resend.dev>',
+        to: to,
+        subject: subject,
+        html: htmlBody
+      });
+      
+      console.log('Email sent via Resend:', result);
+      return { success: true, result };
+    } else {
+      // Gmail/Nodemailer
+      const transporter = createTransporter();
+      if (!transporter) {
+        return { success: false, error: 'Gmail transporter not available' };
+      }
+      
+      const emailUser = process.env.EMAIL_USER;
+      const result = await transporter.sendMail({
+        from: `Kerala Economic Forum <${emailUser}>`,
+        to: to,
+        subject: subject,
+        html: htmlBody
+      });
 
-    console.log('Email sent successfully:', result.messageId);
-    return { success: true, result };
+      console.log('Email sent via Gmail:', result.messageId);
+      return { success: true, result };
+    }
   } catch (error) {
     console.error('Failed to send email:', error);
-    throw error;
+    return { success: false, error };
   }
 }
 

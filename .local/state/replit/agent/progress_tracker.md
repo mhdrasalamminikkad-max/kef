@@ -228,3 +228,7 @@
 [x] 219. Cards now show only: small icon, program name, and very short description
 [x] 220. Mobile: 180px wide cards in horizontal scroll
 [x] 221. Desktop: 4 columns grid (was 3) with smaller padding
+[x] 222. Fixed email for Railway - now supports both Resend and Gmail
+[x] 223. Email system checks for RESEND_API_KEY first (Railway production)
+[x] 224. Falls back to EMAIL_USER/EMAIL_PASS for Gmail (development)
+[x] 225. User needs to add RESEND_API_KEY in Railway environment variables
