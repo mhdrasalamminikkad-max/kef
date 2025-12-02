@@ -9,11 +9,17 @@ function createTransporter() {
   const emailUser = process.env.EMAIL_USER;
   const emailPass = process.env.EMAIL_PASS;
 
+  console.log('=== EMAIL CONFIG CHECK ===');
+  console.log('EMAIL_USER configured:', emailUser ? `Yes (${emailUser})` : 'No');
+  console.log('EMAIL_PASS configured:', emailPass ? `Yes (length: ${emailPass.length})` : 'No');
+
   if (!emailUser || !emailPass) {
     console.warn('EMAIL_USER or EMAIL_PASS not configured. Email sending will be disabled.');
     return null;
   }
 
+  console.log('Creating Gmail transporter...');
+  
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -25,6 +31,10 @@ function createTransporter() {
 
 // Send email using nodemailer
 async function sendEmail(to: string, subject: string, htmlBody: string) {
+  console.log('=== SENDING EMAIL ===');
+  console.log('To:', to);
+  console.log('Subject:', subject);
+  
   const transporter = createTransporter();
   
   if (!transporter) {
@@ -35,6 +45,7 @@ async function sendEmail(to: string, subject: string, htmlBody: string) {
   const emailUser = process.env.EMAIL_USER;
 
   try {
+    console.log('Attempting to send email via Gmail...');
     const result = await transporter.sendMail({
       from: `Kerala Economic Forum <${emailUser}>`,
       to: to,
@@ -42,10 +53,15 @@ async function sendEmail(to: string, subject: string, htmlBody: string) {
       html: htmlBody
     });
 
-    console.log('Email sent successfully:', result.messageId);
+    console.log('=== EMAIL SENT SUCCESSFULLY ===');
+    console.log('Message ID:', result.messageId);
     return { success: true, result };
-  } catch (error) {
-    console.error('Failed to send email:', error);
+  } catch (error: any) {
+    console.error('=== EMAIL SEND FAILED ===');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Full error:', JSON.stringify(error, null, 2));
     return { success: false, error };
   }
 }
