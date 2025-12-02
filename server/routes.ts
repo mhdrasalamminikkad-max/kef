@@ -7,6 +7,7 @@ import { sendBootcampRegistrationEmail, sendMembershipApplicationEmail, sendCont
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import PDFDocument from "pdfkit";
 
 // Configure multer for file uploads
 const uploadsDir = path.resolve(process.cwd(), "public/uploads");
@@ -261,6 +262,155 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting bootcamp registration:", error);
       res.status(500).json({ error: "Failed to delete bootcamp registration" });
+    }
+  });
+
+  // PDF Export for Bootcamp Registrations
+  app.get("/api/admin/bootcamp/export-pdf", requireAdmin, async (req, res) => {
+    try {
+      const registrations = await storage.getBootcampRegistrations();
+      
+      const doc = new PDFDocument({ 
+        margin: 40,
+        size: 'A4',
+        bufferPages: true
+      });
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="bootcamp-registrations.pdf"');
+      
+      doc.pipe(res);
+      
+      // Header
+      doc.fontSize(24).font('Helvetica-Bold').fillColor('#1a365d')
+         .text('STARTUP BOOT CAMP', { align: 'center' });
+      doc.fontSize(14).font('Helvetica').fillColor('#4a5568')
+         .text('Registration Details Report', { align: 'center' });
+      doc.moveDown(0.5);
+      doc.fontSize(10).fillColor('#718096')
+         .text(`Generated on: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`, { align: 'center' });
+      doc.fontSize(10)
+         .text(`Total Registrations: ${registrations.length}`, { align: 'center' });
+      doc.moveDown(1);
+      
+      // Horizontal line
+      doc.strokeColor('#e2e8f0').lineWidth(1)
+         .moveTo(40, doc.y).lineTo(555, doc.y).stroke();
+      doc.moveDown(1);
+      
+      if (registrations.length === 0) {
+        doc.fontSize(14).fillColor('#a0aec0')
+           .text('No registrations found.', { align: 'center' });
+      } else {
+        registrations.forEach((reg, index) => {
+          // Check if we need a new page (leave room for content)
+          if (doc.y > 650) {
+            doc.addPage();
+          }
+          
+          // Registration number header
+          doc.fontSize(14).font('Helvetica-Bold').fillColor('#2d3748')
+             .text(`Registration #${index + 1}`, { underline: true });
+          doc.moveDown(0.3);
+          
+          // Status badge
+          const statusColor = reg.status === 'approved' ? '#38a169' : 
+                             reg.status === 'rejected' ? '#e53e3e' : '#dd6b20';
+          doc.fontSize(10).font('Helvetica-Bold').fillColor(statusColor)
+             .text(`Status: ${reg.status?.toUpperCase() || 'PENDING'}`);
+          doc.moveDown(0.5);
+          
+          // Helper function for field display
+          const addField = (label: string, value: string | null | undefined) => {
+            if (doc.y > 750) {
+              doc.addPage();
+            }
+            doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+               .text(`${label}: `, { continued: true });
+            doc.font('Helvetica').fillColor('#1a202c')
+               .text(value || 'N/A');
+          };
+          
+          // Personal Details Section
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
+             .text('Personal Details');
+          doc.moveDown(0.3);
+          
+          addField('Full Name', reg.fullName);
+          addField('Email', reg.email);
+          addField('Phone', reg.phone);
+          addField('Age', reg.age);
+          addField('District', reg.district);
+          addField('Place', reg.place);
+          addField('Address', reg.address);
+          doc.moveDown(0.5);
+          
+          // Organization Details
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
+             .text('Organization Details');
+          doc.moveDown(0.3);
+          
+          addField('Organization/Institution', reg.organization);
+          doc.moveDown(0.5);
+          
+          // Experience & Expectations
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
+             .text('Experience & Expectations');
+          doc.moveDown(0.3);
+          
+          doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+             .text('Prior Experience:');
+          doc.font('Helvetica').fillColor('#1a202c')
+             .text(reg.experience || 'N/A', { width: 500 });
+          doc.moveDown(0.3);
+          
+          doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+             .text('Expectations:');
+          doc.font('Helvetica').fillColor('#1a202c')
+             .text(reg.expectations || 'N/A', { width: 500 });
+          doc.moveDown(0.5);
+          
+          // Media Links
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
+             .text('Uploaded Files');
+          doc.moveDown(0.3);
+          
+          addField('Photo', reg.photo ? `${req.protocol}://${req.get('host')}${reg.photo}` : 'Not uploaded');
+          addField('Payment Proof', reg.paymentProof ? `${req.protocol}://${req.get('host')}${reg.paymentProof}` : 'Not uploaded');
+          doc.moveDown(0.3);
+          
+          // Registration Date
+          doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+             .text('Registered On: ', { continued: true });
+          doc.font('Helvetica').fillColor('#1a202c')
+             .text(reg.createdAt ? new Date(reg.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A');
+          
+          // Separator between registrations
+          if (index < registrations.length - 1) {
+            doc.moveDown(0.8);
+            doc.strokeColor('#cbd5e0').lineWidth(0.5)
+               .moveTo(40, doc.y).lineTo(555, doc.y).stroke();
+            doc.moveDown(0.8);
+          }
+        });
+      }
+      
+      // Footer on each page
+      const pages = doc.bufferedPageRange();
+      for (let i = 0; i < pages.count; i++) {
+        doc.switchToPage(i);
+        doc.fontSize(8).fillColor('#a0aec0')
+           .text(
+             `Page ${i + 1} of ${pages.count} | Kerala Economic Forum - Startup Boot Camp`,
+             40, 780,
+             { align: 'center', width: 515 }
+           );
+      }
+      
+      doc.end();
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
     }
   });
 

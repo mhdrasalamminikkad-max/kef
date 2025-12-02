@@ -53,6 +53,7 @@ import {
   Pencil,
   BellRing,
   Save,
+  FileDown,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -689,11 +690,24 @@ export default function AdminDashboard() {
 
           <TabsContent value="bootcamp">
             <Card>
-              <CardHeader>
-                <CardTitle>Bootcamp Registrations</CardTitle>
-                <CardDescription>
-                  View and manage all Startup Boot Camp registrations
-                </CardDescription>
+              <CardHeader className="flex flex-row items-start justify-between gap-4">
+                <div>
+                  <CardTitle>Bootcamp Registrations</CardTitle>
+                  <CardDescription>
+                    View and manage all Startup Boot Camp registrations
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    window.open('/api/admin/bootcamp/export-pdf', '_blank');
+                  }}
+                  disabled={bootcampQuery.isLoading || !bootcampQuery.data?.length}
+                  data-testid="button-download-bootcamp-pdf"
+                >
+                  <FileDown className="w-4 h-4 mr-2" />
+                  Download PDF
+                </Button>
               </CardHeader>
               <CardContent>
                 {bootcampQuery.isLoading ? (

@@ -211,3 +211,8 @@
 [x] 202. Database connection active - all 7 programs loading correctly
 [x] 203. All features confirmed operational (navigation, registration, admin panel)
 [x] 204. ✅ IMPORT MIGRATION FULLY COMPLETED - PROJECT READY FOR DEVELOPMENT ✅
+[x] 205. Changed registration crossed-out price from ₹7999 to ₹6999
+[x] 206. Added PDF download feature to admin bootcamp section
+[x] 207. PDF includes all registration details: personal info, organization, experience, expectations
+[x] 208. PDF has professional formatting with sections, status badges, and page footers
+[x] 209. Download PDF button added to bootcamp registrations header in admin panel
