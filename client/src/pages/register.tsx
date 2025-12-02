@@ -337,7 +337,7 @@ export default function Register() {
               <CardContent className="flex flex-col items-center text-center pt-0">
                 <div className="w-full max-w-md">
                   <p className="text-lg font-bold text-foreground mb-3">
-                    <span className="line-through opacity-50 text-muted-foreground">₹7999</span> <span className="text-green-600">₹4999</span>
+                    <span className="line-through opacity-50 text-muted-foreground">₹6999</span> <span className="text-green-600">₹4999</span>
                   </p>
                   <p className="text-sm text-muted-foreground mb-4">
                     Choose your payment app:
@@ -1237,7 +1237,7 @@ export default function Register() {
                 transition={{ delay: 0.9, duration: 0.4 }}
               >
                 <p className="text-xl font-bold text-foreground mb-2">
-                  <span className="line-through opacity-50 text-muted-foreground">₹7999</span> <span className="text-green-600">₹4999</span>
+                  <span className="line-through opacity-50 text-muted-foreground">₹6999</span> <span className="text-green-600">₹4999</span>
                 </p>
                 <p className="text-sm text-muted-foreground mb-5">
                   Choose your payment app:
