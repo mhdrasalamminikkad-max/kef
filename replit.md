@@ -165,7 +165,37 @@ Preferred communication style: Simple, everyday language.
 - **nanoid** - Unique ID generation
 - **cmdk** - Command palette component
 
-### Email Integration Notes
-- **Gmail Integration**: User dismissed the Gmail connector setup. To enable email notifications in Replit, set up the Gmail connector via Replit integrations.
-- **Resend (Railway)**: For Railway deployment, set the `RESEND_API_KEY` environment variable to enable email notifications via Resend.
-- The email system (`server/email.ts`) automatically detects the environment and uses the appropriate email provider.
+### Email Integration (ACTIVE - December 2025)
+
+**Email System Configuration:**
+- **Provider**: Gmail via Nodemailer
+- **Recipient**: All notifications sent to `keralaeconomicforum@gmail.com`
+- **Implementation**: `server/email.ts`
+
+**Required Environment Variables (MUST BE SET):**
+- `EMAIL_USER` - Gmail address used to send emails
+- `EMAIL_PASS` - Gmail App Password (NOT regular password)
+  - To create App Password: Google Account → Security → 2-Step Verification → App Passwords → Create new
+
+**Email Triggers:**
+1. **Bootcamp Registration** (`sendBootcampRegistrationEmail`)
+   - Triggered when user submits registration form at `/register`
+   - Includes: Name, email, phone, age, organization, district, experience, expectations, timestamps
+   
+2. **Membership Application** (`sendMembershipApplicationEmail`)
+   - Triggered when user submits membership form
+   - Includes: Name, email, phone, membership type, interests, organization, designation
+   
+3. **Contact Form** (`sendContactFormEmail`)
+   - Triggered when user submits contact form
+   - Includes: Name, email, phone, subject, message
+
+**Email Format:**
+- Professional HTML templates with Kerala Economic Forum branding
+- Red-orange gradient headers matching website theme
+- Timestamps in Indian timezone (Asia/Kolkata)
+
+**Troubleshooting:**
+- If emails not sending, check server logs for "Email sent successfully" or error messages
+- Verify EMAIL_USER and EMAIL_PASS are correctly set in Replit Secrets
+- Gmail may require "Less secure app access" or App Password for authentication
