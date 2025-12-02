@@ -1,134 +1,53 @@
-// Email Integration - Gmail for Replit, Resend for Railway
-import { google } from 'googleapis';
-import { Resend } from 'resend';
+// Email Integration using Nodemailer
+import nodemailer from 'nodemailer';
 
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaeconomicforum@gmail.com';
 
-// Resend client for Railway deployment
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+// Create nodemailer transporter using environment variables
+function createTransporter() {
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS;
 
-let connectionSettings: any;
-
-// Check if we're in Replit environment
-function isReplitEnvironment(): boolean {
-  return !!(process.env.REPLIT_CONNECTORS_HOSTNAME && (process.env.REPL_IDENTITY || process.env.WEB_REPL_RENEWAL));
-}
-
-async function getAccessToken() {
-  if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
-    return connectionSettings.settings.access_token;
-  }
-  
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  if (!emailUser || !emailPass) {
+    console.warn('EMAIL_USER or EMAIL_PASS not configured. Email sending will be disabled.');
+    return null;
   }
 
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=google-mail',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  const accessToken = connectionSettings?.settings?.access_token || connectionSettings.settings?.oauth?.credentials?.access_token;
-
-  if (!connectionSettings || !accessToken) {
-    throw new Error('Gmail not connected');
-  }
-  return accessToken;
-}
-
-async function getGmailClient() {
-  const accessToken = await getAccessToken();
-
-  const oauth2Client = new google.auth.OAuth2();
-  oauth2Client.setCredentials({
-    access_token: accessToken
-  });
-
-  return google.gmail({ version: 'v1', auth: oauth2Client });
-}
-
-function createEmail(to: string, subject: string, htmlBody: string): string {
-  const emailLines = [
-    `To: ${to}`,
-    'Content-Type: text/html; charset=utf-8',
-    'MIME-Version: 1.0',
-    `Subject: ${subject}`,
-    '',
-    htmlBody
-  ];
-  
-  const email = emailLines.join('\r\n');
-  return Buffer.from(email).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-// Send email via Gmail (Replit)
-async function sendViaGmail(to: string, subject: string, htmlBody: string) {
-  const gmail = await getGmailClient();
-  const rawEmail = createEmail(to, subject, htmlBody);
-  
-  const result = await gmail.users.messages.send({
-    userId: 'me',
-    requestBody: {
-      raw: rawEmail
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: emailUser,
+      pass: emailPass
     }
   });
-  
-  console.log('Email sent successfully via Gmail:', result.data);
-  return { success: true, result: result.data };
 }
 
-// Send email via Resend (Railway)
-async function sendViaResend(to: string, subject: string, htmlBody: string) {
-  if (!resend) {
-    throw new Error('Resend API key not configured');
-  }
-  
-  const result = await resend.emails.send({
-    from: 'Kerala Economic Forum <noreply@keralaeconomicforum.com>',
-    to: to,
-    subject: subject,
-    html: htmlBody
-  });
-  
-  console.log('Email sent successfully via Resend:', result);
-  return { success: true, result };
-}
-
-// Universal email sender - tries Gmail first, then Resend
+// Send email using nodemailer
 async function sendEmail(to: string, subject: string, htmlBody: string) {
-  // Try Gmail first if in Replit environment
-  if (isReplitEnvironment()) {
-    try {
-      return await sendViaGmail(to, subject, htmlBody);
-    } catch (gmailError) {
-      console.log('Gmail failed, trying Resend...', gmailError);
-    }
-  }
+  const transporter = createTransporter();
   
-  // Try Resend (for Railway or if Gmail fails)
-  if (resend) {
-    try {
-      return await sendViaResend(to, subject, htmlBody);
-    } catch (resendError) {
-      console.error('Resend also failed:', resendError);
-      throw resendError;
-    }
+  if (!transporter) {
+    console.log('Email transporter not available. Skipping email send.');
+    return { success: false, error: 'Email not configured' };
   }
-  
-  throw new Error('No email provider available');
+
+  const emailUser = process.env.EMAIL_USER;
+
+  try {
+    const result = await transporter.sendMail({
+      from: `Kerala Economic Forum <${emailUser}>`,
+      to: to,
+      subject: subject,
+      html: htmlBody
+    });
+
+    console.log('Email sent successfully:', result.messageId);
+    return { success: true, result };
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    throw error;
+  }
 }
 
 export async function sendBootcampRegistrationEmail(registration: {
@@ -141,6 +60,7 @@ export async function sendBootcampRegistrationEmail(registration: {
   district: string;
   experience: string;
   expectations?: string | null;
+  photo?: string | null;
   createdAt: Date;
 }) {
   try {
@@ -188,9 +108,15 @@ export async function sendBootcampRegistrationEmail(registration: {
               <td style="padding: 10px; color: #1f2937;">${registration.expectations}</td>
             </tr>
             ` : ''}
+            ${registration.photo ? `
             <tr>
+              <td style="padding: 10px; font-weight: bold; color: #374151;">Photo:</td>
+              <td style="padding: 10px; color: #1f2937;">Uploaded</td>
+            </tr>
+            ` : ''}
+            <tr style="background: #f3f4f6;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Payment Proof:</td>
-              <td style="padding: 10px; color: #1f2937;">${registration.paymentProof}</td>
+              <td style="padding: 10px; color: #1f2937;">${registration.paymentProof ? 'Uploaded' : 'Not uploaded'}</td>
             </tr>
             <tr style="background: #fef3c7;">
               <td style="padding: 10px; font-weight: bold; color: #374151;">Registered At:</td>
