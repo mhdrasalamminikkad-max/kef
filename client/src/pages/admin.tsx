@@ -113,6 +113,12 @@ export default function AdminDashboard() {
     order: "0",
     bannerImage: "",
     features: "",
+    programStatus: "upcoming" as "past" | "live" | "upcoming",
+    eventDate: "",
+    venue: "",
+    feeLabel: "",
+    feeAmount: "",
+    earlyBirdOffer: "",
   });
   const [partnerDialog, setPartnerDialog] = useState<{
     open: boolean;
@@ -408,6 +414,12 @@ export default function AdminDashboard() {
       order: "0",
       bannerImage: "",
       features: "",
+      programStatus: "upcoming",
+      eventDate: "",
+      venue: "",
+      feeLabel: "",
+      feeAmount: "",
+      earlyBirdOffer: "",
     });
   };
 
@@ -431,6 +443,12 @@ export default function AdminDashboard() {
       order: program.order,
       bannerImage: program.bannerImage || "",
       features: program.features?.join(", ") || "",
+      programStatus: (program.programStatus as "past" | "live" | "upcoming") || "upcoming",
+      eventDate: program.eventDate || "",
+      venue: program.venue || "",
+      feeLabel: program.feeLabel || "",
+      feeAmount: program.feeAmount || "",
+      earlyBirdOffer: program.earlyBirdOffer || "",
     });
     setProgramDialog({ open: true, mode: "edit", program });
   };
@@ -1558,6 +1576,82 @@ export default function AdminDashboard() {
                 data-testid="input-program-features"
               />
             </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="programStatus">Program Status</Label>
+              <Select
+                value={programForm.programStatus}
+                onValueChange={(value: "past" | "live" | "upcoming") => setProgramForm({ ...programForm, programStatus: value })}
+              >
+                <SelectTrigger data-testid="select-program-status">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="live">Live Now</SelectItem>
+                  <SelectItem value="upcoming">Upcoming</SelectItem>
+                  <SelectItem value="past">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="eventDate">Event Date</Label>
+                <Input
+                  id="eventDate"
+                  value={programForm.eventDate}
+                  onChange={(e) => setProgramForm({ ...programForm, eventDate: e.target.value })}
+                  placeholder="e.g., December 26-28, 2025"
+                  data-testid="input-program-event-date"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="venue">Venue</Label>
+                <Input
+                  id="venue"
+                  value={programForm.venue}
+                  onChange={(e) => setProgramForm({ ...programForm, venue: e.target.value })}
+                  placeholder="e.g., Caliph Life School, Kozhikode"
+                  data-testid="input-program-venue"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="feeLabel">Fee Label</Label>
+                <Input
+                  id="feeLabel"
+                  value={programForm.feeLabel}
+                  onChange={(e) => setProgramForm({ ...programForm, feeLabel: e.target.value })}
+                  placeholder="e.g., Camp Fee, Registration Fee"
+                  data-testid="input-program-fee-label"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="feeAmount">Fee Amount</Label>
+                <Input
+                  id="feeAmount"
+                  value={programForm.feeAmount}
+                  onChange={(e) => setProgramForm({ ...programForm, feeAmount: e.target.value })}
+                  placeholder="e.g., Rs. 2,999"
+                  data-testid="input-program-fee-amount"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="earlyBirdOffer">Early Bird Offer (optional)</Label>
+              <Textarea
+                id="earlyBirdOffer"
+                value={programForm.earlyBirdOffer}
+                onChange={(e) => setProgramForm({ ...programForm, earlyBirdOffer: e.target.value })}
+                placeholder="e.g., Register before Dec 15 and get 20% off! Use code EARLY20"
+                rows={2}
+                data-testid="input-program-early-bird"
+              />
+            </div>
+
             <div className="flex items-center gap-2">
               <Switch
                 id="isActive"

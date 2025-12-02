@@ -149,6 +149,11 @@ export const programs = pgTable("programs", {
   isActive: boolean("is_active").default(true).notNull(),
   programStatus: text("program_status").default("upcoming").notNull(), // past, live, upcoming
   order: text("order").default("0").notNull(),
+  eventDate: text("event_date"),
+  venue: text("venue"),
+  feeLabel: text("fee_label"),
+  feeAmount: text("fee_amount"),
+  earlyBirdOffer: text("early_bird_offer"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -167,6 +172,11 @@ export const insertProgramSchema = createInsertSchema(programs).omit({
   isActive: z.boolean().default(true),
   programStatus: z.enum(["past", "live", "upcoming"]).default("upcoming"),
   order: z.string().default("0"),
+  eventDate: z.string().optional(),
+  venue: z.string().optional(),
+  feeLabel: z.string().optional(),
+  feeAmount: z.string().optional(),
+  earlyBirdOffer: z.string().optional(),
 });
 
 export const updateProgramSchema = z.object({
@@ -179,6 +189,11 @@ export const updateProgramSchema = z.object({
   isActive: z.boolean().optional(),
   programStatus: z.enum(["past", "live", "upcoming"]).optional(),
   order: z.string().optional(),
+  eventDate: z.string().optional().nullable(),
+  venue: z.string().optional().nullable(),
+  feeLabel: z.string().optional().nullable(),
+  feeAmount: z.string().optional().nullable(),
+  earlyBirdOffer: z.string().optional().nullable(),
 });
 
 export type InsertProgram = z.infer<typeof insertProgramSchema>;
