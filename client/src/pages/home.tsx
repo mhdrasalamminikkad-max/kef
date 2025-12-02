@@ -242,15 +242,6 @@ export default function Home() {
                     Upcoming Programs
                   </Button>
                 </Link>
-                <Link href="/programs" className="hidden sm:block">
-                  <Button 
-                    size="lg" 
-                    className="btn-angular glass-panel text-white hover:bg-white/20 text-sm md:text-base" 
-                    data-testid="button-explore-programs"
-                  >
-                    Explore Programs
-                  </Button>
-                </Link>
               </motion.div>
 
               <motion.p
@@ -420,7 +411,13 @@ export default function Home() {
               >
                 <Card className="h-full hover-elevate overflow-visible">
                   <CardContent className="p-6">
-                    <div className="w-2 h-12 bg-gradient-to-b from-red-500 via-yellow-400 to-cyan-500 mb-4" />
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                      index % 3 === 0 ? 'bg-red-500' :
+                      index % 3 === 1 ? 'bg-yellow-400' :
+                      'bg-cyan-500'
+                    }`}>
+                      <IconComponent className={`w-6 h-6 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
+                    </div>
                     <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-program-title-${index}`}>
                       {program.title}
                     </h3>

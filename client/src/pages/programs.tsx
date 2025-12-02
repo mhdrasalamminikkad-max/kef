@@ -104,10 +104,6 @@ function ProgramCard({
                   {program.title}
                 </h3>
               </div>
-              <Badge className={`${status.bgClass} ${status.textClass} border-0 flex-shrink-0`}>
-                <StatusIcon className="w-3 h-3 mr-1" />
-                {status.label}
-              </Badge>
               <ArrowRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             </div>
           </CardContent>
