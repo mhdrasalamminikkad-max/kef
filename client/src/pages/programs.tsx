@@ -163,6 +163,18 @@ function ProgramCard({
                 </div>
               </div>
             </div>
+            
+            {/* Banner/Poster Image */}
+            {program.bannerImage && (
+              <div className="mt-4">
+                <img 
+                  src={program.bannerImage} 
+                  alt={`${program.title} banner`}
+                  className="w-full h-auto rounded-md object-cover"
+                  data-testid={`img-program-banner-${program.id}`}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       </Link>
