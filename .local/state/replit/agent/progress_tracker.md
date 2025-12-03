@@ -238,3 +238,5 @@
 [x] 229. Single invitation: clicks goes directly to invitation page
 [x] 230. Multiple invitations: shows dropdown list with all invitations
 [x] 231. Each invitation shows name and registration date
+[x] 232. Fixed Railway crash - removed @neondatabase/serverless from build allowlist
+[x] 233. This package was triggering auto-migrations at startup causing crash loop
