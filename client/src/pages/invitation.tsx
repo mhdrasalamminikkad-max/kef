@@ -18,21 +18,35 @@ import {
   Phone,
   Mail
 } from "lucide-react";
-import type { Bootcamp } from "@shared/schema";
+
+// Slim invitation data - only essential fields (no large base64 blobs)
+interface InvitationData {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  status: string | null;
+  createdAt: Date | null;
+}
 
 export default function Invitation() {
   const [, params] = useRoute("/invitation/:id");
   const registrationId = params?.id;
 
-  const { data: registration, isLoading, error } = useQuery<Bootcamp>({
-    queryKey: ['/api/bootcamp', registrationId],
+  // Use the slim invitation endpoint - much faster (no large base64 data)
+  const { data: registration, isLoading, error } = useQuery<InvitationData>({
+    queryKey: ['/api/invitation', registrationId],
     enabled: !!registrationId,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading your invitation...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+          <div className="text-white text-lg">Loading invitation...</div>
+        </div>
       </div>
     );
   }

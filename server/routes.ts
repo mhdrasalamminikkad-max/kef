@@ -854,6 +854,33 @@ export async function registerRoutes(
     }
   });
 
+  // Slim invitation endpoint - returns only essential fields (no large base64 blobs)
+  // This is much faster for the invitation page
+  app.get("/api/invitation/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const registration = await storage.getBootcampById(id);
+      
+      if (!registration) {
+        return res.status(404).json({ error: "Registration not found" });
+      }
+      
+      // Return only the fields needed for the invitation page
+      // Excludes photo and paymentProof (large base64 strings)
+      res.json({
+        id: registration.id,
+        fullName: registration.fullName,
+        email: registration.email,
+        phone: registration.phone,
+        status: registration.status,
+        createdAt: registration.createdAt,
+      });
+    } catch (error) {
+      console.error("Error fetching invitation:", error);
+      res.status(500).json({ error: "Failed to fetch invitation" });
+    }
+  });
+
   // Programs API routes (public)
   app.get("/api/programs", async (req, res) => {
     try {

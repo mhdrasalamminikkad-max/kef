@@ -305,3 +305,10 @@
 [x] 296. Users can now complete registration and get invitation without payment processing
 [x] 297. When PhonePe is not configured, registration submits directly and redirects to invitation
 [x] 298. Restarted workflow - changes applied successfully
+[x] 299. PERFORMANCE OPTIMIZATION - Made registration and invitation loading much faster
+[x] 300. Created slim /api/invitation/:id endpoint - returns only essential fields (no large base64 blobs)
+[x] 301. Updated invitation page to use slim endpoint instead of full bootcamp data
+[x] 302. Added 5-minute cache (staleTime) to invitation query for faster repeat loads
+[x] 303. Added better loading spinner animation on invitation page
+[x] 304. Registration now bypasses payment and submits directly (much faster)
+[x] 305. Restarted workflow with all performance optimizations applied
