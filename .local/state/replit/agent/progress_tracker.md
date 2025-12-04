@@ -377,3 +377,7 @@
 [x] 362. Hardcoded email credentials directly in server/email.ts as requested by user
 [x] 363. Email: keralaecomicforumhelp@gmail.com with App Password configured
 [x] 364. Restarted workflow - email system working with hardcoded credentials
+[x] 365. Created Shipping and Delivery Policy page (/shipping-policy) for PhonePe compliance
+[x] 366. Added Shipping & Delivery link to footer in Legal section
+[x] 367. Fixed email on Contact page (was showing domain instead of email address)
+[x] 368. Updated App.tsx with shipping policy route

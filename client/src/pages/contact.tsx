@@ -152,7 +152,7 @@ export default function Contact() {
                     <div>
                       <p className="font-medium text-foreground">Email</p>
                       <p className="text-muted-foreground text-sm" data-testid="text-email">
-                        keralaeconomicforum.com
+                        keralaeconomicforum@gmail.com
                       </p>
                     </div>
                   </div>
