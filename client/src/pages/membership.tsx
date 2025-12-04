@@ -21,7 +21,6 @@ import {
   CreditCard,
   Copy
 } from "lucide-react";
-import qrCodeImage from "@assets/qrm_1764493231811.png";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -364,20 +363,11 @@ export default function Membership() {
                     {/* Payment Section */}
                     <div className="text-center">
                       <h3 className="text-lg font-semibold text-foreground mb-4">Complete Membership Payment</h3>
-                      <p className="text-sm text-muted-foreground mb-6">Scan the QR code below to pay membership fee</p>
+                      <p className="text-sm text-muted-foreground mb-6">Pay using UPI or Bank Transfer</p>
                       
                       <div className="flex flex-col items-center gap-6">
-                        <div className="bg-white p-4 rounded-lg border-4 border-yellow-400 shadow-lg" data-testid="qr-code-payment">
-                          <img 
-                            src={qrCodeImage} 
-                            alt="Payment QR Code" 
-                            className="w-40 h-40 object-contain"
-                            data-testid="img-payment-qr"
-                          />
-                        </div>
-                        
                         <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800 text-left max-w-sm">
-                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">OR Pay Manually:</p>
+                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">Pay Using:</p>
                           <p className="text-xs text-muted-foreground mb-2">UPI ID:</p>
                           <p className="text-sm font-mono font-semibold break-all mb-4">caliphworldfoundation.9605399676.ibz@icici</p>
                           <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">Bank Transfer:</p>
@@ -555,22 +545,7 @@ export default function Membership() {
                           </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                          <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border">
-                            <div className="flex flex-col items-center">
-                              <p className="text-sm font-semibold mb-2">Scan QR to Pay</p>
-                              <div className="bg-white p-2 rounded-lg border-2 border-yellow-400">
-                                <img 
-                                  src={qrCodeImage} 
-                                  alt="Payment QR Code" 
-                                  className="w-32 h-32 object-contain"
-                                  data-testid="img-payment-qr"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                        <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
                             <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Pay Manually:</p>
                             
                             <div className="space-y-3">
@@ -628,7 +603,6 @@ export default function Membership() {
                               </div>
                             </div>
                           </div>
-                        </div>
 
                         <div className="space-y-2">
                           <Label htmlFor="paymentScreenshot">Payment Screenshot *</Label>
