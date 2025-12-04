@@ -199,3 +199,19 @@ Preferred communication style: Simple, everyday language.
 - If emails not sending, check server logs for "Email sent successfully" or error messages
 - Verify EMAIL_USER and EMAIL_PASS are correctly set in Replit Secrets
 - Gmail may require "Less secure app access" or App Password for authentication
+
+### RBI Compliance Policy Pages (December 2025)
+
+**Required for PhonePe Merchant Account Setup:**
+- `/terms` - Terms and Conditions
+- `/privacy` - Privacy Policy
+- `/refund-policy` - Refund Policy
+
+**Policy Page Content:**
+- Terms: Services, eligibility, payment terms, program participation, intellectual property, liability
+- Privacy: Data collection, storage, security, sharing, user rights, cookies, children's privacy
+- Refund: Cancellation windows (100%/50%/0% based on timing), refund processing, transfer policy
+
+**Footer Integration:**
+- Legal section added with links to all three policy pages
+- URLs ready for PhonePe merchant account configuration
