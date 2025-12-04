@@ -53,6 +53,8 @@ export const membershipApplications = pgTable("membership_applications", {
   membershipType: text("membership_type").notNull(),
   interests: text("interests").notNull(),
   message: text("message"),
+  paymentAmount: text("payment_amount"),
+  paymentScreenshot: text("payment_screenshot"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   status: text("status").default("pending").notNull(),
 });
@@ -82,6 +84,8 @@ export const insertMembershipSchema = createInsertSchema(membershipApplications)
   phone: z.string().min(10, "Please enter a valid phone number"),
   membershipType: z.enum(["individual", "student", "corporate", "institutional"]),
   interests: z.string().min(3, "Please select or describe your interests"),
+  paymentAmount: z.string().optional(),
+  paymentScreenshot: z.string().optional(),
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
