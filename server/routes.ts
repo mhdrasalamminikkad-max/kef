@@ -8,6 +8,25 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import PDFDocument from "pdfkit";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+
+// Lazy initialization of Razorpay instance
+let razorpay: Razorpay | null = null;
+
+function getRazorpayInstance(): Razorpay | null {
+  if (razorpay) return razorpay;
+  
+  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+    return razorpay;
+  }
+  
+  return null;
+}
 
 // Configure multer for file uploads
 const uploadsDir = path.resolve(process.cwd(), "public/uploads");
@@ -86,6 +105,112 @@ export async function registerRoutes(
         error: error?.message || "Database connection failed"
       });
     }
+  });
+
+  // Razorpay: Create Order
+  app.post("/api/razorpay/create-order", async (req, res) => {
+    try {
+      const { amount, currency = "INR", notes = {} } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Valid amount is required" 
+        });
+      }
+
+      const razorpayInstance = getRazorpayInstance();
+      if (!razorpayInstance) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "Razorpay is not configured. Please contact support." 
+        });
+      }
+
+      const options = {
+        amount: Math.round(amount * 100), // Convert to paise
+        currency: currency,
+        receipt: `receipt_${Date.now()}`,
+        notes: notes,
+      };
+
+      const order = await razorpayInstance.orders.create(options);
+
+      res.json({
+        success: true,
+        orderId: order.id,
+        currency: order.currency,
+        amount: order.amount,
+        keyId: process.env.RAZORPAY_KEY_ID, // Only send key_id (public), never key_secret
+      });
+    } catch (error: any) {
+      console.error("Razorpay order creation error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to create payment order" 
+      });
+    }
+  });
+
+  // Razorpay: Verify Payment
+  app.post("/api/razorpay/verify-payment", (req, res) => {
+    try {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Missing payment verification parameters" 
+        });
+      }
+
+      if (!process.env.RAZORPAY_KEY_SECRET) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "Razorpay is not configured" 
+        });
+      }
+
+      // Create hash using order_id + payment_id
+      const body = razorpay_order_id + "|" + razorpay_payment_id;
+      
+      const expectedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+        .update(body)
+        .digest("hex");
+
+      // Compare signatures
+      const isAuthentic = expectedSignature === razorpay_signature;
+
+      if (isAuthentic) {
+        res.json({
+          success: true,
+          message: "Payment verified successfully",
+          paymentId: razorpay_payment_id,
+          orderId: razorpay_order_id,
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: "Payment verification failed - signature mismatch",
+        });
+      }
+    } catch (error: any) {
+      console.error("Razorpay payment verification error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Payment verification failed" 
+      });
+    }
+  });
+
+  // Razorpay: Get configuration (public key only)
+  app.get("/api/razorpay/config", (_req, res) => {
+    const isConfigured = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+    res.json({
+      configured: isConfigured,
+      keyId: isConfigured ? process.env.RAZORPAY_KEY_ID : null,
+    });
   });
 
   app.post("/api/admin/verify-code", async (req, res) => {

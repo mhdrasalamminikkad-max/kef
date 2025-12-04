@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Wallet, Rocket, Star, Zap, Camera, Image, Home } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2 } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -21,50 +21,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
-import qrCodeImage from "@assets/qrm_1764493231811.png";
-import newQrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427.png";
 
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
+const PAYMENT_AMOUNT = 4999; // Amount in INR
 
-const UPI_ID = "caliphworldfoundation.9605399676.ibz@icici";
-const UPI_NAME = "Caliph World Foundation";
-const UPI_AMOUNT = "4999";
-const UPI_NOTE = "Startup Boot Camp Registration";
-
-const UPI_APPS = [
-  { name: "Google Pay", scheme: "tez://upi/pay", icon: "GPay", color: "from-blue-500 to-blue-600" },
-  { name: "PhonePe", scheme: "phonepe://pay", icon: "PhonePe", color: "from-purple-500 to-purple-600" },
-  { name: "Paytm", scheme: "paytmmp://pay", icon: "Paytm", color: "from-sky-400 to-sky-500" },
-  { name: "BHIM", scheme: "bhim://upi/pay", icon: "BHIM", color: "from-green-600 to-green-700" },
-  { name: "Amazon Pay", scheme: "amazonpay://pay", icon: "Amazon", color: "from-orange-500 to-orange-600" },
-];
-
-const buildUPIUrl = (scheme: string) => {
-  const params = new URLSearchParams({
-    pa: UPI_ID,
-    pn: UPI_NAME,
-    am: UPI_AMOUNT,
-    tn: UPI_NOTE,
-    cu: "INR"
-  });
-  return `${scheme}?${params.toString()}`;
-};
-
-const handleUPIPayment = (e: React.MouseEvent, appScheme?: string) => {
-  e.preventDefault();
-  
-  const userAgent = navigator.userAgent.toLowerCase();
-  const isIOS = /iphone|ipad|ipod/.test(userAgent);
-  
-  if (appScheme) {
-    window.location.href = buildUPIUrl(appScheme);
-  } else if (isIOS) {
-    return;
-  } else {
-    const genericUrl = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${UPI_AMOUNT}&tn=${encodeURIComponent(UPI_NOTE)}&cu=INR`;
-    window.location.href = genericUrl;
+declare global {
+  interface Window {
+    Razorpay: any;
   }
-};
+}
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -79,11 +44,123 @@ export default function Register() {
   const [addingAnother, setAddingAnother] = useState(false);
   const [registrationCount, setRegistrationCount] = useState(0);
   const [justRegistered, setJustRegistered] = useState(false);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+
+  // Check if Razorpay is configured
+  const { data: razorpayConfig } = useQuery<{ configured: boolean; keyId: string | null }>({
+    queryKey: ['/api/razorpay/config'],
+  });
 
   useEffect(() => {
     const count = parseInt(localStorage.getItem(REGISTRATIONS_COUNT_KEY) || "0", 10);
     setRegistrationCount(count);
   }, []);
+
+  // Razorpay payment handler
+  const initiateRazorpayPayment = async (formData: InsertBootcamp) => {
+    setIsPaymentProcessing(true);
+    
+    try {
+      // Create order on backend
+      const orderResponse = await apiRequest("POST", "/api/razorpay/create-order", {
+        amount: PAYMENT_AMOUNT,
+        currency: "INR",
+        notes: {
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+        },
+      });
+      
+      const orderData = await orderResponse.json();
+      
+      if (!orderData.success) {
+        throw new Error(orderData.error || "Failed to create payment order");
+      }
+
+      // Open Razorpay checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Kerala Economic Forum",
+        description: "Startup Boot Camp Registration",
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          try {
+            // Verify payment on backend
+            const verifyResponse = await apiRequest("POST", "/api/razorpay/verify-payment", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            
+            const verifyData = await verifyResponse.json();
+            
+            if (verifyData.success) {
+              // Payment verified, now submit registration with payment proof
+              const registrationData = {
+                ...formData,
+                paymentProof: `Razorpay Payment ID: ${verifyData.paymentId}`,
+              };
+              
+              mutation.mutate(registrationData);
+            } else {
+              toast({
+                title: "Payment Verification Failed",
+                description: "Your payment could not be verified. Please contact support.",
+                variant: "destructive",
+              });
+              setIsPaymentProcessing(false);
+            }
+          } catch (error) {
+            toast({
+              title: "Verification Error",
+              description: "Failed to verify payment. Please contact support.",
+              variant: "destructive",
+            });
+            setIsPaymentProcessing(false);
+          }
+        },
+        prefill: {
+          name: formData.fullName,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: "#2563eb", // Blue theme matching the site
+        },
+        modal: {
+          ondismiss: function () {
+            setIsPaymentProcessing(false);
+            toast({
+              title: "Payment Cancelled",
+              description: "You cancelled the payment. Please try again.",
+              variant: "destructive",
+            });
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response: any) {
+        setIsPaymentProcessing(false);
+        toast({
+          title: "Payment Failed",
+          description: response.error.description || "Payment failed. Please try again.",
+          variant: "destructive",
+        });
+      });
+      rzp.open();
+    } catch (error: any) {
+      setIsPaymentProcessing(false);
+      toast({
+        title: "Payment Error",
+        description: error.message || "Failed to initiate payment. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const form = useForm<InsertBootcamp>({
     resolver: zodResolver(insertBootcampSchema),
@@ -224,6 +301,7 @@ export default function Register() {
       return response.json();
     },
     onSuccess: (data) => {
+      setIsPaymentProcessing(false);
       markRegistered(data.id);
       const newCount = registrationCount + 1;
       localStorage.setItem(REGISTRATIONS_COUNT_KEY, newCount.toString());
@@ -234,11 +312,12 @@ export default function Register() {
       setPhotoPreview(null);
       toast({
         title: "Registration Successful!",
-        description: "Redirecting to your invitation...",
+        description: "Payment completed. Redirecting to your invitation...",
       });
       setLocation(`/invitation/${data.id}`);
     },
     onError: (error: Error) => {
+      setIsPaymentProcessing(false);
       toast({
         title: "Registration Failed",
         description: error.message || "Something went wrong. Please try again.",
@@ -248,7 +327,18 @@ export default function Register() {
   });
 
   const onSubmit = (data: InsertBootcamp) => {
-    mutation.mutate(data);
+    // Check if Razorpay is configured and ready
+    if (razorpayConfig?.configured && window.Razorpay) {
+      // Initiate Razorpay payment flow
+      initiateRazorpayPayment(data);
+    } else {
+      // Fallback: Submit without payment (for testing or if Razorpay not configured)
+      toast({
+        title: "Payment System Unavailable",
+        description: "Online payment is not available. Please contact support.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAddAnother = () => {
@@ -320,7 +410,7 @@ export default function Register() {
             </Card>
           </motion.div>
 
-          {/* Payment Section for those who just registered */}
+          {/* Payment Confirmation Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -330,81 +420,24 @@ export default function Register() {
             <Card className="backdrop-blur-sm bg-white/95">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <CreditCard className="w-5 h-5 text-green-600" />
-                  Complete Payment
+                  <Shield className="w-5 h-5 text-green-600" />
+                  Payment Completed
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col items-center text-center pt-0">
                 <div className="w-full max-w-md">
-                  <p className="text-lg font-bold text-foreground mb-3">
-                    <span className="line-through opacity-50 text-muted-foreground">₹6999</span> <span className="text-green-600">₹4999</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Choose your payment app:
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {UPI_APPS.map((app) => (
-                      <Button 
-                        key={app.name}
-                        onClick={(e) => handleUPIPayment(e, app.scheme)}
-                        className={`w-full bg-gradient-to-r ${app.color} text-white font-semibold py-5 text-sm shadow-md rounded-xl`}
-                        data-testid={`button-upi-${app.name.toLowerCase().replace(' ', '-')}`}
-                      >
-                        {app.icon}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground mt-4 mb-6">
-                  Tap on your preferred UPI app to pay
-                </p>
-
-                {/* Manual Payment Details */}
-                <div className="w-full border-t border-gray-200 pt-6">
-                  <h4 className="text-sm font-semibold text-foreground mb-4">Or Scan QR Code</h4>
-                  
-                  <div className="flex justify-center mb-6" data-testid="qr-code-payment-register">
-                    <div className="bg-white p-4 rounded-lg border-4 border-yellow-400 shadow-lg">
-                      <img 
-                        src={qrCodeImage} 
-                        alt="Payment QR Code" 
-                        className="w-40 h-40 object-contain"
-                        data-testid="img-payment-qr-register"
-                      />
-                    </div>
-                  </div>
-
-                  <h4 className="text-sm font-semibold text-foreground mb-4 text-center">Or Pay Manually</h4>
-                  
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-5 mb-4 text-left border border-blue-200">
-                    <p className="text-xs font-semibold text-blue-600 mb-2 tracking-wide">UPI ID</p>
-                    <p className="text-base font-semibold tracking-wide text-gray-800 font-sans break-all" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", letterSpacing: '0.3px' }}>
-                      caliphworldfoundation.9605399676.ibz@icici
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <Check className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                    <p className="text-lg font-bold text-green-700 mb-2">
+                      Payment Successful
+                    </p>
+                    <p className="text-sm text-green-600">
+                      Your payment of ₹{PAYMENT_AMOUNT} has been processed securely via Razorpay.
                     </p>
                   </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4 text-left">
-                    <p className="text-xs text-muted-foreground mb-3">Account Details</p>
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-foreground">CALIPH WORLD FOUNDATION</p>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-muted-foreground">Bank</span>
-                        <span className="text-sm text-foreground">ICICI BANK</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-muted-foreground">Branch</span>
-                        <span className="text-sm text-foreground">MUKKAM BRANCH</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-muted-foreground">A/C No</span>
-                        <span className="text-sm font-mono font-medium text-foreground">265405000474</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-muted-foreground">IFSC</span>
-                        <span className="text-sm font-mono font-medium text-foreground">ICIC0002654</span>
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    You will receive a confirmation email shortly with your registration details.
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -1127,10 +1160,10 @@ export default function Register() {
                       <Button 
                         type="submit" 
                         className="w-full btn-angular bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/30 transition-all duration-300"
-                        disabled={mutation.isPending}
+                        disabled={mutation.isPending || isPaymentProcessing}
                         data-testid="button-submit-registration"
                       >
-                        {mutation.isPending ? (
+                        {mutation.isPending || isPaymentProcessing ? (
                           <motion.div 
                             className="flex items-center gap-2"
                             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -1140,9 +1173,9 @@ export default function Register() {
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                             >
-                              <Rocket className="w-4 h-4" />
+                              <Loader2 className="w-4 h-4" />
                             </motion.div>
-                            Submitting...
+                            {isPaymentProcessing ? "Processing Payment..." : "Registering..."}
                           </motion.div>
                         ) : (
                           <motion.div 
@@ -1150,8 +1183,8 @@ export default function Register() {
                             whileHover={{ x: [0, 5, 0] }}
                             transition={{ duration: 0.3 }}
                           >
-                            <Rocket className="w-4 h-4" />
-                            {addingAnother ? "Register This Person" : "Register Now"}
+                            <CreditCard className="w-4 h-4" />
+                            {addingAnother ? "Pay & Register" : "Pay ₹4999 & Register"}
                           </motion.div>
                         )}
                       </Button>
@@ -1183,7 +1216,7 @@ export default function Register() {
           </Card>
         </motion.div>
 
-        {/* PAYMENT SECTION */}
+        {/* PAYMENT INFORMATION SECTION */}
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1216,7 +1249,7 @@ export default function Register() {
                   >
                     <CreditCard className="w-5 h-5 text-green-600" />
                   </motion.div>
-                  Complete Your Registration
+                  Secure Payment
                 </CardTitle>
               </motion.div>
               <motion.div
@@ -1225,7 +1258,7 @@ export default function Register() {
                 transition={{ delay: 0.8, duration: 0.4 }}
               >
                 <CardDescription className="text-sm">
-                  Click the button below to pay instantly via UPI.
+                  Complete the form above and pay securely via Razorpay
                 </CardDescription>
               </motion.div>
             </CardHeader>
@@ -1236,95 +1269,48 @@ export default function Register() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9, duration: 0.4 }}
               >
-                <p className="text-xl font-bold text-foreground mb-2">
-                  <span className="line-through opacity-50 text-muted-foreground">₹6999</span> <span className="text-green-600">₹4999</span>
-                </p>
-                <p className="text-sm text-muted-foreground mb-5">
-                  Choose your payment app:
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {UPI_APPS.map((app, index) => (
-                    <motion.div
-                      key={app.name}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.0 + (index * 0.1), duration: 0.3 }}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <Button 
-                        onClick={(e) => handleUPIPayment(e, app.scheme)}
-                        className={`w-full bg-gradient-to-r ${app.color} text-white font-semibold py-5 text-sm shadow-lg rounded-xl`}
-                        data-testid={`button-upi-${app.name.toLowerCase().replace(' ', '-')}`}
-                      >
-                        <Wallet className="w-4 h-4 mr-2" />
-                        {app.icon}
-                      </Button>
-                    </motion.div>
-                  ))}
+                {/* Price Display */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 mb-6">
+                  <p className="text-sm text-green-600 mb-2">Registration Fee</p>
+                  <p className="text-3xl font-bold text-foreground mb-2">
+                    <span className="line-through opacity-50 text-muted-foreground text-xl">₹6999</span>{" "}
+                    <span className="text-green-600">₹{PAYMENT_AMOUNT}</span>
+                  </p>
+                  <p className="text-xs text-green-600 font-medium">Early Bird Offer</p>
+                </div>
+
+                {/* Payment Methods */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-center gap-6 text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-green-500" />
+                      <span className="text-xs">Secure Payment</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-blue-500" />
+                      <span className="text-xs">Cards, UPI, Netbanking</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800 mb-2 font-medium">How it works:</p>
+                    <ol className="text-xs text-blue-700 text-left space-y-1">
+                      <li>1. Fill in your details in the form above</li>
+                      <li>2. Click "Register Now" to proceed to payment</li>
+                      <li>3. Complete payment via Razorpay (UPI, Card, Netbanking)</li>
+                      <li>4. Receive instant confirmation</li>
+                    </ol>
+                  </div>
+
+                  {/* Razorpay Badge */}
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <span className="text-xs text-muted-foreground">Powered by</span>
+                    <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">
+                      Razorpay
+                    </div>
+                  </div>
                 </div>
               </motion.div>
-              <p className="text-xs md:text-sm text-muted-foreground mt-5 mb-6" data-testid="text-upi-description">
-                Tap on your preferred UPI app to pay
-              </p>
-
-              {/* Manual Payment Details */}
-              <div className="w-full border-t border-gray-200 pt-6 mb-6">
-                <h4 className="text-sm font-semibold text-foreground mb-4">Or Pay Manually</h4>
-                
-                {/* UPI ID */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-5 mb-4 text-left border border-blue-200">
-                  <p className="text-xs font-semibold text-blue-600 mb-2 tracking-wide">UPI ID</p>
-                  <p className="text-base font-semibold tracking-wide text-gray-800 font-sans break-all" style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", letterSpacing: '0.3px' }} data-testid="text-upi-id">
-                    caliphworldfoundation.9605399676.ibz@icici
-                  </p>
-                </div>
-
-                {/* Bank Account Details */}
-                <div className="bg-gray-50 rounded-lg p-4 text-left mb-4">
-                  <p className="text-xs text-muted-foreground mb-3">Account Details</p>
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground" data-testid="text-account-name">CALIPH WORLD FOUNDATION</p>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs text-muted-foreground">Bank</span>
-                      <span className="text-sm text-foreground" data-testid="text-bank-name">ICICI BANK</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs text-muted-foreground">Branch</span>
-                      <span className="text-sm text-foreground" data-testid="text-branch">MUKKAM BRANCH</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs text-muted-foreground">A/C No</span>
-                      <span className="text-sm font-mono font-medium text-foreground" data-testid="text-account-number">265405000474</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-xs text-muted-foreground">IFSC</span>
-                      <span className="text-sm font-mono font-medium text-foreground" data-testid="text-ifsc">ICIC0002654</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* QR Code */}
-                <div className="flex flex-col items-center">
-                  <p className="text-sm font-semibold text-foreground mb-4">Or Scan QR Code</p>
-                  <div className="bg-white p-4 rounded-lg border-4 border-yellow-400 shadow-lg">
-                    <img 
-                      src={newQrCodeImage}
-                      alt="UPI Payment QR Code" 
-                      className="w-40 h-40 object-contain"
-                      data-testid="img-qr-code"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-3 md:p-4 w-full">
-                <p className="text-xs md:text-sm text-blue-900" data-testid="text-payment-note">
-                  <strong>Note:</strong> Keep your payment confirmation safe for camp registration.
-                </p>
-              </div>
             </CardContent>
           </Card>
         </motion.div>
