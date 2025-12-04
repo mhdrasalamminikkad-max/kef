@@ -318,6 +318,12 @@
 [x] 309. Registration now completes in seconds instead of minutes
 [x] 310. Fixed TypeScript issue with Image constructor
 [x] 311. Restarted workflow - all speed optimizations applied
+[x] 312. Added manual payment options to registration page
+[x] 313. UPI ID: caliphworldfoundation.9605399676.ibz@icici with copy button
+[x] 314. Bank Account: CALIPH WORLD FOUNDATION, ICICI BANK, MUKKAM BRANCH
+[x] 315. Account No: 265405000474, IFSC: ICIC0002654 with copy buttons
+[x] 316. Updated payment instructions for manual payment flow
+[x] 317. Payment section now shows both UPI and Bank Transfer options side by side
 [x] 312. 🎯 NEW MIGRATION TO FRESH REPLIT ENVIRONMENT - December 4, 2025
 [x] 313. Detected workflow startup error - tsx package was missing
 [x] 314. Installed tsx package successfully via npm packager tool
