@@ -4,27 +4,21 @@ import nodemailer from 'nodemailer';
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 
-// Create nodemailer transporter using environment variables
+// Email credentials
+const EMAIL_USER = 'keralaecomicforumhelp@gmail.com';
+const EMAIL_PASS = 'kqtw pxxx ramo gbvm';
+
+// Create nodemailer transporter
 function createTransporter() {
-  const emailUser = process.env.EMAIL_USER;
-  const emailPass = process.env.EMAIL_PASS;
-
   console.log('=== EMAIL CONFIG CHECK ===');
-  console.log('EMAIL_USER configured:', emailUser ? `Yes (${emailUser})` : 'No');
-  console.log('EMAIL_PASS configured:', emailPass ? `Yes (length: ${emailPass.length})` : 'No');
-
-  if (!emailUser || !emailPass) {
-    console.warn('EMAIL_USER or EMAIL_PASS not configured. Email sending will be disabled.');
-    return null;
-  }
-
+  console.log('EMAIL_USER configured: Yes');
   console.log('Creating Gmail transporter...');
   
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: emailUser,
-      pass: emailPass
+      user: EMAIL_USER,
+      pass: EMAIL_PASS
     }
   });
 }
@@ -36,18 +30,11 @@ async function sendEmail(to: string, subject: string, htmlBody: string) {
   console.log('Subject:', subject);
   
   const transporter = createTransporter();
-  
-  if (!transporter) {
-    console.log('Email transporter not available. Skipping email send.');
-    return { success: false, error: 'Email not configured' };
-  }
-
-  const emailUser = process.env.EMAIL_USER;
 
   try {
     console.log('Attempting to send email via Gmail...');
     const result = await transporter.sendMail({
-      from: `Kerala Economic Forum <${emailUser}>`,
+      from: `Kerala Economic Forum <${EMAIL_USER}>`,
       to: to,
       subject: subject,
       html: htmlBody

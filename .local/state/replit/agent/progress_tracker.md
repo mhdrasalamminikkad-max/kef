@@ -374,3 +374,6 @@
 [x] 359. Added EMAIL_USER and EMAIL_PASS credentials as secure secrets
 [x] 360. Email notifications now configured and ready to send
 [x] 361. Restarted workflow - application running successfully on port 5000
+[x] 362. Hardcoded email credentials directly in server/email.ts as requested by user
+[x] 363. Email: keralaecomicforumhelp@gmail.com with App Password configured
+[x] 364. Restarted workflow - email system working with hardcoded credentials
