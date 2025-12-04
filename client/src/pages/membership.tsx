@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { 
@@ -14,7 +14,12 @@ import {
   UserPlus,
   Rocket,
   ArrowRight,
-  Loader2
+  Loader2,
+  Upload,
+  X,
+  IndianRupee,
+  CreditCard,
+  Copy
 } from "lucide-react";
 import qrCodeImage from "@assets/qrm_1764493231811.png";
 import { Section, SectionHeader } from "@/components/section";
@@ -28,6 +33,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+
+const membershipPricing: Record<string, number> = {
+  student: 999,
+  individual: 9999,
+  corporate: 19999,
+  institutional: 9999,
+};
 
 const membershipBenefits = [
   "Access to all events",
@@ -92,6 +104,8 @@ const interestOptions = [
 export default function Membership() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -100,8 +114,66 @@ export default function Membership() {
     designation: "",
     membershipType: "",
     interests: "",
-    message: ""
+    message: "",
+    paymentAmount: "",
+    paymentScreenshot: ""
   });
+
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      
+      if (!validTypes.includes(file.type)) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload an image (JPEG, PNG, GIF, WebP).",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload a file smaller than 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setUploadedFile(file);
+      const base64 = await convertFileToBase64(file);
+      setFormData(prev => ({ ...prev, paymentScreenshot: base64 }));
+    }
+  };
+
+  const clearFile = () => {
+    setUploadedFile(null);
+    setFormData(prev => ({ ...prev, paymentScreenshot: "" }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied!",
+      description: `${label} copied to clipboard`,
+    });
+  };
+
+  const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : 0;
 
   const submitMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -134,11 +206,24 @@ export default function Membership() {
       });
       return;
     }
+    if (!formData.paymentScreenshot) {
+      toast({
+        title: "Payment Screenshot Required",
+        description: "Please upload your payment screenshot.",
+        variant: "destructive",
+      });
+      return;
+    }
     submitMutation.mutate(formData);
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === "membershipType") {
+      const price = membershipPricing[value] || 0;
+      setFormData(prev => ({ ...prev, [field]: value, paymentAmount: price.toString() }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   return (
@@ -310,6 +395,7 @@ export default function Membership() {
                       variant="outline" 
                       onClick={() => {
                         setIsSubmitted(false);
+                        setUploadedFile(null);
                         setFormData({
                           fullName: "",
                           email: "",
@@ -318,7 +404,9 @@ export default function Membership() {
                           designation: "",
                           membershipType: "",
                           interests: "",
-                          message: ""
+                          message: "",
+                          paymentAmount: "",
+                          paymentScreenshot: ""
                         });
                       }}
                       className="w-full"
@@ -441,6 +529,162 @@ export default function Membership() {
                         data-testid="textarea-message"
                       />
                     </div>
+
+                    {formData.membershipType && (
+                      <div className="border-t pt-6 mt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <CreditCard className="w-5 h-5 text-primary" />
+                          <h3 className="text-lg font-semibold">Payment Details</h3>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-red-500/10 to-yellow-500/10 rounded-lg p-4 mb-4 border border-red-200 dark:border-red-800">
+                          <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground">Membership Fee:</span>
+                            <div className="flex items-center gap-1">
+                              <IndianRupee className="w-5 h-5 text-green-600" />
+                              <span className="text-2xl font-bold text-green-600" data-testid="text-membership-price">
+                                {currentPrice.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {formData.membershipType === 'student' && 'Student Membership'}
+                            {formData.membershipType === 'individual' && 'Entrepreneur / Individual Membership'}
+                            {formData.membershipType === 'corporate' && 'Business / Corporate Membership'}
+                            {formData.membershipType === 'institutional' && 'Institution / Organization Membership'}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <div className="bg-white dark:bg-slate-900 p-4 rounded-lg border">
+                            <div className="flex flex-col items-center">
+                              <p className="text-sm font-semibold mb-2">Scan QR to Pay</p>
+                              <div className="bg-white p-2 rounded-lg border-2 border-yellow-400">
+                                <img 
+                                  src={qrCodeImage} 
+                                  alt="Payment QR Code" 
+                                  className="w-32 h-32 object-contain"
+                                  data-testid="img-payment-qr"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Pay Manually:</p>
+                            
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1">UPI ID:</p>
+                                <div className="flex items-center gap-2">
+                                  <code className="text-xs font-mono bg-white dark:bg-slate-800 px-2 py-1 rounded border flex-1 break-all">
+                                    caliphworldfoundation.9605399676.ibz@icici
+                                  </code>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 shrink-0"
+                                    onClick={() => copyToClipboard("caliphworldfoundation.9605399676.ibz@icici", "UPI ID")}
+                                    data-testid="button-copy-upi"
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              <div className="border-t pt-2">
+                                <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">Bank Transfer:</p>
+                                <div className="text-xs space-y-0.5 text-muted-foreground">
+                                  <p className="font-medium text-foreground">CALIPH WORLD FOUNDATION</p>
+                                  <p>ICICI BANK - MUKKAM BRANCH</p>
+                                  <div className="flex items-center gap-2">
+                                    <p>A/C: 265405000474</p>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => copyToClipboard("265405000474", "Account Number")}
+                                      data-testid="button-copy-account"
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <p>IFSC: ICIC0002654</p>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => copyToClipboard("ICIC0002654", "IFSC Code")}
+                                      data-testid="button-copy-ifsc"
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="paymentScreenshot">Payment Screenshot *</Label>
+                          <div className="border-2 border-dashed rounded-lg p-4 transition-colors hover:border-primary/50">
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              id="paymentScreenshot"
+                              accept="image/jpeg,image/png,image/gif,image/webp"
+                              onChange={handleFileChange}
+                              className="hidden"
+                              data-testid="input-payment-screenshot"
+                            />
+                            
+                            {formData.paymentScreenshot ? (
+                              <div className="space-y-3">
+                                <div className="relative">
+                                  <img 
+                                    src={formData.paymentScreenshot} 
+                                    alt="Payment Screenshot" 
+                                    className="max-h-48 mx-auto rounded-lg object-contain"
+                                    data-testid="img-payment-screenshot-preview"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-2 right-2 h-8 w-8"
+                                    onClick={clearFile}
+                                    data-testid="button-clear-screenshot"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                <p className="text-sm text-center text-muted-foreground">
+                                  {uploadedFile?.name}
+                                </p>
+                              </div>
+                            ) : (
+                              <div 
+                                className="flex flex-col items-center gap-2 py-4 cursor-pointer"
+                                onClick={() => fileInputRef.current?.click()}
+                              >
+                                <Upload className="w-8 h-8 text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground text-center">
+                                  Click to upload payment screenshot
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  JPG, PNG, GIF, WebP (Max 5MB)
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <Button 
                       type="submit" 

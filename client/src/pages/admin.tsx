@@ -1420,11 +1420,42 @@ export default function AdminDashboard() {
                     <p className="text-sm font-medium text-muted-foreground">Status</p>
                     <div>{getStatusBadge(selectedMembership.status)}</div>
                   </div>
+                  {(selectedMembership as any).paymentAmount && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Payment Amount</p>
+                      <p className="text-base font-semibold text-green-600">
+                        ₹{parseInt((selectedMembership as any).paymentAmount).toLocaleString('en-IN')}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 {selectedMembership.message && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Message</p>
                     <p className="text-base">{selectedMembership.message}</p>
+                  </div>
+                )}
+                {(selectedMembership as any).paymentScreenshot && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Payment Screenshot</p>
+                    <div className="border rounded-lg overflow-hidden bg-muted/30">
+                      <img 
+                        src={(selectedMembership as any).paymentScreenshot} 
+                        alt="Payment Screenshot" 
+                        className="w-full max-h-96 object-contain"
+                        data-testid="img-membership-payment-screenshot"
+                      />
+                    </div>
+                    <a 
+                      href={(selectedMembership as any).paymentScreenshot} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 mt-2"
+                      data-testid="link-view-membership-payment"
+                    >
+                      <Eye className="h-4 w-4" />
+                      View Full Image
+                    </a>
                   </div>
                 )}
                 <div>
