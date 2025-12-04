@@ -18,6 +18,11 @@ const footerLinks = {
     { label: "About Us", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],
+  policies: [
+    { label: "Terms & Conditions", href: "/terms" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Refund Policy", href: "/refund-policy" },
+  ],
 };
 
 const socialLinks = [
@@ -105,7 +110,21 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Connect</h3>
+            <h3 className="font-semibold text-white mb-4">Legal</h3>
+            <ul className="space-y-2">
+              {footerLinks.policies.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>
+                    <span className="text-sm text-slate-400 hover:text-yellow-300 cursor-pointer transition-colors flex items-center gap-2 group" data-testid={`footer-link-${link.label.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {link.label}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            
+            <h3 className="font-semibold text-white mb-4 mt-6">Connect</h3>
             <ul className="space-y-2">
               <li>
                 <a href="https://www.instagram.com/kerala.economic.forum?igsh=MThoMXFqdXEzdnM2cA==" className="text-sm text-slate-400 hover:text-yellow-300 transition-colors flex items-center gap-2 group" target="_blank" rel="noopener noreferrer">

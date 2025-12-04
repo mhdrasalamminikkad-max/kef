@@ -22,6 +22,9 @@ import Invitation from "@/pages/invitation";
 import PaymentStatus from "@/pages/payment-status";
 import AdminLogin from "@/pages/admin-login";
 import Admin from "@/pages/admin";
+import Terms from "@/pages/terms";
+import Privacy from "@/pages/privacy";
+import RefundPolicy from "@/pages/refund-policy";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -44,6 +47,9 @@ function Router() {
               <Route path="/partners" component={Partners} />
               <Route path="/contact" component={Contact} />
               <Route path="/register" component={Register} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/refund-policy" component={RefundPolicy} />
               <Route component={NotFound} />
             </Switch>
           </Layout>
