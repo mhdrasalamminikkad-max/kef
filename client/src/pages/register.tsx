@@ -25,12 +25,6 @@ import { useState, useEffect, useRef } from "react";
 const REGISTRATIONS_COUNT_KEY = "kef:bootcamp-registrations-count";
 const PAYMENT_AMOUNT = 4999; // Amount in INR
 
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
-
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -46,9 +40,9 @@ export default function Register() {
   const [justRegistered, setJustRegistered] = useState(false);
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 
-  // Check if Razorpay is configured
-  const { data: razorpayConfig } = useQuery<{ configured: boolean; keyId: string | null }>({
-    queryKey: ['/api/razorpay/config'],
+  // Check if PhonePe is configured
+  const { data: phonePeConfig } = useQuery<{ configured: boolean }>({
+    queryKey: ['/api/phonepe/config'],
   });
 
   useEffect(() => {
@@ -56,104 +50,36 @@ export default function Register() {
     setRegistrationCount(count);
   }, []);
 
-  // Razorpay payment handler
-  const initiateRazorpayPayment = async (formData: InsertBootcamp) => {
+  // PhonePe payment handler - redirects user to PhonePe payment page
+  const initiatePhonePePayment = async (formData: InsertBootcamp) => {
     setIsPaymentProcessing(true);
     
     try {
-      // Create order on backend
-      const orderResponse = await apiRequest("POST", "/api/razorpay/create-order", {
+      // Store form data in sessionStorage for retrieval after payment
+      sessionStorage.setItem('pendingRegistration', JSON.stringify(formData));
+      
+      // Initiate payment on backend
+      const paymentResponse = await apiRequest("POST", "/api/phonepe/initiate-payment", {
         amount: PAYMENT_AMOUNT,
-        currency: "INR",
-        notes: {
-          name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-        },
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
       });
       
-      const orderData = await orderResponse.json();
+      const paymentData = await paymentResponse.json();
       
-      if (!orderData.success) {
-        throw new Error(orderData.error || "Failed to create payment order");
+      if (!paymentData.success) {
+        throw new Error(paymentData.error || "Failed to initiate payment");
       }
 
-      // Open Razorpay checkout
-      const options = {
-        key: orderData.keyId,
-        amount: orderData.amount,
-        currency: orderData.currency,
-        name: "Kerala Economic Forum",
-        description: "Startup Boot Camp Registration",
-        order_id: orderData.orderId,
-        handler: async function (response: any) {
-          try {
-            // Verify payment on backend
-            const verifyResponse = await apiRequest("POST", "/api/razorpay/verify-payment", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            
-            const verifyData = await verifyResponse.json();
-            
-            if (verifyData.success) {
-              // Payment verified, now submit registration with payment proof
-              const registrationData = {
-                ...formData,
-                paymentProof: `Razorpay Payment ID: ${verifyData.paymentId}`,
-              };
-              
-              mutation.mutate(registrationData);
-            } else {
-              toast({
-                title: "Payment Verification Failed",
-                description: "Your payment could not be verified. Please contact support.",
-                variant: "destructive",
-              });
-              setIsPaymentProcessing(false);
-            }
-          } catch (error) {
-            toast({
-              title: "Verification Error",
-              description: "Failed to verify payment. Please contact support.",
-              variant: "destructive",
-            });
-            setIsPaymentProcessing(false);
-          }
-        },
-        prefill: {
-          name: formData.fullName,
-          email: formData.email,
-          contact: formData.phone,
-        },
-        theme: {
-          color: "#2563eb", // Blue theme matching the site
-        },
-        modal: {
-          ondismiss: function () {
-            setIsPaymentProcessing(false);
-            toast({
-              title: "Payment Cancelled",
-              description: "You cancelled the payment. Please try again.",
-              variant: "destructive",
-            });
-          },
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on("payment.failed", function (response: any) {
-        setIsPaymentProcessing(false);
-        toast({
-          title: "Payment Failed",
-          description: response.error.description || "Payment failed. Please try again.",
-          variant: "destructive",
-        });
-      });
-      rzp.open();
+      // Store transaction ID for later verification
+      sessionStorage.setItem('merchantTransactionId', paymentData.merchantTransactionId);
+      
+      // Redirect to PhonePe payment page
+      window.location.href = paymentData.paymentUrl;
     } catch (error: any) {
       setIsPaymentProcessing(false);
+      sessionStorage.removeItem('pendingRegistration');
       toast({
         title: "Payment Error",
         description: error.message || "Failed to initiate payment. Please try again.",
@@ -327,12 +253,12 @@ export default function Register() {
   });
 
   const onSubmit = (data: InsertBootcamp) => {
-    // Check if Razorpay is configured and ready
-    if (razorpayConfig?.configured && window.Razorpay) {
-      // Initiate Razorpay payment flow
-      initiateRazorpayPayment(data);
+    // Check if PhonePe is configured
+    if (phonePeConfig?.configured) {
+      // Initiate PhonePe payment flow (redirect-based)
+      initiatePhonePePayment(data);
     } else {
-      // Fallback: Submit without payment (for testing or if Razorpay not configured)
+      // Fallback: Submit without payment (for testing or if PhonePe not configured)
       toast({
         title: "Payment System Unavailable",
         description: "Online payment is not available. Please contact support.",

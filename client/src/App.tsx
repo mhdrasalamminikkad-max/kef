@@ -19,6 +19,7 @@ import Partners from "@/pages/partners";
 import Contact from "@/pages/contact";
 import Register from "@/pages/register";
 import Invitation from "@/pages/invitation";
+import PaymentStatus from "@/pages/payment-status";
 import AdminLogin from "@/pages/admin-login";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
@@ -31,6 +32,7 @@ function Router() {
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin" component={Admin} />
         <Route path="/invitation/:id" component={Invitation} />
+        <Route path="/payment-status/:merchantTransactionId" component={PaymentStatus} />
         <Route>
           <Layout>
             <Switch>

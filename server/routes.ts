@@ -8,24 +8,35 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import PDFDocument from "pdfkit";
-import Razorpay from "razorpay";
+import axios from "axios";
 import crypto from "crypto";
 
-// Lazy initialization of Razorpay instance
-let razorpay: Razorpay | null = null;
+// PhonePe Configuration
+const PHONEPE_UAT_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox";
+const PHONEPE_PROD_URL = "https://api.phonepe.com/apis/hermes";
 
-function getRazorpayInstance(): Razorpay | null {
-  if (razorpay) return razorpay;
+function getPhonePeConfig() {
+  const merchantId = process.env.PHONEPE_MERCHANT_ID;
+  const saltKey = process.env.PHONEPE_SALT_KEY;
+  const saltIndex = process.env.PHONEPE_SALT_INDEX || "1";
+  const isProduction = process.env.PHONEPE_PRODUCTION === "true";
   
-  if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
-    razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
-    return razorpay;
+  if (!merchantId || !saltKey) {
+    return null;
   }
   
-  return null;
+  return {
+    merchantId,
+    saltKey,
+    saltIndex,
+    baseUrl: isProduction ? PHONEPE_PROD_URL : PHONEPE_UAT_URL,
+  };
+}
+
+function generatePhonePeChecksum(payload: string, endpoint: string, saltKey: string, saltIndex: string): string {
+  const stringToHash = payload + endpoint + saltKey;
+  const sha256 = crypto.createHash("sha256").update(stringToHash).digest("hex");
+  return `${sha256}###${saltIndex}`;
 }
 
 // Configure multer for file uploads
@@ -107,10 +118,10 @@ export async function registerRoutes(
     }
   });
 
-  // Razorpay: Create Order
-  app.post("/api/razorpay/create-order", async (req, res) => {
+  // PhonePe: Initiate Payment
+  app.post("/api/phonepe/initiate-payment", async (req, res) => {
     try {
-      const { amount, currency = "INR", notes = {} } = req.body;
+      const { amount, name, email, phone, redirectUrl } = req.body;
 
       if (!amount || amount <= 0) {
         return res.status(400).json({ 
@@ -119,97 +130,163 @@ export async function registerRoutes(
         });
       }
 
-      const razorpayInstance = getRazorpayInstance();
-      if (!razorpayInstance) {
+      const config = getPhonePeConfig();
+      if (!config) {
         return res.status(500).json({ 
           success: false, 
-          error: "Razorpay is not configured. Please contact support." 
+          error: "PhonePe is not configured. Please contact support." 
         });
       }
 
-      const options = {
+      const merchantTransactionId = `T${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+      const merchantUserId = phone ? `MUID_${phone}` : `MUID_${Date.now()}`;
+      
+      // Get the base URL from environment or construct from request
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+        : `${req.protocol}://${req.get('host')}`;
+      
+      const callbackUrl = `${baseUrl}/api/phonepe/callback/${merchantTransactionId}`;
+      
+      const payload = {
+        merchantId: config.merchantId,
+        merchantTransactionId: merchantTransactionId,
+        merchantUserId: merchantUserId,
         amount: Math.round(amount * 100), // Convert to paise
-        currency: currency,
-        receipt: `receipt_${Date.now()}`,
-        notes: notes,
+        redirectUrl: redirectUrl || `${baseUrl}/payment-status/${merchantTransactionId}`,
+        redirectMode: "POST",
+        callbackUrl: callbackUrl,
+        mobileNumber: phone || "",
+        paymentInstrument: {
+          type: "PAY_PAGE"
+        }
       };
 
-      const order = await razorpayInstance.orders.create(options);
+      const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString("base64");
+      const checksum = generatePhonePeChecksum(payloadBase64, "/pg/v1/pay", config.saltKey, config.saltIndex);
 
-      res.json({
-        success: true,
-        orderId: order.id,
-        currency: order.currency,
-        amount: order.amount,
-        keyId: process.env.RAZORPAY_KEY_ID, // Only send key_id (public), never key_secret
-      });
-    } catch (error: any) {
-      console.error("Razorpay order creation error:", error);
-      res.status(500).json({ 
-        success: false, 
-        error: "Failed to create payment order" 
-      });
-    }
-  });
+      const response = await axios.post(
+        `${config.baseUrl}/pg/v1/pay`,
+        { request: payloadBase64 },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-VERIFY": checksum,
+          },
+        }
+      );
 
-  // Razorpay: Verify Payment
-  app.post("/api/razorpay/verify-payment", (req, res) => {
-    try {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        return res.status(400).json({ 
-          success: false, 
-          error: "Missing payment verification parameters" 
-        });
-      }
-
-      if (!process.env.RAZORPAY_KEY_SECRET) {
-        return res.status(500).json({ 
-          success: false, 
-          error: "Razorpay is not configured" 
-        });
-      }
-
-      // Create hash using order_id + payment_id
-      const body = razorpay_order_id + "|" + razorpay_payment_id;
-      
-      const expectedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-        .update(body)
-        .digest("hex");
-
-      // Compare signatures
-      const isAuthentic = expectedSignature === razorpay_signature;
-
-      if (isAuthentic) {
+      if (response.data.success && response.data.data?.instrumentResponse?.redirectInfo?.url) {
         res.json({
           success: true,
-          message: "Payment verified successfully",
-          paymentId: razorpay_payment_id,
-          orderId: razorpay_order_id,
+          paymentUrl: response.data.data.instrumentResponse.redirectInfo.url,
+          merchantTransactionId: merchantTransactionId,
         });
       } else {
+        console.error("PhonePe initiation failed:", response.data);
         res.status(400).json({
           success: false,
-          error: "Payment verification failed - signature mismatch",
+          error: response.data.message || "Failed to initiate payment",
         });
       }
     } catch (error: any) {
-      console.error("Razorpay payment verification error:", error);
+      console.error("PhonePe payment initiation error:", error.response?.data || error);
       res.status(500).json({ 
         success: false, 
-        error: "Payment verification failed" 
+        error: "Failed to initiate payment" 
       });
     }
   });
 
-  // Razorpay: Get configuration (public key only)
-  app.get("/api/razorpay/config", (_req, res) => {
-    const isConfigured = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+  // PhonePe: Callback handler (POST from PhonePe after payment)
+  app.post("/api/phonepe/callback/:merchantTransactionId", async (req, res) => {
+    try {
+      const { merchantTransactionId } = req.params;
+      
+      const config = getPhonePeConfig();
+      if (!config) {
+        return res.redirect(`/payment-status/${merchantTransactionId}?status=error&message=Configuration+error`);
+      }
+
+      // Check payment status
+      const statusEndpoint = `/pg/v1/status/${config.merchantId}/${merchantTransactionId}`;
+      const stringToHash = statusEndpoint + config.saltKey;
+      const sha256 = crypto.createHash("sha256").update(stringToHash).digest("hex");
+      const checksum = `${sha256}###${config.saltIndex}`;
+
+      const statusUrl = `${config.baseUrl}${statusEndpoint}`;
+
+      const response = await axios.get(statusUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-VERIFY": checksum,
+          "X-MERCHANT-ID": config.merchantId,
+        },
+      });
+
+      if (response.data.code === "PAYMENT_SUCCESS") {
+        res.redirect(`/payment-status/${merchantTransactionId}?status=success`);
+      } else {
+        res.redirect(`/payment-status/${merchantTransactionId}?status=failed&code=${response.data.code}`);
+      }
+    } catch (error: any) {
+      console.error("PhonePe callback error:", error.response?.data || error);
+      const { merchantTransactionId } = req.params;
+      res.redirect(`/payment-status/${merchantTransactionId}?status=error`);
+    }
+  });
+
+  // PhonePe: Check Payment Status
+  app.get("/api/phonepe/status/:merchantTransactionId", async (req, res) => {
+    try {
+      const { merchantTransactionId } = req.params;
+
+      const config = getPhonePeConfig();
+      if (!config) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "PhonePe is not configured" 
+        });
+      }
+
+      const statusEndpoint = `/pg/v1/status/${config.merchantId}/${merchantTransactionId}`;
+      const stringToHash = statusEndpoint + config.saltKey;
+      const sha256 = crypto.createHash("sha256").update(stringToHash).digest("hex");
+      const checksum = `${sha256}###${config.saltIndex}`;
+
+      const statusUrl = `${config.baseUrl}${statusEndpoint}`;
+
+      const response = await axios.get(statusUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-VERIFY": checksum,
+          "X-MERCHANT-ID": config.merchantId,
+        },
+      });
+
+      const isSuccess = response.data.code === "PAYMENT_SUCCESS";
+      
+      res.json({
+        success: isSuccess,
+        code: response.data.code,
+        message: response.data.message,
+        transactionId: merchantTransactionId,
+        data: response.data.data,
+      });
+    } catch (error: any) {
+      console.error("PhonePe status check error:", error.response?.data || error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to check payment status" 
+      });
+    }
+  });
+
+  // PhonePe: Get configuration status
+  app.get("/api/phonepe/config", (_req, res) => {
+    const config = getPhonePeConfig();
     res.json({
-      configured: isConfigured,
-      keyId: isConfigured ? process.env.RAZORPAY_KEY_ID : null,
+      configured: !!config,
     });
   });
 
