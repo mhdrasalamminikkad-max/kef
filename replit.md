@@ -215,3 +215,31 @@ Preferred communication style: Simple, everyday language.
 **Footer Integration:**
 - Legal section added with links to all three policy pages
 - URLs ready for PhonePe merchant account configuration
+
+### Membership Payment Integration (December 2025)
+
+**Dynamic Pricing by Membership Type:**
+- Student Membership: ₹999
+- Entrepreneur / Individual Membership: ₹9,999
+- Business / Corporate Membership: ₹19,999
+- Institution / Organization Membership: ₹9,999
+
+**Payment Methods Displayed:**
+- UPI ID: `caliphworldfoundation.9605399676.ibz@icici`
+- Bank Transfer: ICICI Bank, Account: 265405000474, IFSC: ICIC0002654
+
+**Payment Verification:**
+- Users upload payment screenshot after completing payment
+- Screenshots stored as base64 encoded images in database
+- Admin panel displays payment amount and screenshot for verification
+- Status tracking (pending, approved, rejected) for each application
+
+**Database Fields:**
+- `paymentAmount` - Stores the membership fee amount
+- `paymentScreenshot` - Stores base64 encoded payment proof image
+
+**Frontend Features:**
+- QR code display for quick payment (configurable via /attached_assets/qr-code.png)
+- Copy-to-clipboard buttons for UPI ID and bank details
+- File upload with preview, drag-and-drop support
+- Size limit: 5MB, Formats: JPG, PNG, GIF, WebP
