@@ -258,12 +258,10 @@ export default function Register() {
       // Initiate PhonePe payment flow (redirect-based)
       initiatePhonePePayment(data);
     } else {
-      // Fallback: Submit without payment (for testing or if PhonePe not configured)
-      toast({
-        title: "Payment System Unavailable",
-        description: "Online payment is not available. Please contact support.",
-        variant: "destructive",
-      });
+      // Temporary bypass: Complete registration directly without payment
+      // This allows users to register and get invitation while payment system is being set up
+      setIsPaymentProcessing(true);
+      mutation.mutate(data);
     }
   };
 

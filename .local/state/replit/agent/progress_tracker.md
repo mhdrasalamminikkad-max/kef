@@ -301,3 +301,7 @@
 [x] 292.   ✓ Floating invitation icon functional
 [x] 293.   ✓ All 7 programs loading from database
 [x] 294. ✅✅✅✅✅ IMPORT MIGRATION FULLY COMPLETED - PROJECT READY FOR DEVELOPMENT ✅✅✅✅✅
+[x] 295. Fixed registration payment flow - temporary bypass when payment system unavailable
+[x] 296. Users can now complete registration and get invitation without payment processing
+[x] 297. When PhonePe is not configured, registration submits directly and redirects to invitation
+[x] 298. Restarted workflow - changes applied successfully
