@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Copy, Building2, Smartphone } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Copy, Smartphone } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -401,7 +401,7 @@ export default function Register() {
                       Payment Successful
                     </p>
                     <p className="text-sm text-green-600">
-                      Your payment of ₹{PAYMENT_AMOUNT} has been processed securely via Razorpay.
+                      Your payment of ₹{PAYMENT_AMOUNT} has been received successfully.
                     </p>
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -1248,106 +1248,126 @@ export default function Register() {
                   <p className="text-xs text-green-600 font-medium">Early Bird Offer</p>
                 </div>
 
-                {/* Payment Options Grid */}
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  {/* UPI Payment */}
-                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4 text-left">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Smartphone className="w-5 h-5 text-purple-600" />
-                      <h3 className="font-semibold text-purple-800">UPI Payment</h3>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xs text-purple-600 font-medium">UPI ID:</p>
-                      <div className="flex items-center gap-2 bg-white rounded-md p-2 border border-purple-200">
-                        <code className="text-xs text-purple-800 flex-1 break-all" data-testid="text-upi-id">
-                          caliphworldfoundation.9605399676.ibz@icici
-                        </code>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 shrink-0"
-                          onClick={() => {
-                            navigator.clipboard.writeText("caliphworldfoundation.9605399676.ibz@icici");
-                            toast({
-                              title: "Copied!",
-                              description: "UPI ID copied to clipboard",
-                            });
-                          }}
-                          data-testid="button-copy-upi"
-                        >
-                          <Copy className="w-3 h-3" />
-                        </Button>
+                {/* UPI Payment Apps */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-4 justify-center">
+                    <Smartphone className="w-5 h-5 text-purple-600" />
+                    <h3 className="font-semibold text-foreground">Pay with UPI App</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Tap any app below to pay ₹{PAYMENT_AMOUNT} instantly
+                  </p>
+                  
+                  {/* UPI App Buttons Grid */}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    {/* Google Pay */}
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        const upiUrl = `tez://upi/pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
+                        window.location.href = upiUrl;
+                      }}
+                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-50 transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      data-testid="button-pay-gpay"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 via-red-500 to-yellow-500 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">G</span>
                       </div>
-                      <p className="text-xs text-purple-600 mt-2">
-                        Open any UPI app (GPay, PhonePe, Paytm) and pay to this UPI ID
-                      </p>
-                    </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-foreground">Google Pay</p>
+                        <p className="text-xs text-muted-foreground">GPay</p>
+                      </div>
+                    </motion.button>
+
+                    {/* PhonePe */}
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        const upiUrl = `phonepe://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
+                        window.location.href = upiUrl;
+                      }}
+                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-50 transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      data-testid="button-pay-phonepe"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">P</span>
+                      </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-foreground">PhonePe</p>
+                        <p className="text-xs text-muted-foreground">UPI</p>
+                      </div>
+                    </motion.button>
+
+                    {/* Paytm */}
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        const upiUrl = `paytmmp://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
+                        window.location.href = upiUrl;
+                      }}
+                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-50 transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      data-testid="button-pay-paytm"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">P</span>
+                      </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-foreground">Paytm</p>
+                        <p className="text-xs text-muted-foreground">UPI</p>
+                      </div>
+                    </motion.button>
+
+                    {/* All UPI Apps */}
+                    <motion.button
+                      type="button"
+                      onClick={() => {
+                        const upiUrl = `upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
+                        window.location.href = upiUrl;
+                      }}
+                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-green-400 hover:bg-green-50 transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      data-testid="button-pay-all-upi"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
+                        <Smartphone className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-foreground">All UPI Apps</p>
+                        <p className="text-xs text-muted-foreground">Any UPI app</p>
+                      </div>
+                    </motion.button>
                   </div>
 
-                  {/* Bank Transfer */}
-                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4 text-left">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Building2 className="w-5 h-5 text-blue-600" />
-                      <h3 className="font-semibold text-blue-800">Bank Transfer</h3>
-                    </div>
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between items-center py-1 border-b border-blue-100">
-                        <span className="text-blue-600">Account Name:</span>
-                        <span className="font-medium text-blue-800">CALIPH WORLD FOUNDATION</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1 border-b border-blue-100">
-                        <span className="text-blue-600">Bank:</span>
-                        <span className="font-medium text-blue-800">ICICI BANK</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1 border-b border-blue-100">
-                        <span className="text-blue-600">Branch:</span>
-                        <span className="font-medium text-blue-800">MUKKAM</span>
-                      </div>
-                      <div className="flex justify-between items-center py-1 border-b border-blue-100">
-                        <span className="text-blue-600">A/C No:</span>
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium text-blue-800" data-testid="text-account-number">265405000474</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5"
-                            onClick={() => {
-                              navigator.clipboard.writeText("265405000474");
-                              toast({
-                                title: "Copied!",
-                                description: "Account number copied to clipboard",
-                              });
-                            }}
-                            data-testid="button-copy-account"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center py-1">
-                        <span className="text-blue-600">IFSC:</span>
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium text-blue-800" data-testid="text-ifsc">ICIC0002654</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-5 w-5"
-                            onClick={() => {
-                              navigator.clipboard.writeText("ICIC0002654");
-                              toast({
-                                title: "Copied!",
-                                description: "IFSC code copied to clipboard",
-                              });
-                            }}
-                            data-testid="button-copy-ifsc"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
+                  {/* Copy UPI ID Option */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-muted-foreground mb-2">Or copy UPI ID to pay manually:</p>
+                    <div className="flex items-center gap-2 bg-white rounded-md p-2 border border-gray-200">
+                      <code className="text-xs text-foreground flex-1 break-all" data-testid="text-upi-id">
+                        caliphworldfoundation.9605399676.ibz@icici
+                      </code>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 shrink-0"
+                        onClick={() => {
+                          navigator.clipboard.writeText("caliphworldfoundation.9605399676.ibz@icici");
+                          toast({
+                            title: "Copied!",
+                            description: "UPI ID copied to clipboard",
+                          });
+                        }}
+                        data-testid="button-copy-upi"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -1356,11 +1376,11 @@ export default function Register() {
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <p className="text-sm text-amber-800 mb-2 font-medium">How to Register:</p>
                   <ol className="text-xs text-amber-700 text-left space-y-1">
-                    <li>1. Pay ₹{PAYMENT_AMOUNT} using UPI or Bank Transfer above</li>
-                    <li>2. Take a screenshot of the payment confirmation</li>
-                    <li>3. Fill in your details in the form above</li>
-                    <li>4. Upload the payment screenshot</li>
-                    <li>5. Click "Register" to complete your registration</li>
+                    <li>1. Tap any UPI app button above to pay ₹{PAYMENT_AMOUNT}</li>
+                    <li>2. Complete payment in the app (amount is pre-filled)</li>
+                    <li>3. Take a screenshot of the payment confirmation</li>
+                    <li>4. Fill in your details in the form above</li>
+                    <li>5. Upload the payment screenshot and click "Register"</li>
                   </ol>
                 </div>
 
