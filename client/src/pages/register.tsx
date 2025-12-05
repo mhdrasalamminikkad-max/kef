@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Copy, Smartphone } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Smartphone } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -1296,30 +1296,20 @@ export default function Register() {
                     </motion.button>
                   </div>
 
-                  {/* Copy UPI ID Option */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-                    <p className="text-xs text-muted-foreground mb-2">Or copy UPI ID to pay manually:</p>
-                    <div className="flex items-center gap-2 bg-white rounded-md p-2 border border-gray-200">
-                      <code className="text-xs text-foreground flex-1 break-all" data-testid="text-upi-id">
-                        caliphworldfoundation.9605399676.ibz@icici
-                      </code>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 shrink-0"
-                        onClick={() => {
-                          navigator.clipboard.writeText("caliphworldfoundation.9605399676.ibz@icici");
-                          toast({
-                            title: "Copied!",
-                            description: "UPI ID copied to clipboard",
-                          });
-                        }}
-                        data-testid="button-copy-upi"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
+                  {/* QR Code for manual payment */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <p className="text-xs text-muted-foreground mb-3">Or scan QR code to pay:</p>
+                    <div className="flex justify-center">
+                      <img 
+                        src="/attached_assets/IMG_3535_1764520833105_1764941840960.PNG" 
+                        alt="Payment QR Code" 
+                        className="w-40 h-40 rounded-lg border border-gray-200 bg-white p-2"
+                        data-testid="img-payment-qr"
+                      />
                     </div>
+                    <p className="text-xs text-muted-foreground mt-2 text-center">
+                      Scan with any UPI app
+                    </p>
                   </div>
                 </div>
 
