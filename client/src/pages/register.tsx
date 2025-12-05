@@ -40,53 +40,10 @@ export default function Register() {
   const [justRegistered, setJustRegistered] = useState(false);
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
 
-  // Check if PhonePe is configured
-  const { data: phonePeConfig } = useQuery<{ configured: boolean }>({
-    queryKey: ['/api/phonepe/config'],
-  });
-
   useEffect(() => {
     const count = parseInt(localStorage.getItem(REGISTRATIONS_COUNT_KEY) || "0", 10);
     setRegistrationCount(count);
   }, []);
-
-  // PhonePe payment handler - redirects user to PhonePe payment page
-  const initiatePhonePePayment = async (formData: InsertBootcamp) => {
-    setIsPaymentProcessing(true);
-    
-    try {
-      // Store form data in sessionStorage for retrieval after payment
-      sessionStorage.setItem('pendingRegistration', JSON.stringify(formData));
-      
-      // Initiate payment on backend
-      const paymentResponse = await apiRequest("POST", "/api/phonepe/initiate-payment", {
-        amount: PAYMENT_AMOUNT,
-        name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-      });
-      
-      const paymentData = await paymentResponse.json();
-      
-      if (!paymentData.success) {
-        throw new Error(paymentData.error || "Failed to initiate payment");
-      }
-
-      // Store transaction ID for later verification
-      sessionStorage.setItem('merchantTransactionId', paymentData.merchantTransactionId);
-      
-      // Redirect to PhonePe payment page
-      window.location.href = paymentData.paymentUrl;
-    } catch (error: any) {
-      setIsPaymentProcessing(false);
-      sessionStorage.removeItem('pendingRegistration');
-      toast({
-        title: "Payment Error",
-        description: error.message || "Failed to initiate payment. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const form = useForm<InsertBootcamp>({
     resolver: zodResolver(insertBootcampSchema),
@@ -298,16 +255,10 @@ export default function Register() {
   });
 
   const onSubmit = (data: InsertBootcamp) => {
-    // Check if PhonePe is configured
-    if (phonePeConfig?.configured) {
-      // Initiate PhonePe payment flow (redirect-based)
-      initiatePhonePePayment(data);
-    } else {
-      // Temporary bypass: Complete registration directly without payment
-      // This allows users to register and get invitation while payment system is being set up
-      setIsPaymentProcessing(true);
-      mutation.mutate(data);
-    }
+    // Submit registration with payment proof
+    // User has already paid via UPI app and uploaded screenshot
+    setIsPaymentProcessing(true);
+    mutation.mutate(data);
   };
 
   const handleAddAnother = () => {
