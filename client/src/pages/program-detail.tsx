@@ -263,12 +263,21 @@ export default function ProgramDetail() {
                     
                     {program.programStatus === 'live' && (
                       <div className="mt-6 pt-6 border-t border-border">
-                        <Link href="/register">
-                          <Button className="w-full btn-angular" data-testid="button-register-program">
-                            Register Now
-                            <ArrowRight className="ml-2 w-4 h-4" />
-                          </Button>
-                        </Link>
+                        {program.title === "Kerala Startup Fest" ? (
+                          <a href="https://keralastartupfest.com" target="_blank" rel="noopener noreferrer">
+                            <Button className="w-full btn-angular" data-testid="button-register-program">
+                              Register Now
+                              <ArrowRight className="ml-2 w-4 h-4" />
+                            </Button>
+                          </a>
+                        ) : (
+                          <Link href="/register">
+                            <Button className="w-full btn-angular" data-testid="button-register-program">
+                              Register Now
+                              <ArrowRight className="ml-2 w-4 h-4" />
+                            </Button>
+                          </Link>
+                        )}
                       </div>
                     )}
                     {program.programStatus === 'upcoming' && (

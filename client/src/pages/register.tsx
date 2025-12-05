@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Smartphone } from "lucide-react";
+import paymentQrCode from "@assets/payment-qr-code.png";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -1301,7 +1302,7 @@ export default function Register() {
                     <p className="text-xs text-muted-foreground mb-3">Or scan QR code to pay:</p>
                     <div className="flex justify-center">
                       <img 
-                        src="/attached_assets/IMG_3535_1764520833105_1764941840960.PNG" 
+                        src={paymentQrCode} 
                         alt="Payment QR Code" 
                         className="w-40 h-40 rounded-lg border border-gray-200 bg-white p-2"
                         data-testid="img-payment-qr"
