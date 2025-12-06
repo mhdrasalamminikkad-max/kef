@@ -170,7 +170,7 @@ export default function Privacy() {
               <li><strong>Organization:</strong> Caliph World Foundation</li>
               <li><strong>Email:</strong> keralaeconomicforum@gmail.com</li>
               <li><strong>Phone:</strong> +91 9072344431</li>
-              <li><strong>Address:</strong> Level 3, Venture Arcade, Mavoor Rd, above Croma, Thondayad, Kozhikode, Kerala 673016</li>
+              <li><strong>Address:</strong> Caliph World Foundation, Level 3, Venture Arcade, Mavoor Rd, above Croma, Thondayad, Kozhikode, Kerala 673016</li>
             </ul>
           </section>
         </motion.div>
