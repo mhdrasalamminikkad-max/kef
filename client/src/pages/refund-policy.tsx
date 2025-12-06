@@ -160,6 +160,7 @@ export default function RefundPolicy() {
               For all refund-related queries, please contact us:
             </p>
             <ul className="list-none text-muted-foreground space-y-2">
+              <li><strong>Organization:</strong> Caliph World Foundation</li>
               <li><strong>Email:</strong> keralaeconomicforum@gmail.com</li>
               <li><strong>Phone:</strong> +91 9072344431 (WhatsApp available)</li>
               <li><strong>Address:</strong> Level 3, Venture Arcade, Mavoor Rd, above Croma, Thondayad, Kozhikode, Kerala 673016</li>
