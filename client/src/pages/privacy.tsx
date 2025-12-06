@@ -39,9 +39,9 @@ export default function Privacy() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Introduction</h2>
             <p className="text-muted-foreground">
-              Kerala Economic Forum ("we," "our," or "us") is committed to protecting your privacy. This Privacy 
+              Caliph World Foundation ("we," "our," or "us") is committed to protecting your privacy. This Privacy 
               Policy explains how we collect, use, disclose, and safeguard your information when you visit our 
-              website (www.keralaeconomicforum.com) or participate in our programs and services.
+              website or participate in our programs and services operated under Kerala Economic Forum.
             </p>
           </section>
 

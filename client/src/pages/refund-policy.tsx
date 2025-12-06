@@ -39,8 +39,8 @@ export default function RefundPolicy() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Overview</h2>
             <p className="text-muted-foreground">
-              This Refund Policy outlines the terms and conditions for refunds related to Kerala Economic Forum's 
-              programs and events, including the Startup Boot Camp and other paid services. We strive to ensure 
+              This Refund Policy outlines the terms and conditions for refunds related to Caliph World Foundation's 
+              programs and events operated under Kerala Economic Forum, including the Startup Boot Camp and other paid services. We strive to ensure 
               complete satisfaction with our programs while maintaining fair policies for all participants.
             </p>
           </section>
@@ -58,9 +58,9 @@ export default function RefundPolicy() {
               </ul>
             </div>
 
-            <h3 className="text-xl font-semibold text-foreground mb-3">2.2 Cancellation by Kerala Economic Forum</h3>
+            <h3 className="text-xl font-semibold text-foreground mb-3">2.2 Cancellation by Caliph World Foundation</h3>
             <p className="text-muted-foreground mb-4">
-              If Kerala Economic Forum cancels a program due to unforeseen circumstances:
+              If Caliph World Foundation cancels a program due to unforeseen circumstances:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Full refund (100%) will be provided within 7-10 business days</li>
@@ -172,7 +172,7 @@ export default function RefundPolicy() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">11. Policy Updates</h2>
             <p className="text-muted-foreground">
-              Kerala Economic Forum reserves the right to modify this Refund Policy at any time. Changes will 
+              Caliph World Foundation reserves the right to modify this Refund Policy at any time. Changes will 
               be effective immediately upon posting on our website. The refund policy applicable to your 
               registration will be the one in effect at the time of your registration.
             </p>

@@ -39,8 +39,8 @@ export default function ShippingPolicy() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Overview</h2>
             <p className="text-muted-foreground">
-              Kerala Economic Forum (KEF) primarily provides services related to entrepreneurship programs, 
-              events, workshops, and membership benefits. As our offerings are predominantly service-based 
+              Caliph World Foundation primarily provides services related to entrepreneurship programs, 
+              events, workshops, and membership benefits through Kerala Economic Forum. As our offerings are predominantly service-based 
               and delivered in-person or digitally, this policy outlines how we deliver our services to 
               registered participants.
             </p>

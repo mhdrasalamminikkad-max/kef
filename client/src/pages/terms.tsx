@@ -39,8 +39,8 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Introduction</h2>
             <p className="text-muted-foreground mb-4">
-              Welcome to Kerala Economic Forum (KEF). These Terms and Conditions govern your use of our website 
-              (www.keralaeconomicforum.com) and participation in our programs, events, and services, including 
+              Welcome to Caliph World Foundation. These Terms and Conditions govern your use of our website 
+              and participation in our programs, events, and services operated under Kerala Economic Forum, including 
               the Startup Boot Camp and other initiatives.
             </p>
             <p className="text-muted-foreground">
@@ -52,7 +52,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">2. Services Offered</h2>
             <p className="text-muted-foreground mb-4">
-              Kerala Economic Forum provides the following services:
+              Caliph World Foundation provides the following services through Kerala Economic Forum:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Startup Boot Camp - A residential entrepreneurship training program</li>
@@ -122,7 +122,7 @@ export default function Terms() {
             <h2 className="text-2xl font-bold text-foreground mb-4">7. Intellectual Property</h2>
             <p className="text-muted-foreground">
               All content, materials, and resources provided during our programs are the intellectual property 
-              of Kerala Economic Forum or its partners. Participants may not reproduce, distribute, or use 
+              of Caliph World Foundation or its partners. Participants may not reproduce, distribute, or use 
               these materials for commercial purposes without prior written consent.
             </p>
           </section>
@@ -130,7 +130,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">8. Limitation of Liability</h2>
             <p className="text-muted-foreground">
-              Kerala Economic Forum shall not be liable for any indirect, incidental, special, consequential, 
+              Caliph World Foundation shall not be liable for any indirect, incidental, special, consequential, 
               or punitive damages arising out of your participation in our programs. Our total liability shall 
               not exceed the amount paid by you for the specific program.
             </p>
@@ -139,7 +139,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-foreground mb-4">9. Modifications</h2>
             <p className="text-muted-foreground">
-              Kerala Economic Forum reserves the right to modify these Terms and Conditions at any time. 
+              Caliph World Foundation reserves the right to modify these Terms and Conditions at any time. 
               Changes will be effective immediately upon posting on our website. Continued use of our 
               services constitutes acceptance of the modified terms.
             </p>
