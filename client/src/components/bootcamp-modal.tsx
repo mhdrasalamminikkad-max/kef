@@ -24,7 +24,7 @@ export function BootcampModal() {
   const [isMounted, setIsMounted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const preloadedImageRef = useRef<string | null>(null);
-  const { dismissModal, shouldShowModal, setModalOpen } = useRegistrationStatus();
+  const { dismissModal, shouldShowModal, setModalOpen, isRegistered, registrationIds, isLoaded: registrationLoaded } = useRegistrationStatus();
 
   const { data: settings, isLoading, isError } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
@@ -72,13 +72,23 @@ export function BootcampModal() {
     }
   }, [settings?.bannerImage, settings?.isEnabled, isLoading]);
 
+  // Check if user already has registrations
+  const hasExistingRegistrations = isRegistered && registrationIds.length > 0;
+
   useEffect(() => {
     if (!isMounted) return;
     if (!imageLoaded) return;
+    if (!registrationLoaded) return;
 
-    // Always show the popup on page load
+    // Don't auto-open for users who already have registrations
+    // They can use the floating button to see their invitations
+    if (hasExistingRegistrations) {
+      return;
+    }
+
+    // Show the popup on page load for new visitors
     setIsOpen(true);
-  }, [isMounted, imageLoaded]);
+  }, [isMounted, imageLoaded, registrationLoaded, hasExistingRegistrations]);
 
   useEffect(() => {
     if (shouldShowModal && isPopupEnabled && imageLoaded) {
