@@ -64,18 +64,18 @@ export function FloatingInvitationButton() {
   
   const settingsReady = !isSettingsLoading || isSettingsError;
 
+  const hasInvitations = isRegistered && registrationIds.length > 0;
+  const invitationCount = registrationIds.length;
+
   const shouldShowButton = 
     isMounted && 
     isLoaded && 
     settingsReady &&
-    isModalDismissed && 
+    (isModalDismissed || hasInvitations) && 
     isPopupEnabled && 
     !isModalCurrentlyOpen;
 
   if (!isMounted) return null;
-
-  const hasInvitations = isRegistered && registrationIds.length > 0;
-  const invitationCount = registrationIds.length;
 
   const handleClick = () => {
     if (hasInvitations) {
