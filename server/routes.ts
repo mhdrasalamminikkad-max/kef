@@ -801,7 +801,7 @@ export async function registerRoutes(
       
       const bootcamp = await storage.createBootcampRegistration(result.data);
       
-      // Send email notification to admin
+      // Send email notification to admin (non-blocking)
       sendBootcampRegistrationEmail({
         fullName: bootcamp.fullName,
         email: bootcamp.email,
@@ -815,7 +815,15 @@ export async function registerRoutes(
         createdAt: bootcamp.createdAt,
       }).catch(err => console.error("Failed to send bootcamp email:", err));
       
-      res.status(201).json(bootcamp);
+      // Return only essential fields for fast response (no large base64 blobs)
+      res.status(201).json({
+        id: bootcamp.id,
+        fullName: bootcamp.fullName,
+        email: bootcamp.email,
+        phone: bootcamp.phone,
+        status: bootcamp.status,
+        createdAt: bootcamp.createdAt,
+      });
     } catch (error: any) {
       console.error("Error creating bootcamp registration:", error);
       const errorMessage = error?.message || "Unknown database error";

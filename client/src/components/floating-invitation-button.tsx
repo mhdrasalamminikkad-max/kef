@@ -39,13 +39,13 @@ export function FloatingInvitationButton() {
     setIsMounted(true);
   }, []);
 
-  // Fetch registration details when we have IDs
+  // Fetch registration details when we have IDs - use slim endpoint for speed
   useEffect(() => {
     if (registrationIds.length > 0) {
       Promise.all(
         registrationIds.map(async (id) => {
           try {
-            const response = await fetch(`/api/bootcamp-registrations/${id}`);
+            const response = await fetch(`/api/invitation/${id}`);
             if (response.ok) {
               return await response.json();
             }
