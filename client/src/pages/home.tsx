@@ -30,8 +30,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Program } from "@shared/schema";
 import { 
-  FloatingParticles, 
-  GlowingOrbs, 
   FadeInUp, 
   ScaleIn, 
   StaggerContainer, 
@@ -40,8 +38,7 @@ import {
   MagneticButton,
   CountUp,
   RevealOnScroll,
-  HoverScale,
-  Floating3DShapes
+  HoverScale
 } from "@/components/animations";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -193,26 +190,6 @@ export default function Home() {
         <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
-        <Floating3DShapes />
-        
-        {/* Animated floating orbs */}
-        <GlowingOrbs />
-        <FloatingParticles count={30} />
-        
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div 
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-            className="absolute top-20 right-10 md:right-20 w-16 md:w-32 h-16 md:h-32 border border-white/10 rotate-45"
-          />
-          <motion.div 
-            initial={{ rotate: 45 }}
-            animate={{ rotate: -315 }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="absolute bottom-40 left-5 md:left-20 w-12 md:w-24 h-12 md:h-24 border border-white/10"
-          />
-        </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 lg:py-24 w-full">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -590,7 +567,6 @@ export default function Home() {
       <section className="relative overflow-hidden py-12 md:py-20">
         <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-red-500 animate-gradient-x bg-[length:200%_auto]" />
         <div className="absolute inset-0 geometric-dots" />
-        <FloatingParticles count={20} />
         
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
