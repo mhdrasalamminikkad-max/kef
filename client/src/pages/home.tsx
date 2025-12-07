@@ -30,6 +30,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Program } from "@shared/schema";
 import { 
+  FloatingParticles, 
+  GlowingOrbs, 
   FadeInUp, 
   ScaleIn, 
   StaggerContainer, 
@@ -38,7 +40,8 @@ import {
   MagneticButton,
   CountUp,
   RevealOnScroll,
-  HoverScale
+  HoverScale,
+  Floating3DShapes
 } from "@/components/animations";
 
 const iconMap: Record<string, LucideIcon> = {
