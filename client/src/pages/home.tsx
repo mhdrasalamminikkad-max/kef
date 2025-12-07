@@ -189,7 +189,7 @@ export default function Home() {
     <>
       {/* MOBILE HERO SECTION */}
       <section className="relative overflow-hidden min-h-[85vh] md:min-h-[700px] lg:min-h-[800px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600 animate-gradient-x bg-[length:200%_auto]" />
+        <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
         

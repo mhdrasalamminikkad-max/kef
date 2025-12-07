@@ -60,8 +60,8 @@ export function Hero({
         size === "default" ? "min-h-[600px] lg:min-h-[700px]" : "min-h-[400px] lg:min-h-[450px]"
       } flex items-center`}
     >
-      {/* Solid red gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+      {/* Animated gradient background with yellow shading */}
+      <div className="absolute inset-0 hero-gradient-animated" />
       
       {/* Dark overlay for contrast */}
       <div className="absolute inset-0 bg-black/20" />

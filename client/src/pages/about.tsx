@@ -126,7 +126,7 @@ export default function About() {
     <>
       {/* SECTION 1 — WHO WE ARE - Glassmorphism Hero */}
       <section className="relative overflow-hidden min-h-[300px] md:min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+        <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
         <div className="absolute inset-0 overflow-hidden">
