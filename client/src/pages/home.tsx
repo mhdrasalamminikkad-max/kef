@@ -193,6 +193,10 @@ export default function Home() {
         <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
+        <Floating3DShapes />
+        
+        <GlowingOrbs />
+        <FloatingParticles count={30} />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 lg:py-24 w-full">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
