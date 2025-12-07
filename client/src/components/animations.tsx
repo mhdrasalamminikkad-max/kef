@@ -702,3 +702,190 @@ export function GlitchText({
     </span>
   );
 }
+
+// 3D Floating Geometric Shapes for Hero Sections
+export function Floating3DShapes() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ perspective: "1000px" }}>
+      {/* Floating 3D Cube */}
+      <motion.div
+        className="absolute w-16 h-16 md:w-20 md:h-20"
+        style={{ 
+          left: "10%", 
+          top: "20%",
+          transformStyle: "preserve-3d"
+        }}
+        animate={{
+          rotateX: [0, 360],
+          rotateY: [0, 360],
+          y: [-20, 20, -20],
+        }}
+        transition={{
+          rotateX: { duration: 20, repeat: Infinity, ease: "linear" },
+          rotateY: { duration: 15, repeat: Infinity, ease: "linear" },
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <div className="relative w-full h-full" style={{ transformStyle: "preserve-3d" }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-orange-500/20 border border-yellow-300/30 backdrop-blur-sm" style={{ transform: "translateZ(10px)" }} />
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 to-orange-500/10 border border-yellow-300/20" style={{ transform: "translateZ(-10px)" }} />
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/25 to-orange-500/15 border border-yellow-300/25" style={{ transform: "rotateY(90deg) translateZ(10px)" }} />
+        </div>
+      </motion.div>
+
+      {/* Floating 3D Diamond/Rhombus */}
+      <motion.div
+        className="absolute w-12 h-12 md:w-16 md:h-16"
+        style={{ 
+          right: "15%", 
+          top: "30%",
+          transformStyle: "preserve-3d"
+        }}
+        animate={{
+          rotateZ: [45, 405],
+          rotateY: [0, 360],
+          y: [-15, 25, -15],
+          x: [-10, 10, -10]
+        }}
+        transition={{
+          rotateZ: { duration: 25, repeat: Infinity, ease: "linear" },
+          rotateY: { duration: 18, repeat: Infinity, ease: "linear" },
+          y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+          x: { duration: 7, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <div className="w-full h-full bg-gradient-to-br from-cyan-400/30 to-blue-500/20 border border-cyan-300/40 backdrop-blur-sm shadow-lg shadow-cyan-500/20" />
+      </motion.div>
+
+      {/* Floating 3D Sphere/Circle */}
+      <motion.div
+        className="absolute w-10 h-10 md:w-14 md:h-14 rounded-full"
+        style={{ 
+          left: "75%", 
+          top: "60%"
+        }}
+        animate={{
+          y: [-25, 15, -25],
+          x: [-15, 20, -15],
+          scale: [1, 1.15, 1]
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        <div className="w-full h-full rounded-full bg-gradient-to-br from-white/40 via-yellow-200/30 to-transparent border border-white/30 shadow-xl shadow-yellow-400/20" 
+          style={{ 
+            background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), rgba(251,191,36,0.2) 50%, transparent 70%)"
+          }} 
+        />
+      </motion.div>
+
+      {/* Floating 3D Triangle/Pyramid */}
+      <motion.div
+        className="absolute"
+        style={{ 
+          left: "20%", 
+          bottom: "25%",
+          transformStyle: "preserve-3d"
+        }}
+        animate={{
+          rotateY: [0, 360],
+          y: [-20, 20, -20],
+        }}
+        transition={{
+          rotateY: { duration: 22, repeat: Infinity, ease: "linear" },
+          y: { duration: 5.5, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <div 
+          className="w-0 h-0 border-l-[25px] border-r-[25px] border-b-[45px] md:border-l-[35px] md:border-r-[35px] md:border-b-[60px] border-l-transparent border-r-transparent border-b-red-400/30"
+          style={{ filter: "drop-shadow(0 10px 20px rgba(239,68,68,0.2))" }}
+        />
+      </motion.div>
+
+      {/* Floating 3D Ring/Torus */}
+      <motion.div
+        className="absolute w-14 h-14 md:w-20 md:h-20 rounded-full border-4 border-cyan-400/30"
+        style={{ 
+          right: "25%", 
+          bottom: "20%",
+          transformStyle: "preserve-3d"
+        }}
+        animate={{
+          rotateX: [60, 60],
+          rotateZ: [0, 360],
+          y: [-10, 15, -10]
+        }}
+        transition={{
+          rotateZ: { duration: 12, repeat: Infinity, ease: "linear" },
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <div className="absolute inset-1 rounded-full border-2 border-yellow-300/20" />
+      </motion.div>
+
+      {/* Floating Hexagon */}
+      <motion.div
+        className="absolute"
+        style={{ 
+          left: "55%", 
+          top: "15%",
+          transformStyle: "preserve-3d"
+        }}
+        animate={{
+          rotateZ: [0, 360],
+          y: [-18, 18, -18],
+          scale: [1, 1.1, 1]
+        }}
+        transition={{
+          rotateZ: { duration: 30, repeat: Infinity, ease: "linear" },
+          y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <svg width="40" height="46" viewBox="0 0 40 46" className="md:w-[50px] md:h-[58px]">
+          <polygon 
+            points="20,1 38,12 38,34 20,45 2,34 2,12" 
+            fill="url(#hexGradient)" 
+            stroke="rgba(255,255,255,0.3)" 
+            strokeWidth="1"
+          />
+          <defs>
+            <linearGradient id="hexGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(251,191,36,0.3)" />
+              <stop offset="100%" stopColor="rgba(239,68,68,0.2)" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </motion.div>
+
+      {/* Small Floating Dots */}
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 md:w-3 md:h-3 rounded-full"
+          style={{
+            left: `${15 + i * 10}%`,
+            top: `${25 + (i % 3) * 25}%`,
+            background: i % 2 === 0 
+              ? "radial-gradient(circle, rgba(251,191,36,0.5), transparent)" 
+              : "radial-gradient(circle, rgba(34,211,238,0.5), transparent)"
+          }}
+          animate={{
+            y: [0, -15, 0],
+            opacity: [0.3, 0.8, 0.3],
+            scale: [1, 1.3, 1]
+          }}
+          transition={{
+            duration: 3 + i * 0.5,
+            repeat: Infinity,
+            delay: i * 0.3,
+            ease: "easeInOut"
+          }}
+        />
+      ))}
+    </div>
+  );
+}

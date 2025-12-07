@@ -22,6 +22,7 @@ import { Section, SectionHeader, itemVariants } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Floating3DShapes } from "@/components/animations";
 
 const coreObjectives = [
   {
@@ -129,6 +130,7 @@ export default function About() {
         <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
+        <Floating3DShapes />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />

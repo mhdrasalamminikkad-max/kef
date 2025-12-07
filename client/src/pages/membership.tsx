@@ -32,6 +32,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { Floating3DShapes } from "@/components/animations";
 
 const membershipPricing: Record<string, number> = {
   student: 999,
@@ -232,6 +233,7 @@ export default function Membership() {
         <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
+        <Floating3DShapes />
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />

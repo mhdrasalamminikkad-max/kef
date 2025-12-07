@@ -40,7 +40,8 @@ import {
   MagneticButton,
   CountUp,
   RevealOnScroll,
-  HoverScale
+  HoverScale,
+  Floating3DShapes
 } from "@/components/animations";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -192,6 +193,7 @@ export default function Home() {
         <div className="absolute inset-0 hero-gradient-animated" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
+        <Floating3DShapes />
         
         {/* Animated floating orbs */}
         <GlowingOrbs />

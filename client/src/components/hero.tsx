@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Floating3DShapes } from "@/components/animations";
 
 interface HeroProps {
   title: string;
@@ -68,6 +69,9 @@ export function Hero({
       
       {/* Geometric grid overlay */}
       <div className="absolute inset-0 geometric-grid" />
+      
+      {/* 3D Floating Shapes */}
+      <Floating3DShapes />
       
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
