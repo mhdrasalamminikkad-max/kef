@@ -8,6 +8,7 @@ import { RegistrationProvider } from "@/contexts/registration-context";
 import { Layout } from "@/components/layout";
 import { useSecretCode } from "@/hooks/use-secret-code";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { ScrollProgress, Spotlight } from "@/components/animations";
 import { useEffect } from "react";
 
 import Home from "@/pages/home";
@@ -81,6 +82,8 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="kef-theme">
       <QueryClientProvider client={queryClient}>
         <PopupPrefetcher />
+        <ScrollProgress />
+        <Spotlight className="hidden lg:block" />
         <TooltipProvider>
           <RegistrationProvider>
             <SecretCodeListener>

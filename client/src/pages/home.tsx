@@ -29,6 +29,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Program } from "@shared/schema";
+import { 
+  FloatingParticles, 
+  GlowingOrbs, 
+  FadeInUp, 
+  ScaleIn, 
+  StaggerContainer, 
+  StaggerItem,
+  GradientText,
+  MagneticButton,
+  CountUp,
+  RevealOnScroll,
+  HoverScale
+} from "@/components/animations";
 
 const iconMap: Record<string, LucideIcon> = {
   Rocket,
@@ -176,15 +189,15 @@ export default function Home() {
     <>
       {/* MOBILE HERO SECTION */}
       <section className="relative overflow-hidden min-h-[85vh] md:min-h-[700px] lg:min-h-[800px] flex items-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-red-500 to-red-600 animate-gradient-x bg-[length:200%_auto]" />
         <div className="absolute inset-0 bg-black/20" />
         <div className="absolute inset-0 geometric-grid" />
         
+        {/* Animated floating orbs */}
+        <GlowingOrbs />
+        <FloatingParticles count={30} />
+        
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 -left-40 w-80 h-80 bg-cyan-400/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-40 right-1/4 w-96 h-96 bg-yellow-300/10 rounded-full blur-3xl" />
-          
           <motion.div 
             initial={{ rotate: 0 }}
             animate={{ rotate: 360 }}
@@ -246,16 +259,18 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="flex flex-col sm:flex-row gap-3 md:gap-4"
               >
-                <Link href="/programs">
-                  <Button 
-                    size="lg" 
-                    className="w-full sm:w-auto btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shadow-lg shadow-yellow-500/30 text-sm md:text-base" 
-                    data-testid="button-upcoming-programs"
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Upcoming Programs
-                  </Button>
-                </Link>
+                <MagneticButton strength={0.2}>
+                  <Link href="/programs">
+                    <Button 
+                      size="lg" 
+                      className="w-full sm:w-auto btn-angular bg-yellow-400 text-black font-semibold shadow-lg shadow-yellow-500/30 text-sm md:text-base shimmer" 
+                      data-testid="button-upcoming-programs"
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Upcoming Programs
+                    </Button>
+                  </Link>
+                </MagneticButton>
               </motion.div>
 
               <motion.p
@@ -276,23 +291,23 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="hidden lg:block"
             >
-              <div className="grid grid-cols-2 gap-4">
+              <StaggerContainer stagger={0.15} className="grid grid-cols-2 gap-4">
                 {impactMetrics.map((metric, index) => (
-                  <motion.div
-                    key={metric.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                    className="glass-panel-strong rounded-xl p-6 text-center"
-                    data-testid={`stat-card-${index}`}
-                  >
-                    <div className="text-3xl font-bold text-white mb-1">
-                      {metric.prefix}{metric.end}{metric.suffix}
-                    </div>
-                    <div className="text-sm text-white/70">{metric.label}</div>
-                  </motion.div>
+                  <StaggerItem key={metric.label}>
+                    <HoverScale scale={1.05}>
+                      <div
+                        className="glass-panel-strong rounded-xl p-6 text-center"
+                        data-testid={`stat-card-${index}`}
+                      >
+                        <div className="text-3xl font-bold text-white mb-1">
+                          <CountUp end={metric.end} prefix={metric.prefix || ""} suffix={metric.suffix} duration={2.5} />
+                        </div>
+                        <div className="text-sm text-white/70">{metric.label}</div>
+                      </div>
+                    </HoverScale>
+                  </StaggerItem>
                 ))}
-              </div>
+              </StaggerContainer>
             </motion.div>
           </div>
         </div>
@@ -333,46 +348,50 @@ export default function Home() {
 
       {/* WHAT WE DO - Mobile Grid */}
       <Section background="muted" className="mobile-section">
-        <SectionHeader
-          title="What We Do"
-          description="Empowering Kerala's entrepreneurial community"
-        />
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+        <FadeInUp>
+          <SectionHeader
+            title="What We Do"
+            description="Empowering Kerala's entrepreneurial community"
+          />
+        </FadeInUp>
+        <StaggerContainer stagger={0.08} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {whatWeDo.map((item, index) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-            >
-              <Card className="h-full hover-elevate overflow-visible">
-                <CardContent className="p-3 md:p-6 text-center">
-                  <div className={`w-10 h-10 md:w-14 md:h-14 mx-auto flex items-center justify-center mb-2 md:mb-4 rounded-xl md:rotate-45 ${
-                    item.gradient === 'red' ? 'bg-red-500' :
-                    item.gradient === 'yellow' ? 'bg-yellow-400' :
-                    'bg-cyan-500'
-                  }`}>
-                    <item.icon className={`w-5 h-5 md:w-7 md:h-7 md:-rotate-45 ${item.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
-                  </div>
-                  <h3 className="font-semibold text-foreground text-sm md:text-base" data-testid={`text-whatwedo-${index}`}>
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1 hidden md:block">
-                    {item.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <StaggerItem key={item.title}>
+              <HoverScale scale={1.03}>
+                <Card className="h-full overflow-visible">
+                  <CardContent className="p-3 md:p-6 text-center">
+                    <motion.div 
+                      className={`w-10 h-10 md:w-14 md:h-14 mx-auto flex items-center justify-center mb-2 md:mb-4 rounded-xl md:rotate-45 ${
+                        item.gradient === 'red' ? 'bg-red-500' :
+                        item.gradient === 'yellow' ? 'bg-yellow-400' :
+                        'bg-cyan-500'
+                      }`}
+                      whileHover={{ rotate: [45, 50, 45], scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <item.icon className={`w-5 h-5 md:w-7 md:h-7 md:-rotate-45 ${item.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
+                    </motion.div>
+                    <h3 className="font-semibold text-foreground text-sm md:text-base" data-testid={`text-whatwedo-${index}`}>
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-1 hidden md:block">
+                      {item.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </HoverScale>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </Section>
 
       {/* SIGNATURE PROGRAMS - Compact Cards */}
       <Section className="mobile-section">
-        <SectionHeader
-          title="Our Signature Programs"
-        />
+        <FadeInUp>
+          <SectionHeader
+            title="Our Signature Programs"
+          />
+        </FadeInUp>
         
         {/* Mobile horizontal scroll - Compact */}
         <div className="md:hidden">
@@ -412,38 +431,34 @@ export default function Home() {
         </div>
 
         {/* Desktop Grid - Compact */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StaggerContainer stagger={0.1} className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
           {signaturePrograms.map((program, index) => {
             const IconComponent = iconMap[program.icon] || Rocket;
             return (
-              <motion.div
-                key={program.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-              >
-                <Card className="h-full hover-elevate overflow-visible">
-                  <CardContent className="p-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
-                      index % 3 === 0 ? 'bg-red-500' :
-                      index % 3 === 1 ? 'bg-yellow-400' :
-                      'bg-cyan-500'
-                    }`}>
-                      <IconComponent className={`w-5 h-5 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
-                    </div>
-                    <h3 className="font-semibold text-sm text-foreground mb-1" data-testid={`text-program-title-${index}`}>
-                      {program.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground" data-testid={`text-program-desc-${index}`}>
-                      {program.shortDesc}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
+              <StaggerItem key={program.title}>
+                <HoverScale scale={1.03}>
+                  <Card className="h-full overflow-visible">
+                    <CardContent className="p-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
+                        index % 3 === 0 ? 'bg-red-500' :
+                        index % 3 === 1 ? 'bg-yellow-400' :
+                        'bg-cyan-500'
+                      }`}>
+                        <IconComponent className={`w-5 h-5 ${index % 3 === 1 ? 'text-black' : 'text-white'}`} />
+                      </div>
+                      <h3 className="font-semibold text-sm text-foreground mb-1" data-testid={`text-program-title-${index}`}>
+                        {program.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground" data-testid={`text-program-desc-${index}`}>
+                        {program.shortDesc}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </HoverScale>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
         
         <div className="mt-6 md:mt-8 text-center">
           <Link href="/programs">
@@ -457,35 +472,40 @@ export default function Home() {
 
       {/* IMPACT SECTION - Desktop Only (Mobile has horizontal scroll above) */}
       <Section background="muted" className="hidden md:block mobile-section">
-        <SectionHeader
-          title="Our Vision. Our Impact. Our Future."
-        />
-        <div className="grid grid-cols-4 gap-8">
+        <FadeInUp>
+          <SectionHeader
+            title="Our Vision. Our Impact. Our Future."
+          />
+        </FadeInUp>
+        <StaggerContainer stagger={0.15} className="grid grid-cols-4 gap-8">
           {impactMetrics.map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="text-center"
-            >
-              <div className="w-20 h-20 mx-auto mb-4 rotate-45 bg-gradient-to-br from-red-500 to-cyan-500 flex items-center justify-center">
-                <span className="text-2xl font-bold text-white -rotate-45">
-                  {metric.prefix}{metric.end}{metric.suffix}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">{metric.label}</p>
-            </motion.div>
+            <StaggerItem key={metric.label}>
+              <HoverScale scale={1.1}>
+                <div className="text-center">
+                  <motion.div 
+                    className="w-20 h-20 mx-auto mb-4 rotate-45 bg-gradient-to-br from-red-500 to-cyan-500 flex items-center justify-center"
+                    whileHover={{ rotate: 50, scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="text-2xl font-bold text-white -rotate-45">
+                      <CountUp end={metric.end} prefix={metric.prefix || ""} suffix={metric.suffix} duration={2} />
+                    </span>
+                  </motion.div>
+                  <p className="text-sm text-muted-foreground">{metric.label}</p>
+                </div>
+              </HoverScale>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </Section>
 
       {/* UPCOMING EVENTS */}
       <Section className="mobile-section">
-        <SectionHeader
-          title="Upcoming Events"
-        />
+        <FadeInUp>
+          <SectionHeader
+            title="Upcoming Events"
+          />
+        </FadeInUp>
         
         {/* Mobile List View */}
         <div className="space-y-3 md:hidden">
@@ -528,31 +548,31 @@ export default function Home() {
         </div>
 
         {/* Desktop Grid */}
-        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StaggerContainer stagger={0.12} className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-6">
           {upcomingEvents.map((event, index) => (
-            <motion.div
-              key={event.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="h-full hover-elevate overflow-visible">
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 rotate-45 bg-cyan-500 flex items-center justify-center mb-4">
-                    <Calendar className="w-6 h-6 text-white -rotate-45" />
-                  </div>
-                  <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-event-title-${index}`}>
-                    {event.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground" data-testid={`text-event-desc-${index}`}>
-                    {event.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <StaggerItem key={event.title}>
+              <HoverScale scale={1.03}>
+                <Card className="h-full overflow-visible">
+                  <CardContent className="p-6">
+                    <motion.div 
+                      className="w-12 h-12 rotate-45 bg-cyan-500 flex items-center justify-center mb-4"
+                      whileHover={{ rotate: 50, scale: 1.1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Calendar className="w-6 h-6 text-white -rotate-45" />
+                    </motion.div>
+                    <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-event-title-${index}`}>
+                      {event.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground" data-testid={`text-event-desc-${index}`}>
+                      {event.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </HoverScale>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
         
         <div className="mt-6 md:mt-8 text-center">
           <Link href="/programs">
@@ -566,8 +586,9 @@ export default function Home() {
 
       {/* CALL TO ACTION */}
       <section className="relative overflow-hidden py-12 md:py-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-red-500" />
+        <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-red-600 to-red-500 animate-gradient-x bg-[length:200%_auto]" />
         <div className="absolute inset-0 geometric-dots" />
+        <FloatingParticles count={20} />
         
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -576,34 +597,56 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+            <motion.h2 
+              className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
               Ready to Join the Movement?
-            </h2>
-            <p className="text-sm md:text-lg text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p 
+              className="text-sm md:text-lg text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               Be part of Kerala's largest entrepreneurial community. Connect with founders, mentors, investors, and innovators.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
-              <Link href="/register">
-                <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto btn-angular bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shadow-lg text-sm md:text-base" 
-                  data-testid="button-cta-register"
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Register Now
-                </Button>
-              </Link>
-              <Link href="/partners">
-                <Button 
-                  size="lg" 
-                  className="w-full sm:w-auto btn-angular glass-panel text-white hover:bg-white/20 text-sm md:text-base" 
-                  data-testid="button-cta-partner"
-                >
-                  Partner With Us
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
+            </motion.p>
+            <motion.div 
+              className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <MagneticButton strength={0.15}>
+                <Link href="/register">
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto btn-angular bg-yellow-400 text-black font-semibold shadow-lg shadow-yellow-500/30 text-sm md:text-base shimmer" 
+                    data-testid="button-cta-register"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Register Now
+                  </Button>
+                </Link>
+              </MagneticButton>
+              <MagneticButton strength={0.15}>
+                <Link href="/partners">
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto btn-angular glass-panel text-white text-sm md:text-base" 
+                    data-testid="button-cta-partner"
+                  >
+                    Partner With Us
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </Link>
+              </MagneticButton>
+            </motion.div>
           </motion.div>
         </div>
       </section>
