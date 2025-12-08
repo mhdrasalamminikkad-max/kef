@@ -130,6 +130,11 @@
 [x] 130. Added SpringCounter, MorphingShape, SparkleEffect, AnimatedMesh
 [x] 131. Added extensive CSS keyframe animations (heartbeat, jello, wobble, shake, etc.)
 [x] 132. All animations reviewed and approved by architect
+[x] 133. Created QR code verification page (/verify/:id) for scanning invitation QR codes
+[x] 134. Verification page shows: status (approved/pending/rejected), participant photo, name, organization, district
+[x] 135. Added payment proof display on verification page
+[x] 136. Updated QR code in invitation to link to verification URL instead of JSON data
+[x] 137. API endpoint returns only minimal fields for privacy (no email, phone, address exposed)
 [x] 126. Replit uses Gmail connector, Railway uses Resend API
 [x] 127. User needs to add RESEND_API_KEY in Railway for emails to work there
 [x] 128. Fresh migration to new Replit environment completed

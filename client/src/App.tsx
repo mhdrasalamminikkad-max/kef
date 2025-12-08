@@ -27,6 +27,7 @@ import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 import RefundPolicy from "@/pages/refund-policy";
 import ShippingPolicy from "@/pages/shipping-policy";
+import Verify from "@/pages/verify";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -37,6 +38,7 @@ function Router() {
         <Route path="/admin/login" component={AdminLogin} />
         <Route path="/admin" component={Admin} />
         <Route path="/invitation/:id" component={Invitation} />
+        <Route path="/verify/:id" component={Verify} />
         <Route path="/payment-status/:merchantTransactionId" component={PaymentStatus} />
         <Route>
           <Layout>

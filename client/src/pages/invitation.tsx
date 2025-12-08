@@ -70,14 +70,9 @@ export default function Invitation() {
     );
   }
 
-  const qrData = JSON.stringify({
-    id: registration.id,
-    name: registration.fullName,
-    email: registration.email,
-    phone: registration.phone,
-    event: "Startup Boot Camp 2025",
-    date: "December 26-28, 2025"
-  });
+  // QR code links to verification page for easy scanning
+  const verificationUrl = `${window.location.origin}/verify/${registration.id}`;
+  const qrData = verificationUrl;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 py-8 px-4">

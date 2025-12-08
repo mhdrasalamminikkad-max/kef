@@ -889,6 +889,36 @@ export async function registerRoutes(
     }
   });
 
+  // Verification endpoint - returns minimal registration details for on-site validation
+  // Used when scanning QR code from invitation
+  // Only exposes fields needed for door check: name, org, photo, payment status, and status
+  app.get("/api/verify/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const registration = await storage.getBootcampById(id);
+      
+      if (!registration) {
+        return res.status(404).json({ error: "Registration not found" });
+      }
+      
+      // Return only minimal fields needed for on-site verification
+      // Masks sensitive data like full address, phone, email, expectations
+      res.json({
+        id: registration.id,
+        fullName: registration.fullName,
+        organization: registration.organization,
+        district: registration.district,
+        photo: registration.photo,
+        paymentProof: registration.paymentProof,
+        status: registration.status,
+        createdAt: registration.createdAt,
+      });
+    } catch (error) {
+      console.error("Error fetching verification:", error);
+      res.status(500).json({ error: "Failed to fetch verification" });
+    }
+  });
+
   // Programs API routes (public)
   app.get("/api/programs", async (req, res) => {
     try {
