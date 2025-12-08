@@ -1125,3 +1125,491 @@ export function Floating3DShapes() {
     </div>
   );
 }
+
+// ===== NEW KILLER ANIMATION COMPONENTS =====
+
+// Page Transition Wrapper
+export function PageTransition({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ 
+        duration: 0.4,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// 3D Tilt Card Component
+export function TiltCard({ 
+  children, 
+  className = "",
+  intensity = 15
+}: { 
+  children: ReactNode; 
+  className?: string;
+  intensity?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const rotateX = useTransform(y, [-0.5, 0.5], [intensity, -intensity]);
+  const rotateY = useTransform(x, [-0.5, 0.5], [-intensity, intensity]);
+
+  const springConfig = { stiffness: 300, damping: 30 };
+  const springRotateX = useSpring(rotateX, springConfig);
+  const springRotateY = useSpring(rotateY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set((e.clientX - centerX) / rect.width);
+    y.set((e.clientY - centerY) / rect.height);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: springRotateX,
+        rotateY: springRotateY,
+        transformStyle: "preserve-3d",
+        perspective: 1000
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Aurora Background Effect
+export function AuroraBackground({ className = "" }: { className?: string }) {
+  return (
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+      <motion.div
+        className="absolute w-[150%] h-[150%] -top-1/4 -left-1/4"
+        animate={{
+          rotate: [0, 360]
+        }}
+        transition={{
+          duration: 60,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      >
+        <div className="absolute inset-0 aurora-bg opacity-60" />
+      </motion.div>
+      <motion.div
+        className="absolute w-full h-full rounded-full blur-3xl"
+        style={{
+          background: "radial-gradient(circle, rgba(239,68,68,0.15) 0%, transparent 50%)",
+          left: "20%",
+          top: "30%"
+        }}
+        animate={{
+          x: [-50, 50, -50],
+          y: [-30, 30, -30],
+          scale: [1, 1.2, 1]
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute w-full h-full rounded-full blur-3xl"
+        style={{
+          background: "radial-gradient(circle, rgba(34,211,238,0.15) 0%, transparent 50%)",
+          right: "20%",
+          bottom: "20%"
+        }}
+        animate={{
+          x: [50, -50, 50],
+          y: [30, -30, 30],
+          scale: [1.2, 1, 1.2]
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+    </div>
+  );
+}
+
+// Liquid Blob Component
+export function LiquidBlob({
+  color = "from-red-500 to-yellow-500",
+  size = "w-64 h-64",
+  className = ""
+}: {
+  color?: string;
+  size?: string;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={`absolute bg-gradient-to-br ${color} ${size} blur-3xl opacity-30 liquid-blob ${className}`}
+      animate={{
+        scale: [1, 1.2, 1],
+      }}
+      transition={{
+        duration: 8,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
+  );
+}
+
+// Text Scramble Animation
+export function TextScramble({
+  text,
+  className = "",
+  scrambleSpeed = 50
+}: {
+  text: string;
+  className?: string;
+  scrambleSpeed?: number;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const [displayText, setDisplayText] = useState(text);
+  const [isScrambling, setIsScrambling] = useState(false);
+  const chars = "!<>-_\\/[]{}—=+*^?#________";
+
+  useEffect(() => {
+    if (!isInView || isScrambling) return;
+    setIsScrambling(true);
+
+    let iteration = 0;
+    const interval = setInterval(() => {
+      setDisplayText(
+        text
+          .split("")
+          .map((char, index) => {
+            if (index < iteration) return text[index];
+            if (char === " ") return " ";
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+
+      if (iteration >= text.length) {
+        clearInterval(interval);
+        setIsScrambling(false);
+      }
+
+      iteration += 1 / 3;
+    }, scrambleSpeed);
+
+    return () => clearInterval(interval);
+  }, [isInView, text, scrambleSpeed, isScrambling]);
+
+  return (
+    <span ref={ref} className={`font-mono ${className}`}>
+      {displayText}
+    </span>
+  );
+}
+
+// Animated Gradient Border
+export function GradientBorderCard({
+  children,
+  className = "",
+  borderWidth = 2
+}: {
+  children: ReactNode;
+  className?: string;
+  borderWidth?: number;
+}) {
+  return (
+    <div className={`relative rounded-lg ${className}`}>
+      <motion.div
+        className="absolute inset-0 rounded-lg"
+        style={{
+          padding: borderWidth,
+          background: "linear-gradient(90deg, #ef4444, #fbbf24, #22d3ee, #a855f7, #ef4444)",
+          backgroundSize: "300% 100%",
+        }}
+        animate={{
+          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+      >
+        <div className="w-full h-full bg-background rounded-lg" />
+      </motion.div>
+      <div className="relative z-10 p-4">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Bounce In Animation
+export function BounceIn({
+  children,
+  className = "",
+  delay = 0
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0, y: 100 }}
+      animate={isInView ? { 
+        opacity: 1, 
+        scale: 1, 
+        y: 0,
+        transition: {
+          type: "spring",
+          stiffness: 260,
+          damping: 20,
+          delay
+        }
+      } : {}}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Elastic Slide
+export function ElasticSlide({
+  children,
+  direction = "left",
+  className = "",
+  delay = 0
+}: {
+  children: ReactNode;
+  direction?: "left" | "right" | "up" | "down";
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  const variants = {
+    left: { x: -200, opacity: 0 },
+    right: { x: 200, opacity: 0 },
+    up: { y: 200, opacity: 0 },
+    down: { y: -200, opacity: 0 }
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={variants[direction]}
+      animate={isInView ? { 
+        x: 0, 
+        y: 0, 
+        opacity: 1,
+        transition: {
+          type: "spring",
+          stiffness: 100,
+          damping: 15,
+          delay
+        }
+      } : {}}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Glowing Button Effect
+export function GlowingButton({
+  children,
+  className = ""
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={`relative ${className}`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-lg bg-gradient-to-r from-red-500 via-yellow-500 to-cyan-500 blur-lg opacity-50"
+        animate={{
+          opacity: [0.5, 0.8, 0.5]
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <div className="relative">{children}</div>
+    </motion.div>
+  );
+}
+
+// Animated Counter with Spring
+export function SpringCounter({
+  value,
+  className = ""
+}: {
+  value: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, { stiffness: 100, damping: 30 });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      motionValue.set(value);
+    }
+  }, [isInView, value, motionValue]);
+
+  useEffect(() => {
+    const unsubscribe = springValue.on("change", (latest) => {
+      setDisplay(Math.round(latest));
+    });
+    return unsubscribe;
+  }, [springValue]);
+
+  return (
+    <span ref={ref} className={className}>
+      {display}
+    </span>
+  );
+}
+
+// Morphing Shape
+export function MorphingShape({
+  className = ""
+}: {
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={`absolute bg-gradient-to-br from-red-500/20 via-yellow-500/20 to-cyan-500/20 ${className}`}
+      animate={{
+        borderRadius: [
+          "60% 40% 30% 70% / 60% 30% 70% 40%",
+          "30% 60% 70% 40% / 50% 60% 30% 60%",
+          "50% 60% 30% 60% / 30% 50% 70% 50%",
+          "60% 40% 60% 30% / 70% 30% 50% 60%",
+          "60% 40% 30% 70% / 60% 30% 70% 40%"
+        ]
+      }}
+      transition={{
+        duration: 8,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+    />
+  );
+}
+
+// Sparkle Effect
+export function SparkleEffect({
+  count = 10,
+  className = ""
+}: {
+  count?: number;
+  className?: string;
+}) {
+  const sparkles = Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 3 + 2,
+    delay: Math.random() * 2
+  }));
+
+  return (
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
+      {sparkles.map((sparkle) => (
+        <motion.div
+          key={sparkle.id}
+          className="absolute rounded-full bg-yellow-400"
+          style={{
+            left: `${sparkle.x}%`,
+            top: `${sparkle.y}%`,
+            width: sparkle.size,
+            height: sparkle.size
+          }}
+          animate={{
+            scale: [0, 1, 0],
+            opacity: [0, 1, 0],
+            rotate: [0, 180]
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            delay: sparkle.delay,
+            ease: "easeInOut"
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Animated Background Mesh
+export function AnimatedMesh({ className = "" }: { className?: string }) {
+  return (
+    <div className={`absolute inset-0 overflow-hidden ${className}`}>
+      <svg className="w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="mesh" width="60" height="60" patternUnits="userSpaceOnUse">
+            <motion.circle
+              cx="30"
+              cy="30"
+              r="1"
+              fill="currentColor"
+              animate={{
+                r: [1, 2, 1],
+                opacity: [0.3, 0.8, 0.3]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#mesh)" />
+      </svg>
+    </div>
+  );
+}
