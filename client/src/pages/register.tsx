@@ -982,6 +982,22 @@ export default function Register() {
                     />
                   </motion.div>
 
+                  {/* Verification Warning */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.89, duration: 0.4 }}
+                  >
+                    <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 border border-amber-200 dark:border-amber-800">
+                      <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1">
+                        Payment Verification Notice
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-500">
+                        All payments are verified against bank records. Fake or manipulated screenshots will result in immediate rejection and permanent blacklisting.
+                      </p>
+                    </div>
+                  </motion.div>
+
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
