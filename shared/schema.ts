@@ -132,7 +132,7 @@ export const insertBootcampSchema = createInsertSchema(bootcampRegistrations).om
   phone: z.string().min(10, "Please enter a valid phone number"),
   age: z.string().min(1, "Please enter your age"),
   organization: z.string().min(2, "Institution name is required"),
-  paymentProof: z.string().min(1, "Payment proof is required"),
+  paymentProof: z.string().optional().default(""),
   place: z.string().optional(),
   address: z.string().optional(),
   photo: z.string().min(1, "Photo is required"),
