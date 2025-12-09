@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { 
@@ -12,14 +12,9 @@ import {
   CheckCircle,
   Sparkles,
   UserPlus,
-  Rocket,
-  ArrowRight,
   Loader2,
-  Upload,
-  X,
   IndianRupee,
-  CreditCard,
-  Copy
+  CreditCard
 } from "lucide-react";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,8 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { Floating3DShapes } from "@/components/animations";
 
 const membershipPricing: Record<string, number> = {
@@ -104,8 +97,7 @@ const interestOptions = [
 export default function Membership() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -115,86 +107,47 @@ export default function Membership() {
     membershipType: "",
     interests: "",
     message: "",
-    paymentAmount: "",
-    paymentScreenshot: ""
+    paymentAmount: ""
   });
-
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      
-      if (!validTypes.includes(file.type)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload an image (JPEG, PNG, GIF, WebP).",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: "Please upload a file smaller than 5MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setUploadedFile(file);
-      const base64 = await convertFileToBase64(file);
-      setFormData(prev => ({ ...prev, paymentScreenshot: base64 }));
-    }
-  };
-
-  const clearFile = () => {
-    setUploadedFile(null);
-    setFormData(prev => ({ ...prev, paymentScreenshot: "" }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: "Copied!",
-      description: `${label} copied to clipboard`,
-    });
-  };
 
   const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : 0;
 
-  const submitMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const response = await apiRequest("POST", "/api/membership", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      setIsSubmitted(true);
-      toast({
-        title: "Application Submitted!",
-        description: "Thank you for applying. We'll review your application and get back to you soon.",
+  const initiatePhonePePayment = async () => {
+    try {
+      setIsPaymentProcessing(true);
+      
+      // Store membership data in sessionStorage for after payment
+      sessionStorage.setItem('pendingMembership', JSON.stringify(formData));
+      sessionStorage.setItem('membershipFlow', 'true');
+      
+      const response = await fetch('/api/phonepe/initiate-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: currentPrice,
+          name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+        }),
       });
-    },
-    onError: (error: Error) => {
+      
+      const result = await response.json();
+      
+      if (result.success && result.paymentUrl) {
+        sessionStorage.setItem('merchantTransactionId', result.merchantTransactionId);
+        window.location.href = result.paymentUrl;
+      } else {
+        throw new Error(result.error || 'Failed to initiate payment');
+      }
+    } catch (error: any) {
+      setIsPaymentProcessing(false);
       toast({
-        title: "Submission Failed",
-        description: error.message || "Please try again later.",
+        title: "Payment Initiation Failed",
+        description: error.message || "Could not start payment. Please try again.",
         variant: "destructive",
       });
-    },
-  });
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,15 +159,8 @@ export default function Membership() {
       });
       return;
     }
-    if (!formData.paymentScreenshot) {
-      toast({
-        title: "Payment Screenshot Required",
-        description: "Please upload your payment screenshot.",
-        variant: "destructive",
-      });
-      return;
-    }
-    submitMutation.mutate(formData);
+    // Initiate PhonePe payment
+    initiatePhonePePayment();
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -387,7 +333,6 @@ export default function Membership() {
                       variant="outline" 
                       onClick={() => {
                         setIsSubmitted(false);
-                        setUploadedFile(null);
                         setFormData({
                           fullName: "",
                           email: "",
@@ -397,8 +342,7 @@ export default function Membership() {
                           membershipType: "",
                           interests: "",
                           message: "",
-                          paymentAmount: "",
-                          paymentScreenshot: ""
+                          paymentAmount: ""
                         });
                       }}
                       className="w-full"
@@ -547,136 +491,34 @@ export default function Membership() {
                           </p>
                         </div>
 
-                        <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Pay Manually:</p>
-                            
-                            <div className="space-y-3">
-                              <div>
-                                <p className="text-xs text-muted-foreground mb-1">UPI ID:</p>
-                                <div className="flex items-center gap-2">
-                                  <code className="text-xs font-mono bg-white dark:bg-slate-800 px-2 py-1 rounded border flex-1 break-all">
-                                    caliphworldfoundation.9605399676.ibz@icici
-                                  </code>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0"
-                                    onClick={() => copyToClipboard("caliphworldfoundation.9605399676.ibz@icici", "UPI ID")}
-                                    data-testid="button-copy-upi"
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                              
-                              <div className="border-t pt-2">
-                                <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">Bank Transfer:</p>
-                                <div className="text-xs space-y-0.5 text-muted-foreground">
-                                  <p className="font-medium text-foreground">CALIPH WORLD FOUNDATION</p>
-                                  <p>ICICI BANK - MUKKAM BRANCH</p>
-                                  <div className="flex items-center gap-2">
-                                    <p>A/C: 265405000474</p>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6"
-                                      onClick={() => copyToClipboard("265405000474", "Account Number")}
-                                      data-testid="button-copy-account"
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <p>IFSC: ICIC0002654</p>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6"
-                                      onClick={() => copyToClipboard("ICIC0002654", "IFSC Code")}
-                                      data-testid="button-copy-ifsc"
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="paymentScreenshot">Payment Screenshot *</Label>
-                          <div className="border-2 border-dashed rounded-lg p-4 transition-colors hover:border-primary/50">
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              id="paymentScreenshot"
-                              accept="image/jpeg,image/png,image/gif,image/webp"
-                              onChange={handleFileChange}
-                              className="hidden"
-                              data-testid="input-payment-screenshot"
-                            />
-                            
-                            {formData.paymentScreenshot ? (
-                              <div className="space-y-3">
-                                <div className="relative">
-                                  <img 
-                                    src={formData.paymentScreenshot} 
-                                    alt="Payment Screenshot" 
-                                    className="max-h-48 mx-auto rounded-lg object-contain"
-                                    data-testid="img-payment-screenshot-preview"
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="icon"
-                                    className="absolute top-2 right-2 h-8 w-8"
-                                    onClick={clearFile}
-                                    data-testid="button-clear-screenshot"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                <p className="text-sm text-center text-muted-foreground">
-                                  {uploadedFile?.name}
-                                </p>
-                              </div>
-                            ) : (
-                              <div 
-                                className="flex flex-col items-center gap-2 py-4 cursor-pointer"
-                                onClick={() => fileInputRef.current?.click()}
-                              >
-                                <Upload className="w-8 h-8 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground text-center">
-                                  Click to upload payment screenshot
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  JPG, PNG, GIF, WebP (Max 5MB)
-                                </p>
-                              </div>
-                            )}
-                          </div>
+                        <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                          <p className="text-sm text-muted-foreground text-center">
+                            You will be redirected to PhonePe to complete your payment securely.
+                          </p>
                         </div>
                       </div>
                     )}
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-red-500 hover:bg-red-600 text-white py-6"
-                      disabled={submitMutation.isPending}
+                      className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white py-6"
+                      disabled={isPaymentProcessing || !formData.membershipType}
                       data-testid="button-submit-membership"
                     >
-                      {submitMutation.isPending ? (
+                      {isPaymentProcessing ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Submitting...
+                          Redirecting to PhonePe...
+                        </>
+                      ) : formData.membershipType ? (
+                        <>
+                          <CreditCard className="w-4 h-4 mr-2" />
+                          Pay ₹{currentPrice.toLocaleString('en-IN')} with PhonePe
                         </>
                       ) : (
                         <>
                           <UserPlus className="w-4 h-4 mr-2" />
-                          Submit Application
+                          Select Membership Type
                         </>
                       )}
                     </Button>

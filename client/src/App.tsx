@@ -21,6 +21,7 @@ import Contact from "@/pages/contact";
 import Register from "@/pages/register";
 import Invitation from "@/pages/invitation";
 import PaymentStatus from "@/pages/payment-status";
+import MembershipSuccess from "@/pages/membership-success";
 import AdminLogin from "@/pages/admin-login";
 import Admin from "@/pages/admin";
 import Terms from "@/pages/terms";
@@ -40,6 +41,7 @@ function Router() {
         <Route path="/invitation/:id" component={Invitation} />
         <Route path="/verify/:id" component={Verify} />
         <Route path="/payment-status/:merchantTransactionId" component={PaymentStatus} />
+        <Route path="/membership-success" component={MembershipSuccess} />
         <Route>
           <Layout>
             <Switch>

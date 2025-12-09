@@ -3,8 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Smartphone } from "lucide-react";
-import paymentQrCode from "@assets/payment-qr-code.png";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2 } from "lucide-react";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -30,7 +29,6 @@ export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { markRegistered, isRegistered, clearRegistered } = useRegistrationStatus();
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [showCamera, setShowCamera] = useState(false);
@@ -60,15 +58,6 @@ export default function Register() {
       photo: "",
     },
   });
-
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
-  };
 
   // Compress image to reduce upload size (makes registration 20-50x faster)
   const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.7): Promise<string> => {
@@ -106,41 +95,6 @@ export default function Register() {
       };
       reader.onerror = () => reject(new Error('Could not read file'));
     });
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'];
-      
-      if (!validTypes.includes(file.type)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload an image (JPEG, PNG, GIF) or PDF document.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: "Please upload a file smaller than 5MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setUploadedFile(file);
-      // Compress images for faster upload, keep PDFs as-is
-      if (file.type.startsWith('image/')) {
-        const compressed = await compressImage(file, 1000, 0.8);
-        form.setValue("paymentProof", compressed);
-      } else {
-        const base64 = await convertFileToBase64(file);
-        form.setValue("paymentProof", base64);
-      }
-    }
   };
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -224,49 +178,51 @@ export default function Register() {
     form.setValue("photo", "");
   };
 
-  const mutation = useMutation({
-    mutationFn: async (data: InsertBootcamp) => {
-      const response = await apiRequest("POST", "/api/bootcamp", data);
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setIsPaymentProcessing(false);
-      markRegistered(data.id);
-      const newCount = registrationCount + 1;
-      localStorage.setItem(REGISTRATIONS_COUNT_KEY, newCount.toString());
-      setRegistrationCount(newCount);
-      form.reset();
-      setUploadedFile(null);
-      setUploadedPhoto(null);
-      setPhotoPreview(null);
-      toast({
-        title: "Registration Successful!",
-        description: "Payment completed. Redirecting to your invitation...",
+  const initiatePhonePePayment = async (data: InsertBootcamp) => {
+    try {
+      setIsPaymentProcessing(true);
+      
+      // Store registration data in sessionStorage for after payment
+      sessionStorage.setItem('pendingRegistration', JSON.stringify(data));
+      
+      const response = await fetch('/api/phonepe/initiate-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: PAYMENT_AMOUNT,
+          name: data.fullName,
+          email: data.email,
+          phone: data.phone,
+        }),
       });
-      setLocation(`/invitation/${data.id}`);
-    },
-    onError: (error: Error) => {
+      
+      const result = await response.json();
+      
+      if (result.success && result.paymentUrl) {
+        sessionStorage.setItem('merchantTransactionId', result.merchantTransactionId);
+        window.location.href = result.paymentUrl;
+      } else {
+        throw new Error(result.error || 'Failed to initiate payment');
+      }
+    } catch (error: any) {
       setIsPaymentProcessing(false);
       toast({
-        title: "Registration Failed",
-        description: error.message || "Something went wrong. Please try again.",
+        title: "Payment Initiation Failed",
+        description: error.message || "Could not start payment. Please try again.",
         variant: "destructive",
       });
-    },
-  });
+    }
+  };
 
   const onSubmit = (data: InsertBootcamp) => {
-    // Submit registration with payment proof
-    // User has already paid via UPI app and uploaded screenshot
-    setIsPaymentProcessing(true);
-    mutation.mutate(data);
+    // Initiate PhonePe payment
+    initiatePhonePePayment(data);
   };
 
   const handleAddAnother = () => {
     clearRegistered();
     setAddingAnother(true);
     setJustRegistered(false);
-    setUploadedFile(null);
     setUploadedPhoto(null);
     setPhotoPreview(null);
   };
@@ -987,104 +943,17 @@ export default function Register() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9, duration: 0.4 }}
                   >
-                    <FormField
-                      control={form.control}
-                      name="paymentProof"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            <motion.div
-                              animate={{ y: [0, -3, 0] }}
-                              transition={{ duration: 1.5, repeat: Infinity }}
-                            >
-                              <Upload className="w-4 h-4" />
-                            </motion.div>
-                            Payment Screenshot *
-                          </FormLabel>
-                          <FormControl>
-                            <motion.div 
-                              className={`border-2 border-dashed rounded-lg p-4 md:p-6 text-center transition-all duration-300 cursor-pointer ${uploadedFile ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50/30'}`} 
-                              data-testid="upload-payment-area"
-                              whileHover={{ scale: 1.01 }}
-                              whileTap={{ scale: 0.99 }}
-                            >
-                              <input
-                                type="file"
-                                accept="image/jpeg,image/png,image/gif,application/pdf"
-                                onChange={handleFileChange}
-                                className="hidden"
-                                id="payment-upload"
-                                data-testid="input-payment-upload"
-                              />
-                              <label htmlFor="payment-upload" className="cursor-pointer block">
-                                <AnimatePresence mode="wait">
-                                  {uploadedFile ? (
-                                    <motion.div 
-                                      key="uploaded"
-                                      initial={{ opacity: 0, scale: 0.8 }}
-                                      animate={{ opacity: 1, scale: 1 }}
-                                      exit={{ opacity: 0, scale: 0.8 }}
-                                      className="text-sm"
-                                    >
-                                      <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ type: "spring", stiffness: 200 }}
-                                      >
-                                        <Check className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                                      </motion.div>
-                                      <p className="font-semibold text-green-600 mb-1">Payment Proof Uploaded</p>
-                                      <p className="text-gray-600">{uploadedFile.name}</p>
-                                      <p className="text-xs text-gray-500 mt-1">
-                                        {(uploadedFile.size / 1024).toFixed(2)} KB
-                                      </p>
-                                    </motion.div>
-                                  ) : (
-                                    <motion.div 
-                                      key="upload"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      exit={{ opacity: 0 }}
-                                      className="text-sm"
-                                    >
-                                      <motion.div
-                                        animate={{ y: [0, -5, 0] }}
-                                        transition={{ duration: 2, repeat: Infinity }}
-                                      >
-                                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                      </motion.div>
-                                      <p className="font-semibold text-gray-700 mb-1">Upload Payment Screenshot</p>
-                                      <p className="text-xs text-gray-400">
-                                        JPEG, PNG, GIF, PDF (Max 5MB)
-                                      </p>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </label>
-                            </motion.div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 0.4 }}
-                  >
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       <Button 
                         type="submit" 
-                        className="w-full btn-angular bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg shadow-blue-500/30 transition-all duration-300"
-                        disabled={mutation.isPending || isPaymentProcessing}
+                        className="w-full btn-angular bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg shadow-purple-500/30 transition-all duration-300"
+                        disabled={isPaymentProcessing}
                         data-testid="button-submit-registration"
                       >
-                        {mutation.isPending || isPaymentProcessing ? (
+                        {isPaymentProcessing ? (
                           <motion.div 
                             className="flex items-center gap-2"
                             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -1096,7 +965,7 @@ export default function Register() {
                             >
                               <Loader2 className="w-4 h-4" />
                             </motion.div>
-                            {isPaymentProcessing ? "Processing Payment..." : "Registering..."}
+                            Redirecting to Payment...
                           </motion.div>
                         ) : (
                           <motion.div 
@@ -1105,7 +974,7 @@ export default function Register() {
                             transition={{ duration: 0.3 }}
                           >
                             <CreditCard className="w-4 h-4" />
-                            {addingAnother ? "Pay & Register" : "Pay ₹4999 & Register"}
+                            Pay ₹{PAYMENT_AMOUNT} with PhonePe
                           </motion.div>
                         )}
                       </Button>
@@ -1133,211 +1002,6 @@ export default function Register() {
                   </AnimatePresence>
                 </form>
               </Form>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* PAYMENT INFORMATION SECTION */}
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ 
-            duration: 0.6, 
-            delay: 0.5,
-            type: "spring",
-            stiffness: 100,
-            damping: 15
-          }}
-          className="mt-6 md:mt-8"
-        >
-          <Card className="backdrop-blur-sm bg-white/95 overflow-visible shadow-xl">
-            <CardHeader className="pb-4">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7, duration: 0.4 }}
-              >
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <motion.div
-                    animate={{ 
-                      rotateY: [0, 360],
-                    }}
-                    transition={{ 
-                      duration: 3, 
-                      repeat: Infinity, 
-                      repeatDelay: 2 
-                    }}
-                  >
-                    <CreditCard className="w-5 h-5 text-green-600" />
-                  </motion.div>
-                  Payment Details
-                </CardTitle>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.4 }}
-              >
-                <CardDescription className="text-sm">
-                  Pay using UPI or Bank Transfer, then upload the screenshot
-                </CardDescription>
-              </motion.div>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center text-center">
-              <motion.div 
-                className="w-full"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.4 }}
-              >
-                {/* Price Display */}
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 mb-6">
-                  <p className="text-sm text-green-600 mb-2">Registration Fee</p>
-                  <p className="text-3xl font-bold text-foreground mb-2">
-                    <span className="line-through opacity-50 text-muted-foreground text-xl">₹6999</span>{" "}
-                    <span className="text-green-600">₹{PAYMENT_AMOUNT}</span>
-                  </p>
-                  <p className="text-xs text-green-600 font-medium">Early Bird Offer</p>
-                </div>
-
-                {/* UPI Payment Apps */}
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-4 justify-center">
-                    <Smartphone className="w-5 h-5 text-purple-600" />
-                    <h3 className="font-semibold text-foreground">Pay with UPI App</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Tap any app below to pay ₹{PAYMENT_AMOUNT} instantly
-                  </p>
-                  
-                  {/* UPI App Buttons Grid */}
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    {/* Google Pay */}
-                    <motion.button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `tez://upi/pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
-                        window.location.href = upiUrl;
-                      }}
-                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-50 transition-all"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      data-testid="button-pay-gpay"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 via-red-500 to-yellow-500 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">G</span>
-                      </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-foreground">Google Pay</p>
-                        <p className="text-xs text-muted-foreground">GPay</p>
-                      </div>
-                    </motion.button>
-
-                    {/* PhonePe */}
-                    <motion.button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `phonepe://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
-                        window.location.href = upiUrl;
-                      }}
-                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-purple-400 hover:bg-purple-50 transition-all"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      data-testid="button-pay-phonepe"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">P</span>
-                      </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-foreground">PhonePe</p>
-                        <p className="text-xs text-muted-foreground">UPI</p>
-                      </div>
-                    </motion.button>
-
-                    {/* Paytm */}
-                    <motion.button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `paytmmp://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
-                        window.location.href = upiUrl;
-                      }}
-                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:bg-blue-50 transition-all"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      data-testid="button-pay-paytm"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">P</span>
-                      </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-foreground">Paytm</p>
-                        <p className="text-xs text-muted-foreground">UPI</p>
-                      </div>
-                    </motion.button>
-
-                    {/* All UPI Apps */}
-                    <motion.button
-                      type="button"
-                      onClick={() => {
-                        const upiUrl = `upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=Kerala%20Economic%20Forum&am=${PAYMENT_AMOUNT}&cu=INR&tn=Startup%20Boot%20Camp%20Registration`;
-                        window.location.href = upiUrl;
-                      }}
-                      className="flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-green-400 hover:bg-green-50 transition-all"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      data-testid="button-pay-all-upi"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
-                        <Smartphone className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-semibold text-foreground">All UPI Apps</p>
-                        <p className="text-xs text-muted-foreground">Any UPI app</p>
-                      </div>
-                    </motion.button>
-                  </div>
-
-                  {/* QR Code for manual payment */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                    <p className="text-xs text-muted-foreground mb-3">Or scan QR code to pay:</p>
-                    <div className="flex justify-center">
-                      <img 
-                        src={paymentQrCode} 
-                        alt="Payment QR Code" 
-                        className="w-40 h-40 rounded-lg border border-gray-200 bg-white p-2"
-                        data-testid="img-payment-qr"
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2 text-center">
-                      Scan with any UPI app
-                    </p>
-                  </div>
-                </div>
-
-                {/* Instructions */}
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                  <p className="text-sm text-amber-800 mb-2 font-medium">How to Register:</p>
-                  <ol className="text-xs text-amber-700 text-left space-y-1">
-                    <li>1. Tap any UPI app button above to pay ₹{PAYMENT_AMOUNT}</li>
-                    <li>2. Complete payment in the app (amount is pre-filled)</li>
-                    <li>3. Take a screenshot of the payment confirmation</li>
-                    <li>4. Fill in your details in the form above</li>
-                    <li>5. Upload the payment screenshot and click "Register"</li>
-                  </ol>
-                </div>
-
-                {/* Security Badge */}
-                <div className="flex items-center justify-center gap-4 mt-4 text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-green-500" />
-                    <span className="text-xs">Secure Payment</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-500" />
-                    <span className="text-xs">Instant Confirmation</span>
-                  </div>
-                </div>
-              </motion.div>
             </CardContent>
           </Card>
         </motion.div>

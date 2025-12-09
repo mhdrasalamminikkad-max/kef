@@ -20,6 +20,7 @@ export default function PaymentStatus() {
   const [status, setStatus] = useState<"checking" | "success" | "failed" | "error">("checking");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [hasProcessed, setHasProcessed] = useState(false);
+  const [isMembershipFlow, setIsMembershipFlow] = useState(false);
 
   const merchantTransactionId = params.merchantTransactionId;
   
@@ -68,47 +69,105 @@ export default function PaymentStatus() {
     },
   });
 
+  const membershipMutation = useMutation({
+    mutationFn: async (data: Record<string, string>) => {
+      const response = await apiRequest("POST", "/api/membership", {
+        ...data,
+        paymentScreenshot: `PhonePe Transaction ID: ${merchantTransactionId}`,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      sessionStorage.removeItem('pendingMembership');
+      sessionStorage.removeItem('membershipFlow');
+      sessionStorage.removeItem('merchantTransactionId');
+      toast({
+        title: "Membership Application Submitted!",
+        description: "Your payment was successful. We'll review your application soon.",
+      });
+      setLocation("/membership-success");
+    },
+    onError: (error: Error) => {
+      setStatus("error");
+      setErrorMessage(error.message || "Failed to submit membership application");
+      toast({
+        title: "Submission Failed",
+        description: "Payment was successful but application submission failed. Please contact support.",
+        variant: "destructive",
+      });
+    },
+  });
+
   useEffect(() => {
     if (hasProcessed) return;
+    
+    // Check if this is a membership flow
+    const membershipFlow = sessionStorage.getItem('membershipFlow') === 'true';
+    setIsMembershipFlow(membershipFlow);
     
     if (urlStatus === "success" || paymentStatus?.success) {
       setStatus("success");
       
-      const pendingRegistrationStr = sessionStorage.getItem('pendingRegistration');
-      if (pendingRegistrationStr) {
-        try {
-          const pendingRegistration = JSON.parse(pendingRegistrationStr) as InsertBootcamp;
-          const registrationWithPayment = {
-            ...pendingRegistration,
-            paymentProof: `PhonePe Transaction ID: ${merchantTransactionId}`,
-          };
-          setHasProcessed(true);
-          registerMutation.mutate(registrationWithPayment);
-        } catch (error) {
+      if (membershipFlow) {
+        // Handle membership flow
+        const pendingMembershipStr = sessionStorage.getItem('pendingMembership');
+        if (pendingMembershipStr) {
+          try {
+            const pendingMembership = JSON.parse(pendingMembershipStr);
+            setHasProcessed(true);
+            membershipMutation.mutate(pendingMembership);
+          } catch (error) {
+            setStatus("error");
+            setErrorMessage("Failed to process membership data");
+          }
+        } else {
           setStatus("error");
-          setErrorMessage("Failed to process registration data");
+          setErrorMessage("Membership data not found. Please apply again.");
         }
       } else {
-        setStatus("error");
-        setErrorMessage("Registration data not found. Please register again.");
+        // Handle bootcamp registration flow
+        const pendingRegistrationStr = sessionStorage.getItem('pendingRegistration');
+        if (pendingRegistrationStr) {
+          try {
+            const pendingRegistration = JSON.parse(pendingRegistrationStr) as InsertBootcamp;
+            const registrationWithPayment = {
+              ...pendingRegistration,
+              paymentProof: `PhonePe Transaction ID: ${merchantTransactionId}`,
+            };
+            setHasProcessed(true);
+            registerMutation.mutate(registrationWithPayment);
+          } catch (error) {
+            setStatus("error");
+            setErrorMessage("Failed to process registration data");
+          }
+        } else {
+          setStatus("error");
+          setErrorMessage("Registration data not found. Please register again.");
+        }
       }
     } else if (urlStatus === "failed" || urlStatus === "error") {
       setStatus("failed");
       setErrorMessage(urlCode ? `Payment failed with code: ${urlCode}` : "Payment was not successful");
       sessionStorage.removeItem('pendingRegistration');
+      sessionStorage.removeItem('pendingMembership');
+      sessionStorage.removeItem('membershipFlow');
       sessionStorage.removeItem('merchantTransactionId');
     } else if (paymentStatus && !paymentStatus.success) {
       setStatus("failed");
       setErrorMessage(paymentStatus.message || "Payment verification failed");
       sessionStorage.removeItem('pendingRegistration');
+      sessionStorage.removeItem('pendingMembership');
+      sessionStorage.removeItem('membershipFlow');
       sessionStorage.removeItem('merchantTransactionId');
     }
   }, [urlStatus, paymentStatus, hasProcessed]);
 
   const handleRetry = () => {
     sessionStorage.removeItem('pendingRegistration');
+    sessionStorage.removeItem('pendingMembership');
+    sessionStorage.removeItem('membershipFlow');
     sessionStorage.removeItem('merchantTransactionId');
-    setLocation("/register");
+    setLocation(isMembershipFlow ? "/membership" : "/register");
   };
 
   return (
