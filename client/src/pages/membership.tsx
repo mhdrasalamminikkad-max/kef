@@ -19,8 +19,11 @@ import {
   X,
   IndianRupee,
   CreditCard,
-  Copy
+  Copy,
+  Smartphone,
+  Lock
 } from "lucide-react";
+import qrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427_1765297402185.png";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,11 +104,23 @@ const interestOptions = [
   "Investment Opportunities",
 ];
 
+const upiApps = [
+  { id: "gpay", name: "Google Pay", color: "bg-blue-500" },
+  { id: "phonepe", name: "PhonePe", color: "bg-purple-600" },
+  { id: "paytm", name: "Paytm", color: "bg-sky-500" },
+  { id: "bhim", name: "BHIM UPI", color: "bg-green-600" },
+  { id: "amazonpay", name: "Amazon Pay", color: "bg-orange-500" },
+  { id: "other", name: "Other UPI", color: "bg-gray-600" },
+];
+
 export default function Membership() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
+  const [upiPin, setUpiPin] = useState("");
+  const [isPinEntered, setIsPinEntered] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -388,6 +403,9 @@ export default function Membership() {
                       onClick={() => {
                         setIsSubmitted(false);
                         setUploadedFile(null);
+                        setSelectedUpiApp(null);
+                        setUpiPin("");
+                        setIsPinEntered(false);
                         setFormData({
                           fullName: "",
                           email: "",
@@ -547,67 +565,147 @@ export default function Membership() {
                           </p>
                         </div>
 
+                        {/* QR Code Section */}
+                        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border text-center">
+                          <p className="text-sm font-semibold text-foreground mb-3">Scan QR Code to Pay</p>
+                          <img 
+                            src={qrCodeImage} 
+                            alt="Payment QR Code" 
+                            className="w-48 h-48 mx-auto rounded-lg border"
+                            data-testid="img-qr-code"
+                          />
+                          <p className="text-xs text-muted-foreground mt-2">Scan with any UPI app</p>
+                        </div>
+
+                        {/* UPI Apps Selection */}
+                        <div className="space-y-3">
+                          <p className="text-sm font-semibold text-foreground">Or Pay Using UPI App:</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {upiApps.map((app) => (
+                              <Button
+                                key={app.id}
+                                type="button"
+                                variant={selectedUpiApp === app.id ? "default" : "outline"}
+                                className={`flex items-center gap-2 ${selectedUpiApp === app.id ? app.color + ' text-white border-transparent' : ''}`}
+                                onClick={() => {
+                                  setSelectedUpiApp(app.id);
+                                  setIsPinEntered(false);
+                                  setUpiPin("");
+                                }}
+                                data-testid={`button-upi-${app.id}`}
+                              >
+                                <Smartphone className="w-4 h-4" />
+                                <span className="text-xs">{app.name}</span>
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* UPI PIN Entry */}
+                        {selectedUpiApp && !isPinEntered && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border"
+                          >
+                            <div className="flex items-center gap-2 mb-3">
+                              <Lock className="w-4 h-4 text-primary" />
+                              <p className="text-sm font-semibold text-foreground">Enter UPI PIN</p>
+                            </div>
+                            <p className="text-xs text-muted-foreground mb-3">
+                              Enter your {upiApps.find(a => a.id === selectedUpiApp)?.name} UPI PIN to complete payment
+                            </p>
+                            <div className="flex gap-2">
+                              <Input
+                                type="password"
+                                maxLength={6}
+                                placeholder="Enter 4-6 digit PIN"
+                                value={upiPin}
+                                onChange={(e) => setUpiPin(e.target.value.replace(/\D/g, ''))}
+                                className="flex-1 text-center tracking-widest font-mono"
+                                data-testid="input-upi-pin"
+                              />
+                              <Button
+                                type="button"
+                                onClick={() => {
+                                  if (upiPin.length >= 4) {
+                                    setIsPinEntered(true);
+                                    toast({
+                                      title: "PIN Entered",
+                                      description: "Now please upload your payment screenshot",
+                                    });
+                                  } else {
+                                    toast({
+                                      title: "Invalid PIN",
+                                      description: "Please enter a valid 4-6 digit PIN",
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }}
+                                disabled={upiPin.length < 4}
+                                data-testid="button-confirm-pin"
+                              >
+                                Confirm
+                              </Button>
+                            </div>
+                          </motion.div>
+                        )}
+
+                        {/* PIN Confirmed Message */}
+                        {isPinEntered && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-green-50 dark:bg-green-950/30 rounded-lg p-3 border border-green-200 dark:border-green-800 flex items-center gap-2"
+                          >
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                            <span className="text-sm text-green-700 dark:text-green-400">
+                              UPI PIN entered via {upiApps.find(a => a.id === selectedUpiApp)?.name}
+                            </span>
+                          </motion.div>
+                        )}
+
+                        {/* Bank Transfer Details */}
                         <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                            <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Pay Manually:</p>
-                            
-                            <div className="space-y-3">
-                              <div>
-                                <p className="text-xs text-muted-foreground mb-1">UPI ID:</p>
-                                <div className="flex items-center gap-2">
-                                  <code className="text-xs font-mono bg-white dark:bg-slate-800 px-2 py-1 rounded border flex-1 break-all">
-                                    caliphworldfoundation.9605399676.ibz@icici
-                                  </code>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 shrink-0"
-                                    onClick={() => copyToClipboard("caliphworldfoundation.9605399676.ibz@icici", "UPI ID")}
-                                    data-testid="button-copy-upi"
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                              
-                              <div className="border-t pt-2">
-                                <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">Bank Transfer:</p>
-                                <div className="text-xs space-y-0.5 text-muted-foreground">
-                                  <p className="font-medium text-foreground">CALIPH WORLD FOUNDATION</p>
-                                  <p>ICICI BANK - MUKKAM BRANCH</p>
-                                  <div className="flex items-center gap-2">
-                                    <p>A/C: 265405000474</p>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6"
-                                      onClick={() => copyToClipboard("265405000474", "Account Number")}
-                                      data-testid="button-copy-account"
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <p>IFSC: ICIC0002654</p>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-6 w-6"
-                                      onClick={() => copyToClipboard("ICIC0002654", "IFSC Code")}
-                                      data-testid="button-copy-ifsc"
-                                    >
-                                      <Copy className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
+                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Or Pay via Bank Transfer:</p>
+                          <div className="text-xs space-y-1 text-muted-foreground">
+                            <p className="font-medium text-foreground">CALIPH WORLD FOUNDATION</p>
+                            <p>ICICI BANK - MUKKAM BRANCH</p>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p>A/C: 265405000474</p>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() => copyToClipboard("265405000474", "Account Number")}
+                                data-testid="button-copy-account"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p>IFSC: ICIC0002654</p>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() => copyToClipboard("ICIC0002654", "IFSC Code")}
+                                data-testid="button-copy-ifsc"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
                             </div>
                           </div>
+                        </div>
 
+                        {/* Payment Screenshot Upload - Required */}
                         <div className="space-y-2">
-                          <Label htmlFor="paymentScreenshot">Payment Screenshot *</Label>
+                          <Label htmlFor="paymentScreenshot" className="flex items-center gap-1">
+                            Payment Screenshot *
+                            <span className="text-xs text-red-500">(Required)</span>
+                          </Label>
                           <div className="border-2 border-dashed rounded-lg p-4 transition-colors hover:border-primary/50">
                             <input
                               ref={fileInputRef}
