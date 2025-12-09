@@ -224,7 +224,15 @@ export async function registerRoutes(
           merchantUrls: {
             redirectUrl: redirectUrl || `${baseUrl}/payment-status/${merchantTransactionId}`,
             callbackUrl: callbackUrl,
-          }
+          },
+          paymentModes: [
+            { type: "UPI_INTENT" },
+            { type: "UPI_COLLECT" },
+            { type: "UPI_QR" },
+            { type: "CARD" },
+            { type: "NET_BANKING" },
+            { type: "TOKEN" }
+          ]
         }
       };
 
