@@ -106,7 +106,6 @@ const interestOptions = [
 
 const upiApps = [
   { id: "gpay", name: "Google Pay", color: "bg-blue-500" },
-  { id: "phonepe", name: "PhonePe", color: "bg-purple-600" },
   { id: "paytm", name: "Paytm", color: "bg-sky-500" },
   { id: "bhim", name: "BHIM UPI", color: "bg-green-600" },
   { id: "amazonpay", name: "Amazon Pay", color: "bg-orange-500" },
