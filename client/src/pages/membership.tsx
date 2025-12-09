@@ -20,8 +20,7 @@ import {
   IndianRupee,
   CreditCard,
   Copy,
-  Smartphone,
-  Lock
+  Smartphone
 } from "lucide-react";
 import qrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427_1765297402185.png";
 import { Section, SectionHeader } from "@/components/section";
@@ -105,21 +104,21 @@ const interestOptions = [
 ];
 
 const upiApps = [
-  { id: "gpay", name: "Google Pay", color: "bg-blue-500" },
-  { id: "paytm", name: "Paytm", color: "bg-sky-500" },
-  { id: "bhim", name: "BHIM UPI", color: "bg-green-600" },
-  { id: "amazonpay", name: "Amazon Pay", color: "bg-orange-500" },
-  { id: "other", name: "Other UPI", color: "bg-gray-600" },
+  { id: "gpay", name: "Google Pay", color: "bg-blue-500", scheme: "gpay://upi/pay" },
+  { id: "paytm", name: "Paytm", color: "bg-sky-500", scheme: "paytmmp://pay" },
+  { id: "bhim", name: "BHIM UPI", color: "bg-green-600", scheme: "upi://pay" },
+  { id: "amazonpay", name: "Amazon Pay", color: "bg-orange-500", scheme: "upi://pay" },
+  { id: "other", name: "Other UPI", color: "bg-gray-600", scheme: "upi://pay" },
 ];
+
+const UPI_ID = "caliphworldfoundation.9605399676.ibz@icici";
+const PAYEE_NAME = "Kerala Economic Forum";
 
 export default function Membership() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedUpiApp, setSelectedUpiApp] = useState<string | null>(null);
-  const [upiPin, setUpiPin] = useState("");
-  const [isPinEntered, setIsPinEntered] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -184,6 +183,27 @@ export default function Membership() {
     toast({
       title: "Copied!",
       description: `${label} copied to clipboard`,
+    });
+  };
+
+  const openUpiApp = (appScheme: string, appName: string) => {
+    const amount = currentPrice.toFixed(2);
+    const txnId = `KEF${Date.now()}`;
+    const params = new URLSearchParams({
+      pa: UPI_ID,
+      pn: PAYEE_NAME,
+      am: amount,
+      cu: "INR",
+      tr: txnId,
+      tn: `KEF Membership - ${formData.membershipType}`
+    });
+    
+    const deepLink = `${appScheme}?${params.toString()}`;
+    window.location.href = deepLink;
+    
+    toast({
+      title: `Opening ${appName}`,
+      description: "Complete payment in the app, then upload screenshot here",
     });
   };
 
@@ -402,9 +422,6 @@ export default function Membership() {
                       onClick={() => {
                         setIsSubmitted(false);
                         setUploadedFile(null);
-                        setSelectedUpiApp(null);
-                        setUpiPin("");
-                        setIsPinEntered(false);
                         setFormData({
                           fullName: "",
                           email: "",
@@ -584,13 +601,9 @@ export default function Membership() {
                               <Button
                                 key={app.id}
                                 type="button"
-                                variant={selectedUpiApp === app.id ? "default" : "outline"}
-                                className={`flex items-center gap-2 ${selectedUpiApp === app.id ? app.color + ' text-white border-transparent' : ''}`}
-                                onClick={() => {
-                                  setSelectedUpiApp(app.id);
-                                  setIsPinEntered(false);
-                                  setUpiPin("");
-                                }}
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                onClick={() => openUpiApp(app.scheme, app.name)}
                                 data-testid={`button-upi-${app.id}`}
                               >
                                 <Smartphone className="w-4 h-4" />
@@ -598,71 +611,10 @@ export default function Membership() {
                               </Button>
                             ))}
                           </div>
+                          <p className="text-xs text-muted-foreground text-center">
+                            Click to open app with payment details pre-filled
+                          </p>
                         </div>
-
-                        {/* UPI PIN Entry */}
-                        {selectedUpiApp && !isPinEntered && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 border"
-                          >
-                            <div className="flex items-center gap-2 mb-3">
-                              <Lock className="w-4 h-4 text-primary" />
-                              <p className="text-sm font-semibold text-foreground">Enter UPI PIN</p>
-                            </div>
-                            <p className="text-xs text-muted-foreground mb-3">
-                              Enter your {upiApps.find(a => a.id === selectedUpiApp)?.name} UPI PIN to complete payment
-                            </p>
-                            <div className="flex gap-2">
-                              <Input
-                                type="password"
-                                maxLength={6}
-                                placeholder="Enter 4-6 digit PIN"
-                                value={upiPin}
-                                onChange={(e) => setUpiPin(e.target.value.replace(/\D/g, ''))}
-                                className="flex-1 text-center tracking-widest font-mono"
-                                data-testid="input-upi-pin"
-                              />
-                              <Button
-                                type="button"
-                                onClick={() => {
-                                  if (upiPin.length >= 4) {
-                                    setIsPinEntered(true);
-                                    toast({
-                                      title: "PIN Entered",
-                                      description: "Now please upload your payment screenshot",
-                                    });
-                                  } else {
-                                    toast({
-                                      title: "Invalid PIN",
-                                      description: "Please enter a valid 4-6 digit PIN",
-                                      variant: "destructive",
-                                    });
-                                  }
-                                }}
-                                disabled={upiPin.length < 4}
-                                data-testid="button-confirm-pin"
-                              >
-                                Confirm
-                              </Button>
-                            </div>
-                          </motion.div>
-                        )}
-
-                        {/* PIN Confirmed Message */}
-                        {isPinEntered && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-green-50 dark:bg-green-950/30 rounded-lg p-3 border border-green-200 dark:border-green-800 flex items-center gap-2"
-                          >
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                            <span className="text-sm text-green-700 dark:text-green-400">
-                              UPI PIN entered via {upiApps.find(a => a.id === selectedUpiApp)?.name}
-                            </span>
-                          </motion.div>
-                        )}
 
                         {/* Bank Transfer Details */}
                         <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
