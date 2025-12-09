@@ -11,28 +11,70 @@ import PDFDocument from "pdfkit";
 import axios from "axios";
 import crypto from "crypto";
 
-// PhonePe Configuration
+// PhonePe Configuration - OAuth2 with Client ID and Client Secret
 const PHONEPE_UAT_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox";
 const PHONEPE_PROD_URL = "https://api.phonepe.com/apis/hermes";
 
+// Token cache to avoid requesting new token for every payment
+let cachedToken: { accessToken: string; expiresAt: number } | null = null;
+
 function getPhonePeConfig() {
-  const merchantId = process.env.PHONEPE_MERCHANT_ID;
-  const saltKey = process.env.PHONEPE_SALT_KEY;
-  const saltIndex = process.env.PHONEPE_SALT_INDEX || "1";
+  const clientId = process.env.PHONEPE_CLIENT_ID;
+  const clientSecret = process.env.PHONEPE_CLIENT_SECRET;
   const isProduction = process.env.PHONEPE_PRODUCTION === "true";
   
-  if (!merchantId || !saltKey) {
+  if (!clientId || !clientSecret) {
     return null;
   }
   
   return {
-    merchantId,
-    saltKey,
-    saltIndex,
+    clientId,
+    clientSecret,
     baseUrl: isProduction ? PHONEPE_PROD_URL : PHONEPE_UAT_URL,
   };
 }
 
+async function getPhonePeAccessToken(config: { clientId: string; clientSecret: string; baseUrl: string }): Promise<string | null> {
+  try {
+    // Check if we have a valid cached token
+    if (cachedToken && cachedToken.expiresAt > Date.now()) {
+      return cachedToken.accessToken;
+    }
+
+    const tokenUrl = `${config.baseUrl}/v1/oauth/token`;
+    
+    const response = await axios.post(
+      tokenUrl,
+      new URLSearchParams({
+        client_id: config.clientId,
+        client_secret: config.clientSecret,
+        grant_type: 'client_credentials',
+      }).toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+
+    if (response.data.access_token) {
+      // Cache the token with expiry (subtract 60 seconds for safety margin)
+      const expiresIn = response.data.expires_in || 3600;
+      cachedToken = {
+        accessToken: response.data.access_token,
+        expiresAt: Date.now() + (expiresIn - 60) * 1000,
+      };
+      return cachedToken.accessToken;
+    }
+    
+    return null;
+  } catch (error: any) {
+    console.error("PhonePe token error:", error.response?.data || error.message);
+    return null;
+  }
+}
+
+// Legacy checksum function kept for backward compatibility
 function generatePhonePeChecksum(payload: string, endpoint: string, saltKey: string, saltIndex: string): string {
   const stringToHash = payload + endpoint + saltKey;
   const sha256 = crypto.createHash("sha256").update(stringToHash).digest("hex");
@@ -118,7 +160,7 @@ export async function registerRoutes(
     }
   });
 
-  // PhonePe: Initiate Payment
+  // PhonePe: Initiate Payment (OAuth2 with Client ID/Secret)
   app.post("/api/phonepe/initiate-payment", async (req, res) => {
     try {
       const { amount, name, email, phone, redirectUrl } = req.body;
@@ -138,6 +180,15 @@ export async function registerRoutes(
         });
       }
 
+      // Get OAuth2 access token
+      const accessToken = await getPhonePeAccessToken(config);
+      if (!accessToken) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "Failed to authenticate with PhonePe. Please try again." 
+        });
+      }
+
       const merchantTransactionId = `T${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
       const merchantUserId = phone ? `MUID_${phone}` : `MUID_${Date.now()}`;
       
@@ -149,34 +200,48 @@ export async function registerRoutes(
       const callbackUrl = `${baseUrl}/api/phonepe/callback/${merchantTransactionId}`;
       
       const payload = {
-        merchantId: config.merchantId,
-        merchantTransactionId: merchantTransactionId,
-        merchantUserId: merchantUserId,
+        merchantOrderId: merchantTransactionId,
         amount: Math.round(amount * 100), // Convert to paise
-        redirectUrl: redirectUrl || `${baseUrl}/payment-status/${merchantTransactionId}`,
-        redirectMode: "POST",
-        callbackUrl: callbackUrl,
-        mobileNumber: phone || "",
-        paymentInstrument: {
-          type: "PAY_PAGE"
+        expireAfter: 1200, // 20 minutes expiry
+        metaInfo: {
+          udf1: name || "",
+          udf2: email || "",
+          udf3: phone || "",
+        },
+        paymentFlow: {
+          type: "PG_CHECKOUT",
+          message: `Payment for ${name || 'Registration'}`,
+          merchantUrls: {
+            redirectUrl: redirectUrl || `${baseUrl}/payment-status/${merchantTransactionId}`,
+            callbackUrl: callbackUrl,
+          }
         }
       };
 
-      const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString("base64");
-      const checksum = generatePhonePeChecksum(payloadBase64, "/pg/v1/pay", config.saltKey, config.saltIndex);
+      console.log("PhonePe payment request:", JSON.stringify(payload, null, 2));
 
       const response = await axios.post(
-        `${config.baseUrl}/pg/v1/pay`,
-        { request: payloadBase64 },
+        `${config.baseUrl}/checkout/v2/pay`,
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
-            "X-VERIFY": checksum,
+            "Authorization": `Bearer ${accessToken}`,
           },
         }
       );
 
-      if (response.data.success && response.data.data?.instrumentResponse?.redirectInfo?.url) {
+      console.log("PhonePe response:", JSON.stringify(response.data, null, 2));
+
+      if (response.data.redirectUrl) {
+        res.json({
+          success: true,
+          paymentUrl: response.data.redirectUrl,
+          merchantTransactionId: merchantTransactionId,
+          orderId: response.data.orderId,
+        });
+      } else if (response.data.data?.instrumentResponse?.redirectInfo?.url) {
+        // Fallback for legacy response format
         res.json({
           success: true,
           paymentUrl: response.data.data.instrumentResponse.redirectInfo.url,
@@ -193,7 +258,7 @@ export async function registerRoutes(
       console.error("PhonePe payment initiation error:", error.response?.data || error);
       res.status(500).json({ 
         success: false, 
-        error: "Failed to initiate payment" 
+        error: error.response?.data?.message || "Failed to initiate payment" 
       });
     }
   });
@@ -202,32 +267,37 @@ export async function registerRoutes(
   app.post("/api/phonepe/callback/:merchantTransactionId", async (req, res) => {
     try {
       const { merchantTransactionId } = req.params;
+      console.log("PhonePe callback received for:", merchantTransactionId);
+      console.log("Callback body:", JSON.stringify(req.body, null, 2));
       
       const config = getPhonePeConfig();
       if (!config) {
         return res.redirect(`/payment-status/${merchantTransactionId}?status=error&message=Configuration+error`);
       }
 
-      // Check payment status
-      const statusEndpoint = `/pg/v1/status/${config.merchantId}/${merchantTransactionId}`;
-      const stringToHash = statusEndpoint + config.saltKey;
-      const sha256 = crypto.createHash("sha256").update(stringToHash).digest("hex");
-      const checksum = `${sha256}###${config.saltIndex}`;
+      // Get OAuth2 access token
+      const accessToken = await getPhonePeAccessToken(config);
+      if (!accessToken) {
+        return res.redirect(`/payment-status/${merchantTransactionId}?status=error&message=Auth+error`);
+      }
 
-      const statusUrl = `${config.baseUrl}${statusEndpoint}`;
+      // Check payment status using OAuth2
+      const statusUrl = `${config.baseUrl}/checkout/v2/order/${merchantTransactionId}/status`;
 
       const response = await axios.get(statusUrl, {
         headers: {
           "Content-Type": "application/json",
-          "X-VERIFY": checksum,
-          "X-MERCHANT-ID": config.merchantId,
+          "Authorization": `Bearer ${accessToken}`,
         },
       });
 
-      if (response.data.code === "PAYMENT_SUCCESS") {
+      console.log("PhonePe status response:", JSON.stringify(response.data, null, 2));
+
+      const state = response.data.state || response.data.code;
+      if (state === "COMPLETED" || state === "PAYMENT_SUCCESS") {
         res.redirect(`/payment-status/${merchantTransactionId}?status=success`);
       } else {
-        res.redirect(`/payment-status/${merchantTransactionId}?status=failed&code=${response.data.code}`);
+        res.redirect(`/payment-status/${merchantTransactionId}?status=failed&code=${state}`);
       }
     } catch (error: any) {
       console.error("PhonePe callback error:", error.response?.data || error);
@@ -236,7 +306,7 @@ export async function registerRoutes(
     }
   });
 
-  // PhonePe: Check Payment Status
+  // PhonePe: Check Payment Status (OAuth2)
   app.get("/api/phonepe/status/:merchantTransactionId", async (req, res) => {
     try {
       const { merchantTransactionId } = req.params;
@@ -249,29 +319,33 @@ export async function registerRoutes(
         });
       }
 
-      const statusEndpoint = `/pg/v1/status/${config.merchantId}/${merchantTransactionId}`;
-      const stringToHash = statusEndpoint + config.saltKey;
-      const sha256 = crypto.createHash("sha256").update(stringToHash).digest("hex");
-      const checksum = `${sha256}###${config.saltIndex}`;
+      // Get OAuth2 access token
+      const accessToken = await getPhonePeAccessToken(config);
+      if (!accessToken) {
+        return res.status(500).json({ 
+          success: false, 
+          error: "Failed to authenticate with PhonePe" 
+        });
+      }
 
-      const statusUrl = `${config.baseUrl}${statusEndpoint}`;
+      const statusUrl = `${config.baseUrl}/checkout/v2/order/${merchantTransactionId}/status`;
 
       const response = await axios.get(statusUrl, {
         headers: {
           "Content-Type": "application/json",
-          "X-VERIFY": checksum,
-          "X-MERCHANT-ID": config.merchantId,
+          "Authorization": `Bearer ${accessToken}`,
         },
       });
 
-      const isSuccess = response.data.code === "PAYMENT_SUCCESS";
+      const state = response.data.state || response.data.code;
+      const isSuccess = state === "COMPLETED" || state === "PAYMENT_SUCCESS";
       
       res.json({
         success: isSuccess,
-        code: response.data.code,
-        message: response.data.message,
+        code: state,
+        message: response.data.message || (isSuccess ? "Payment successful" : "Payment not completed"),
         transactionId: merchantTransactionId,
-        data: response.data.data,
+        data: response.data,
       });
     } catch (error: any) {
       console.error("PhonePe status check error:", error.response?.data || error);
