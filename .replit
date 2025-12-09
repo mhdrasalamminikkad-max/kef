@@ -15,10 +15,6 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 33821
-externalPort = 8080
-
-[[ports]]
 localPort = 36699
 externalPort = 3001
 
@@ -105,3 +101,6 @@ integrations = ["resend:1.0.0", "google-mail:1.0.0"]
 
 [userenv.development]
 DATABASE_URL = "postgresql://postgres:RtEkSmiOwWNiCSjaGaGXKhLSkqNigzbj@nozomi.proxy.rlwy.net:22161/railway"
+
+[userenv.shared]
+PHONEPE_PRODUCTION = "true"

@@ -13,7 +13,8 @@ import crypto from "crypto";
 
 // PhonePe Configuration - OAuth2 with Client ID and Client Secret
 const PHONEPE_UAT_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox";
-const PHONEPE_PROD_URL = "https://api.phonepe.com/apis/hermes";
+const PHONEPE_PROD_URL = "https://api.phonepe.com/apis/pg";
+const PHONEPE_PROD_TOKEN_URL = "https://api.phonepe.com/apis/identity-manager";
 
 // Token cache to avoid requesting new token for every payment
 let cachedToken: { accessToken: string; expiresAt: number } | null = null;
@@ -31,23 +32,26 @@ function getPhonePeConfig() {
     clientId,
     clientSecret,
     baseUrl: isProduction ? PHONEPE_PROD_URL : PHONEPE_UAT_URL,
+    tokenUrl: isProduction ? PHONEPE_PROD_TOKEN_URL : PHONEPE_UAT_URL,
+    isProduction,
   };
 }
 
-async function getPhonePeAccessToken(config: { clientId: string; clientSecret: string; baseUrl: string }): Promise<string | null> {
+async function getPhonePeAccessToken(config: { clientId: string; clientSecret: string; baseUrl: string; tokenUrl: string; isProduction: boolean }): Promise<string | null> {
   try {
     // Check if we have a valid cached token
     if (cachedToken && cachedToken.expiresAt > Date.now()) {
       return cachedToken.accessToken;
     }
 
-    const tokenUrl = `${config.baseUrl}/v1/oauth/token`;
+    const tokenUrl = `${config.tokenUrl}/v1/oauth/token`;
     
     const response = await axios.post(
       tokenUrl,
       new URLSearchParams({
         client_id: config.clientId,
         client_secret: config.clientSecret,
+        client_version: '1',
         grant_type: 'client_credentials',
       }).toString(),
       {
@@ -57,16 +61,22 @@ async function getPhonePeAccessToken(config: { clientId: string; clientSecret: s
       }
     );
 
-    if (response.data.access_token) {
+    console.log("PhonePe token response:", JSON.stringify(response.data, null, 2));
+    
+    // Handle both response formats
+    const accessToken = response.data.access_token || response.data.data?.accessToken;
+    const expiresIn = response.data.expires_in || response.data.data?.expiresInSeconds || 3600;
+    
+    if (accessToken) {
       // Cache the token with expiry (subtract 60 seconds for safety margin)
-      const expiresIn = response.data.expires_in || 3600;
       cachedToken = {
-        accessToken: response.data.access_token,
+        accessToken: accessToken,
         expiresAt: Date.now() + (expiresIn - 60) * 1000,
       };
       return cachedToken.accessToken;
     }
     
+    console.error("PhonePe token error - no token in response:", response.data);
     return null;
   } catch (error: any) {
     console.error("PhonePe token error:", error.response?.data || error.message);
@@ -220,13 +230,16 @@ export async function registerRoutes(
 
       console.log("PhonePe payment request:", JSON.stringify(payload, null, 2));
 
+      const paymentUrl = `${config.baseUrl}/checkout/v2/pay`;
+      console.log("PhonePe payment URL:", paymentUrl);
+      
       const response = await axios.post(
-        `${config.baseUrl}/checkout/v2/pay`,
+        paymentUrl,
         payload,
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`,
+            "Authorization": `O-Bearer ${accessToken}`,
           },
         }
       );
