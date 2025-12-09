@@ -129,7 +129,10 @@ export default function Membership() {
     interests: "",
     message: "",
     paymentAmount: "",
-    paymentScreenshot: ""
+    paymentScreenshot: "",
+    utrNumber: "",
+    payerUpiId: "",
+    paymentDate: ""
   });
 
   const convertFileToBase64 = (file: File): Promise<string> => {
@@ -236,6 +239,14 @@ export default function Membership() {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!formData.utrNumber || formData.utrNumber.length < 6) {
+      toast({
+        title: "Transaction ID Required",
+        description: "Please enter a valid UTR/Transaction ID from your payment.",
         variant: "destructive",
       });
       return;
@@ -432,7 +443,10 @@ export default function Membership() {
                           interests: "",
                           message: "",
                           paymentAmount: "",
-                          paymentScreenshot: ""
+                          paymentScreenshot: "",
+                          utrNumber: "",
+                          payerUpiId: "",
+                          paymentDate: ""
                         });
                       }}
                       className="w-full"
@@ -647,6 +661,60 @@ export default function Membership() {
                               >
                                 <Copy className="h-3 w-3" />
                               </Button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Verification Warning */}
+                        <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 border border-amber-200 dark:border-amber-800">
+                          <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 mb-1">
+                            Payment Verification Notice
+                          </p>
+                          <p className="text-xs text-amber-600 dark:text-amber-500">
+                            All payments are verified against bank records. Fake or manipulated screenshots will result in immediate rejection and permanent blacklisting.
+                          </p>
+                        </div>
+
+                        {/* Payment Details - Required for Verification */}
+                        <div className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="utrNumber" className="flex items-center gap-1">
+                              UTR / Transaction ID *
+                              <span className="text-xs text-red-500">(Required)</span>
+                            </Label>
+                            <Input
+                              id="utrNumber"
+                              placeholder="Enter 12-digit UTR number from payment"
+                              value={formData.utrNumber}
+                              onChange={(e) => handleInputChange("utrNumber", e.target.value)}
+                              required
+                              data-testid="input-utr-number"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              Find this in your payment app under transaction details or SMS from bank
+                            </p>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label htmlFor="payerUpiId">Your UPI ID</Label>
+                              <Input
+                                id="payerUpiId"
+                                placeholder="yourname@upi"
+                                value={formData.payerUpiId}
+                                onChange={(e) => handleInputChange("payerUpiId", e.target.value)}
+                                data-testid="input-payer-upi"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="paymentDate">Payment Date</Label>
+                              <Input
+                                id="paymentDate"
+                                type="date"
+                                value={formData.paymentDate}
+                                onChange={(e) => handleInputChange("paymentDate", e.target.value)}
+                                data-testid="input-payment-date"
+                              />
                             </div>
                           </div>
                         </div>
