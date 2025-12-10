@@ -23,6 +23,9 @@ declare module "http" {
 // Trust proxy for Railway, Render, and other hosting platforms
 app.set("trust proxy", 1);
 
+// Detect if running on Replit (uses HTTPS proxy) or production
+const isSecureEnv = process.env.NODE_ENV === "production" || !!process.env.REPL_ID;
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "kerala-economic-forum-admin-secret-key-2024",
@@ -32,10 +35,10 @@ app.use(
       checkPeriod: 86400000
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecureEnv,
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+      sameSite: isSecureEnv ? "none" : "lax"
     }
   })
 );
