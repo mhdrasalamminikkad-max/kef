@@ -89,11 +89,8 @@ export function FloatingInvitationButton() {
       return;
     }
     if (hasInvitations) {
-      if (invitationCount === 1) {
-        window.location.href = `/invitation/${registrationIds[0]}`;
-      } else {
-        setShowInvitationList(!showInvitationList);
-      }
+      // Always show the invitation list, even if there's only 1
+      setShowInvitationList(!showInvitationList);
     } else {
       reopenModal();
     }
@@ -129,7 +126,7 @@ export function FloatingInvitationButton() {
           >
           {/* Invitation List Popup */}
           <AnimatePresence>
-            {showInvitationList && invitationCount > 1 && (
+            {showInvitationList && hasInvitations && (
               <motion.div
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -137,8 +134,10 @@ export function FloatingInvitationButton() {
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 className="absolute bottom-20 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden min-w-[280px]"
               >
-                <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3 flex items-center justify-between">
-                  <h3 className="text-white font-semibold text-sm">Your Invitations ({invitationCount})</h3>
+                <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3 flex items-center justify-between gap-2">
+                  <h3 className="text-white font-semibold text-sm">
+                    {invitationCount === 1 ? "Your Invitation" : `Your Invitations (${invitationCount})`}
+                  </h3>
                   <button 
                     onClick={() => setShowInvitationList(false)}
                     className="text-white/80 hover:text-white"

@@ -26,3 +26,5 @@
 [x] 358. December 11, 2025 - Workflow running successfully on port 5000
 [x] 359. December 11, 2025 - Import migration complete
 [x] 360. December 11, 2025 - Made floating invitation icon draggable using Framer Motion drag feature
+[x] 361. December 11, 2025 - Updated floating icon to always show invitation list when clicked (even with 1 registration)
+[x] 362. December 11, 2025 - Users can now see all their registrations by name and select which invitation to view
