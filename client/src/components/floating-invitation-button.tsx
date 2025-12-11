@@ -1,9 +1,9 @@
 import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, MailOpen, Sparkles, X, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence, useDragControls } from "framer-motion";
+import { Mail, MailOpen, Sparkles, X, ChevronUp, GripVertical } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface PopupSettings {
   id: number;
@@ -27,6 +27,8 @@ export function FloatingInvitationButton() {
   const [isMounted, setIsMounted] = useState(false);
   const [showInvitationList, setShowInvitationList] = useState(false);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const constraintsRef = useRef<HTMLDivElement>(null);
 
   const { data: settings, isLoading: isSettingsLoading, isError: isSettingsError } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
@@ -77,13 +79,19 @@ export function FloatingInvitationButton() {
 
   if (!isMounted) return null;
 
-  const handleClick = () => {
+  const handleInvitationClick = (id: string) => {
+    window.location.href = `/invitation/${id}`;
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    if (isDragging) {
+      e.preventDefault();
+      return;
+    }
     if (hasInvitations) {
       if (invitationCount === 1) {
-        // Single invitation - go directly
         window.location.href = `/invitation/${registrationIds[0]}`;
       } else {
-        // Multiple invitations - show list
         setShowInvitationList(!showInvitationList);
       }
     } else {
@@ -91,25 +99,34 @@ export function FloatingInvitationButton() {
     }
   };
 
-  const handleInvitationClick = (id: string) => {
-    window.location.href = `/invitation/${id}`;
-  };
-
   const buttonContent = (
-    <AnimatePresence>
-      {shouldShowButton && (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 260, 
-            damping: 20,
-            delay: 0.3
-          }}
-          className="fixed bottom-6 right-6 z-[9999]"
-        >
+    <>
+      {/* Drag constraints container */}
+      <div 
+        ref={constraintsRef} 
+        className="fixed inset-0 pointer-events-none z-[9998]"
+      />
+      <AnimatePresence>
+        {shouldShowButton && (
+          <motion.div
+            drag
+            dragConstraints={constraintsRef}
+            dragElastic={0.1}
+            dragMomentum={false}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setTimeout(() => setIsDragging(false), 100)}
+            initial={{ scale: 0, opacity: 0, x: 0, y: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 260, 
+              damping: 20,
+              delay: 0.3
+            }}
+            className="fixed bottom-6 right-6 z-[9999] cursor-grab active:cursor-grabbing"
+            whileDrag={{ scale: 1.05 }}
+          >
           {/* Invitation List Popup */}
           <AnimatePresence>
             {showInvitationList && invitationCount > 1 && (
@@ -165,7 +182,7 @@ export function FloatingInvitationButton() {
 
           {/* Main Button */}
           <button
-            onClick={handleClick}
+            onClick={handleButtonClick}
             className="group"
             data-testid="button-floating-invitation"
             aria-label={hasInvitations ? `View your ${invitationCount} invitation(s)` : "Open invitation"}
@@ -257,6 +274,7 @@ export function FloatingInvitationButton() {
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 
   return createPortal(buttonContent, document.body);
