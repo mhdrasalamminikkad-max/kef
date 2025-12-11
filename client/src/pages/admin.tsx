@@ -1377,7 +1377,7 @@ export default function AdminDashboard() {
       </Dialog>
 
       <Dialog open={!!selectedMembership} onOpenChange={() => setSelectedMembership(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Membership Application Details</DialogTitle>
             <DialogDescription>
@@ -1385,7 +1385,7 @@ export default function AdminDashboard() {
             </DialogDescription>
           </DialogHeader>
           {selectedMembership && (
-            <ScrollArea className="flex-1 max-h-[70vh] pr-4">
+            <div className="grid gap-4 pb-4">
               <div className="grid gap-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -1465,7 +1465,7 @@ export default function AdminDashboard() {
                   </p>
                 </div>
               </div>
-            </ScrollArea>
+            </div>
           )}
         </DialogContent>
       </Dialog>
