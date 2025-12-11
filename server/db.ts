@@ -2,10 +2,10 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "@shared/schema";
 
-// In development, prefer Replit's DATABASE_URL. In production (Railway), use RAILWAY_DATABASE_URL
-const databaseUrl = process.env.NODE_ENV === "production" 
-  ? (process.env.RAILWAY_DATABASE_URL || process.env.DATABASE_URL)
-  : (process.env.DATABASE_URL || process.env.RAILWAY_DATABASE_URL);
+// Priority: EXTERNAL_DATABASE_URL (Render/external) > RAILWAY_DATABASE_URL > DATABASE_URL (Replit built-in)
+const databaseUrl = process.env.EXTERNAL_DATABASE_URL 
+  || process.env.RAILWAY_DATABASE_URL 
+  || process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL or RAILWAY_DATABASE_URL environment variable is not set");

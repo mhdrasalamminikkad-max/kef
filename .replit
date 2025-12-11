@@ -48,3 +48,6 @@ integrations = ["resend:1.0.0", "google-mail:1.0.0"]
 [userenv]
 
 [userenv.development]
+
+[userenv.shared]
+EXTERNAL_DATABASE_URL = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a.singapore-postgres.render.com/kef"
