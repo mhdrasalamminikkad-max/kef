@@ -22,3 +22,6 @@
 [x] 354. December 11, 2025 - Workflow restarted successfully - app running on port 5000
 [x] 355. December 11, 2025 - All API endpoints responding correctly (popup-settings, programs)
 [x] 356. December 11, 2025 - Import complete and verified
+[x] 357. December 11, 2025 - Reinstalled tsx package after environment reset
+[x] 358. December 11, 2025 - Workflow running successfully on port 5000
+[x] 359. December 11, 2025 - Import migration complete
