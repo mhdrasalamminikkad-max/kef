@@ -1385,7 +1385,7 @@ export default function AdminDashboard() {
             </DialogDescription>
           </DialogHeader>
           {selectedMembership && (
-            <ScrollArea className="flex-1 pr-4">
+            <ScrollArea className="flex-1 max-h-[70vh] pr-4">
               <div className="grid gap-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
