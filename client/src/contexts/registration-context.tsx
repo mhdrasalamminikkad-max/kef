@@ -17,6 +17,7 @@ interface RegistrationContextType {
   reopenModal: () => void;
   clearRegistered: () => void;
   setModalOpen: (open: boolean) => void;
+  refreshRegistrationIds: () => void;
 }
 
 const RegistrationContext = createContext<RegistrationContextType | undefined>(undefined);
@@ -38,12 +39,23 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     let ids: string[] = [];
     if (savedRegIds) {
       try {
-        ids = JSON.parse(savedRegIds);
-        if (!Array.isArray(ids)) ids = [];
+        const parsed = JSON.parse(savedRegIds);
+        if (Array.isArray(parsed)) {
+          ids = parsed;
+        } else if (typeof parsed === "string") {
+          // Handle legacy single-value format
+          ids = [parsed];
+        }
       } catch {
-        ids = [];
+        // If it's not valid JSON, it might be a plain string ID (legacy format)
+        if (savedRegIds && !savedRegIds.startsWith('[')) {
+          ids = [savedRegIds];
+        }
       }
     }
+    
+    // Log for debugging
+    console.log("[Registration Context] Loaded IDs from localStorage:", ids);
     
     setIsRegistered(registered);
     setIsModalDismissed(dismissed);
@@ -97,6 +109,22 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
     setIsModalCurrentlyOpen(open);
   }, []);
 
+  // Refresh registration IDs from localStorage (useful when localStorage might have been updated externally)
+  const refreshRegistrationIds = useCallback(() => {
+    const savedRegIds = localStorage.getItem(REGISTRATION_IDS_KEY);
+    let ids: string[] = [];
+    if (savedRegIds) {
+      try {
+        ids = JSON.parse(savedRegIds);
+        if (!Array.isArray(ids)) ids = [];
+      } catch {
+        ids = [];
+      }
+    }
+    setRegistrationIds(ids);
+    setIsRegistered(ids.length > 0 || localStorage.getItem(STORAGE_KEY) === "true");
+  }, []);
+
   // For backward compatibility, return the first registration ID
   const registrationId = registrationIds.length > 0 ? registrationIds[0] : null;
 
@@ -115,6 +143,7 @@ export function RegistrationProvider({ children }: { children: ReactNode }) {
         reopenModal,
         clearRegistered,
         setModalOpen,
+        refreshRegistrationIds,
       }}
     >
       {children}

@@ -23,7 +23,7 @@ interface Registration {
 }
 
 export function FloatingInvitationButton() {
-  const { isModalDismissed, isLoaded, reopenModal, isModalCurrentlyOpen, isRegistered, registrationIds } = useRegistrationStatus();
+  const { isModalDismissed, isLoaded, reopenModal, isModalCurrentlyOpen, isRegistered, registrationIds, refreshRegistrationIds } = useRegistrationStatus();
   const [isMounted, setIsMounted] = useState(false);
   const [showInvitationList, setShowInvitationList] = useState(false);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
@@ -39,7 +39,9 @@ export function FloatingInvitationButton() {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    // Refresh registration IDs from localStorage on mount
+    refreshRegistrationIds();
+  }, [refreshRegistrationIds]);
 
   // Fetch registration details when we have IDs - use slim endpoint for speed
   useEffect(() => {
@@ -88,6 +90,9 @@ export function FloatingInvitationButton() {
       e.preventDefault();
       return;
     }
+    // Refresh from localStorage before showing the list
+    refreshRegistrationIds();
+    
     if (hasInvitations) {
       // Always show the invitation list, even if there's only 1
       setShowInvitationList(!showInvitationList);
