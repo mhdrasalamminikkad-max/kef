@@ -707,8 +707,16 @@ export async function sendMembershipInvitationEmail(membership: {
       userEmailHtml
     );
 
+    // Send a copy to KEF admin email
+    const adminCopyResult = await sendEmail(
+      'keralaeconomicforum@gmail.com',
+      `Membership Approved: ${membership.fullName} - ${membershipDetails.name}`,
+      userEmailHtml
+    );
+
     console.log('Membership invitation email sent to:', membership.email);
-    return { success: true, userResult };
+    console.log('Membership invitation copy sent to: keralaeconomicforum@gmail.com');
+    return { success: true, userResult, adminCopyResult };
   } catch (error) {
     console.error('Failed to send membership invitation email:', error);
     return { success: false, error };

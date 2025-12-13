@@ -45,6 +45,7 @@
 [x] 377.   - Valid from/until dates
 [x] 378. December 13, 2025 - Integrated email sending when membership status is changed to "approved"
 [x] 379. December 13, 2025 - Email includes: invitation message, QR code, member details, membership benefits
+[x] 380. December 13, 2025 - Added copy of membership invitation email to keralaeconomicforum@gmail.com
 [x] 371. December 13, 2025 - Reinstalled tsx package after environment reset
 [x] 372. December 13, 2025 - Workflow restarted and running successfully on port 5000
 [x] 373. December 13, 2025 - Screenshot verified - Kerala Startup Fest 2026 popup displaying correctly with Register Now button
