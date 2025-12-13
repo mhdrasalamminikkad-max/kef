@@ -36,6 +36,15 @@
 [x] 368. December 13, 2025 - POPUP: Registration enabled - redirects to https://keralastartupfest.com
 [x] 369. December 13, 2025 - BOOT CAMP: Registration page (/register) now shows "Coming Soon" message
 [x] 370. December 13, 2025 - To toggle: Edit REGISTRATION_OPEN in bootcamp-modal.tsx (popup) and BOOTCAMP_REGISTRATION_OPEN in register.tsx (boot camp page)
+[x] 371. December 13, 2025 - Added QR code generation for membership emails using qrcode package
+[x] 372. December 13, 2025 - Created sendMembershipInvitationEmail function with:
+[x] 373.   - QR code containing member details (ID, name, email, phone, type)
+[x] 374.   - Beautiful membership card design in email
+[x] 375.   - Member details section
+[x] 376.   - Membership benefits based on type (individual, student, corporate, institutional)
+[x] 377.   - Valid from/until dates
+[x] 378. December 13, 2025 - Integrated email sending when membership status is changed to "approved"
+[x] 379. December 13, 2025 - Email includes: invitation message, QR code, member details, membership benefits
 [x] 371. December 13, 2025 - Reinstalled tsx package after environment reset
 [x] 372. December 13, 2025 - Workflow restarted and running successfully on port 5000
 [x] 373. December 13, 2025 - Screenshot verified - Kerala Startup Fest 2026 popup displaying correctly with Register Now button

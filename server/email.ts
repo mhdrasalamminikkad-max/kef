@@ -1,5 +1,6 @@
 // Email Integration using Nodemailer with Gmail
 import nodemailer from 'nodemailer';
+import QRCode from 'qrcode';
 
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
@@ -438,6 +439,278 @@ export async function sendContactFormEmail(contact: {
     return { adminResult, userResult };
   } catch (error) {
     console.error('Failed to send contact form email:', error);
+    return { success: false, error };
+  }
+}
+
+// Generate QR code as base64 data URL
+async function generateMembershipQRCode(memberData: {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  membershipType: string;
+}): Promise<string> {
+  const qrData = JSON.stringify({
+    memberId: memberData.id,
+    name: memberData.fullName,
+    email: memberData.email,
+    phone: memberData.phone,
+    type: memberData.membershipType,
+    org: 'Kerala Economic Forum',
+    verified: true
+  });
+  
+  const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+    width: 200,
+    margin: 2,
+    color: {
+      dark: '#1f2937',
+      light: '#ffffff'
+    }
+  });
+  
+  return qrCodeDataUrl;
+}
+
+// Get membership type details
+function getMembershipTypeDetails(type: string): { name: string; benefits: string[]; validity: string } {
+  const types: Record<string, { name: string; benefits: string[]; validity: string }> = {
+    individual: {
+      name: 'Individual Membership',
+      benefits: [
+        'Access to all KEF events and workshops',
+        'Networking opportunities with entrepreneurs',
+        'Monthly newsletter and updates',
+        'Discounts on event registrations',
+        'Access to online resources and materials'
+      ],
+      validity: '1 Year'
+    },
+    student: {
+      name: 'Student Membership',
+      benefits: [
+        'Access to student-focused programs',
+        'Mentorship opportunities',
+        'Career guidance sessions',
+        'Internship connections',
+        'Free access to workshops'
+      ],
+      validity: '1 Year'
+    },
+    corporate: {
+      name: 'Corporate Membership',
+      benefits: [
+        'Priority access to all KEF events',
+        'Company branding at KEF events',
+        'Multiple employee registrations',
+        'Exclusive B2B networking sessions',
+        'Partnership opportunities',
+        'Dedicated relationship manager'
+      ],
+      validity: '1 Year'
+    },
+    institutional: {
+      name: 'Institutional Membership',
+      benefits: [
+        'Collaboration on research projects',
+        'Joint event organization',
+        'Student exchange programs',
+        'Faculty development programs',
+        'Industry-academia partnerships',
+        'Access to KEF resource network'
+      ],
+      validity: '1 Year'
+    }
+  };
+  
+  return types[type] || types['individual'];
+}
+
+// Send membership invitation email with QR code
+export async function sendMembershipInvitationEmail(membership: {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  organization?: string | null;
+  designation?: string | null;
+  membershipType: string;
+  interests: string;
+  createdAt: Date;
+  paymentAmount?: string | null;
+}) {
+  try {
+    // Generate QR code with member details
+    const qrCodeDataUrl = await generateMembershipQRCode({
+      id: membership.id,
+      fullName: membership.fullName,
+      email: membership.email,
+      phone: membership.phone,
+      membershipType: membership.membershipType
+    });
+    
+    const membershipDetails = getMembershipTypeDetails(membership.membershipType);
+    const benefitsList = membershipDetails.benefits.map(b => 
+      `<li style="color: #374151; margin: 8px 0; padding-left: 5px;">${b}</li>`
+    ).join('');
+    
+    const membershipValidFrom = new Date(membership.createdAt).toLocaleDateString('en-IN', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    });
+    
+    const validUntil = new Date(membership.createdAt);
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+    const membershipValidUntil = validUntil.toLocaleDateString('en-IN', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric',
+      timeZone: 'Asia/Kolkata'
+    });
+
+    const userEmailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9fafb;">
+        <div style="background: linear-gradient(135deg, #dc2626, #f59e0b); padding: 30px 20px; border-radius: 10px 10px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to Kerala Economic Forum!</h1>
+          <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Your Membership is Now Active</p>
+        </div>
+        
+        <div style="background: white; padding: 30px; border: 1px solid #e5e7eb;">
+          <h2 style="color: #1f2937; margin-top: 0; text-align: center;">Dear ${membership.fullName},</h2>
+          
+          <p style="color: #374151; line-height: 1.8; font-size: 15px; text-align: center;">
+            Congratulations! Your membership with <strong>Kerala Economic Forum</strong> has been approved. 
+            We are thrilled to have you as part of our growing community of entrepreneurs, innovators, and changemakers.
+          </p>
+          
+          <!-- Membership Card -->
+          <div style="background: linear-gradient(135deg, #1f2937, #374151); border-radius: 15px; padding: 25px; margin: 25px 0; color: white;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <div>
+                <p style="margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Member ID</p>
+                <p style="margin: 5px 0 0 0; font-size: 14px; font-family: monospace;">${membership.id.substring(0, 8).toUpperCase()}</p>
+              </div>
+              <div style="text-align: right;">
+                <p style="margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Membership Type</p>
+                <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold; color: #fbbf24;">${membershipDetails.name}</p>
+              </div>
+            </div>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; margin-top: 15px;">
+              <p style="margin: 0; font-size: 20px; font-weight: bold;">${membership.fullName}</p>
+              ${membership.organization ? `<p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">${membership.organization}</p>` : ''}
+              ${membership.designation ? `<p style="margin: 3px 0 0 0; font-size: 13px; opacity: 0.7;">${membership.designation}</p>` : ''}
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; opacity: 0.8;">
+              <div>
+                <p style="margin: 0;">Valid From</p>
+                <p style="margin: 3px 0 0 0; font-weight: bold; opacity: 1;">${membershipValidFrom}</p>
+              </div>
+              <div style="text-align: right;">
+                <p style="margin: 0;">Valid Until</p>
+                <p style="margin: 3px 0 0 0; font-weight: bold; opacity: 1;">${membershipValidUntil}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- QR Code Section -->
+          <div style="text-align: center; margin: 30px 0; padding: 20px; background: #f3f4f6; border-radius: 10px;">
+            <h3 style="color: #1f2937; margin: 0 0 15px 0;">Your Membership QR Code</h3>
+            <img src="${qrCodeDataUrl}" alt="Membership QR Code" style="width: 180px; height: 180px; border: 4px solid white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+            <p style="color: #6b7280; font-size: 13px; margin: 15px 0 0 0;">
+              Scan this QR code at any KEF event for instant verification
+            </p>
+          </div>
+          
+          <!-- Member Details -->
+          <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px; padding: 20px; margin: 25px 0;">
+            <h3 style="color: #d97706; margin: 0 0 15px 0; text-align: center;">Your Member Details</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #374151; width: 40%;">Full Name:</td>
+                <td style="padding: 8px 0; color: #1f2937;">${membership.fullName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #374151;">Email:</td>
+                <td style="padding: 8px 0; color: #1f2937;">${membership.email}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #374151;">Phone:</td>
+                <td style="padding: 8px 0; color: #1f2937;">${membership.phone}</td>
+              </tr>
+              ${membership.organization ? `
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #374151;">Organization:</td>
+                <td style="padding: 8px 0; color: #1f2937;">${membership.organization}</td>
+              </tr>
+              ` : ''}
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #374151;">Interests:</td>
+                <td style="padding: 8px 0; color: #1f2937;">${membership.interests}</td>
+              </tr>
+              ${membership.paymentAmount ? `
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #374151;">Payment Amount:</td>
+                <td style="padding: 8px 0; color: #1f2937;">${membership.paymentAmount}</td>
+              </tr>
+              ` : ''}
+            </table>
+          </div>
+          
+          <!-- Membership Benefits -->
+          <div style="background: #dcfce7; border: 1px solid #16a34a; border-radius: 10px; padding: 20px; margin: 25px 0;">
+            <h3 style="color: #16a34a; margin: 0 0 15px 0; text-align: center;">Your Membership Benefits</h3>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${benefitsList}
+            </ul>
+          </div>
+          
+          <!-- Call to Action -->
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #374151; font-size: 15px; line-height: 1.6;">
+              Start exploring the benefits of your membership today!
+            </p>
+            <a href="https://keralastartupfest.com" style="display: inline-block; background: linear-gradient(135deg, #dc2626, #f59e0b); color: white; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; margin-top: 15px;">
+              Visit Our Website
+            </a>
+          </div>
+          
+          <p style="color: #374151; line-height: 1.6; margin-top: 25px;">
+            If you have any questions about your membership, feel free to reach out to us at 
+            <a href="mailto:keralaecomicforumhelp@gmail.com" style="color: #dc2626;">keralaecomicforumhelp@gmail.com</a>
+          </p>
+          
+          <p style="color: #374151; line-height: 1.6; margin-top: 20px;">
+            Welcome aboard!<br/>
+            <strong>Kerala Economic Forum Team</strong>
+          </p>
+        </div>
+        
+        <div style="background: #1f2937; padding: 20px; border-radius: 0 0 10px 10px; text-align: center;">
+          <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+            Kerala Economic Forum - Empowering Entrepreneurs
+          </p>
+          <p style="color: #6b7280; margin: 10px 0 0 0; font-size: 11px;">
+            This email contains your membership invitation and QR code. Please keep it safe.
+          </p>
+        </div>
+      </div>
+    `;
+
+    const userResult = await sendEmail(
+      membership.email,
+      `Welcome to Kerala Economic Forum - Your Membership is Active!`,
+      userEmailHtml
+    );
+
+    console.log('Membership invitation email sent to:', membership.email);
+    return { success: true, userResult };
+  } catch (error) {
+    console.error('Failed to send membership invitation email:', error);
     return { success: false, error };
   }
 }

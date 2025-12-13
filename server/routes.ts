@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema, insertPartnerSchema, updatePartnerSchema, updatePopupSettingsSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
-import { sendBootcampRegistrationEmail, sendMembershipApplicationEmail, sendContactFormEmail } from "./email";
+import { sendBootcampRegistrationEmail, sendMembershipApplicationEmail, sendContactFormEmail, sendMembershipInvitationEmail } from "./email";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -632,6 +632,22 @@ export async function registerRoutes(
         return res.status(404).json({ error: "Membership application not found" });
       }
       
+      // Send invitation email with QR code when membership is approved
+      if (status === "approved") {
+        sendMembershipInvitationEmail({
+          id: updated.id,
+          fullName: updated.fullName,
+          email: updated.email,
+          phone: updated.phone,
+          organization: updated.organization,
+          designation: updated.designation,
+          membershipType: updated.membershipType,
+          interests: updated.interests,
+          createdAt: updated.createdAt,
+          paymentAmount: updated.paymentAmount,
+        }).catch(err => console.error("Failed to send membership invitation email:", err));
+      }
+      
       res.json(updated);
     } catch (error) {
       console.error("Error updating membership status:", error);
@@ -778,6 +794,22 @@ export async function registerRoutes(
       
       if (!updated) {
         return res.status(404).json({ error: "Membership application not found" });
+      }
+      
+      // Send invitation email with QR code when membership is approved
+      if (status === "approved") {
+        sendMembershipInvitationEmail({
+          id: updated.id,
+          fullName: updated.fullName,
+          email: updated.email,
+          phone: updated.phone,
+          organization: updated.organization,
+          designation: updated.designation,
+          membershipType: updated.membershipType,
+          interests: updated.interests,
+          createdAt: updated.createdAt,
+          paymentAmount: updated.paymentAmount,
+        }).catch(err => console.error("Failed to send membership invitation email:", err));
       }
       
       res.json(updated);
