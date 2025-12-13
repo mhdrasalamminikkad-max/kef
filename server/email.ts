@@ -1,56 +1,44 @@
-// Email Integration using Nodemailer with Gmail
-import nodemailer from 'nodemailer';
+// Email Integration using Resend (HTTP API - works on Render)
+import { Resend } from 'resend';
 import QRCode from 'qrcode';
 
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 
-// Email credentials
-const EMAIL_USER = 'keralaecomicforumhelp@gmail.com';
-const EMAIL_PASS = 'kqtw pxxx ramo gbvm';
+// Initialize Resend with API key
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Create nodemailer transporter
-function createTransporter() {
-  console.log('=== EMAIL CONFIG CHECK ===');
-  console.log('EMAIL_USER configured: Yes');
-  console.log('Creating Gmail transporter...');
-  
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: EMAIL_USER,
-      pass: EMAIL_PASS
-    }
-  });
-}
+// From email - use Resend's default for testing, or your verified domain
+// For production, verify your domain at resend.com and use your own email
+const FROM_EMAIL = 'Kerala Economic Forum <onboarding@resend.dev>';
 
-// Send email using nodemailer
-async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: Array<{filename: string; content: Buffer; cid: string}>) {
-  console.log('=== SENDING EMAIL ===');
+// Send email using Resend API
+async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: Array<{filename: string; content: Buffer; cid?: string}>) {
+  console.log('=== SENDING EMAIL VIA RESEND ===');
   console.log('To:', to);
   console.log('Subject:', subject);
   
-  const transporter = createTransporter();
-
   try {
-    console.log('Attempting to send email via Gmail...');
-    const result = await transporter.sendMail({
-      from: `Kerala Economic Forum <${EMAIL_USER}>`,
-      to: to,
+    // Convert attachments for Resend format
+    const resendAttachments = attachments?.map(att => ({
+      filename: att.filename,
+      content: att.content
+    }));
+
+    const result = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [to],
       subject: subject,
       html: htmlBody,
-      attachments: attachments
+      attachments: resendAttachments
     });
 
     console.log('=== EMAIL SENT SUCCESSFULLY ===');
-    console.log('Message ID:', result.messageId);
+    console.log('Result:', result);
     return { success: true, result };
   } catch (error: any) {
     console.error('=== EMAIL SEND FAILED ===');
-    console.error('Error name:', error.name);
-    console.error('Error message:', error.message);
-    console.error('Error code:', error.code);
-    console.error('Full error:', JSON.stringify(error, null, 2));
+    console.error('Error:', error);
     return { success: false, error };
   }
 }
@@ -542,7 +530,7 @@ export async function sendMembershipInvitationEmail(membership: {
   paymentAmount?: string | null;
 }) {
   try {
-    // Generate QR code as buffer for inline attachment
+    // Generate QR code as buffer for attachment
     const qrCodeBuffer = await generateMembershipQRCodeBuffer({
       id: membership.id,
       fullName: membership.fullName,
@@ -551,12 +539,8 @@ export async function sendMembershipInvitationEmail(membership: {
       membershipType: membership.membershipType
     });
     
-    // QR code attachment for email
-    const qrAttachment = {
-      filename: 'membership-qr.png',
-      content: qrCodeBuffer,
-      cid: 'membership-qr'
-    };
+    // Convert QR code to base64 for inline display in email
+    const qrCodeBase64 = qrCodeBuffer.toString('base64');
     
     const membershipDetails = getMembershipTypeDetails(membership.membershipType);
     const benefitsList = membershipDetails.benefits.map(b => 
@@ -596,16 +580,18 @@ export async function sendMembershipInvitationEmail(membership: {
           
           <!-- Membership Card -->
           <div style="background: linear-gradient(135deg, #1f2937, #374151); border-radius: 15px; padding: 25px; margin: 25px 0; color: white;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-              <div>
-                <p style="margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Member ID</p>
-                <p style="margin: 5px 0 0 0; font-size: 14px; font-family: monospace;">${membership.id.substring(0, 8).toUpperCase()}</p>
-              </div>
-              <div style="text-align: right;">
-                <p style="margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Membership Type</p>
-                <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold; color: #fbbf24;">${membershipDetails.name}</p>
-              </div>
-            </div>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 0;">
+                  <p style="margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Member ID</p>
+                  <p style="margin: 5px 0 0 0; font-size: 14px; font-family: monospace;">${membership.id.substring(0, 8).toUpperCase()}</p>
+                </td>
+                <td style="padding: 0; text-align: right;">
+                  <p style="margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Membership Type</p>
+                  <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold; color: #fbbf24;">${membershipDetails.name}</p>
+                </td>
+              </tr>
+            </table>
             
             <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; margin-top: 15px;">
               <p style="margin: 0; font-size: 20px; font-weight: bold;">${membership.fullName}</p>
@@ -613,22 +599,24 @@ export async function sendMembershipInvitationEmail(membership: {
               ${membership.designation ? `<p style="margin: 3px 0 0 0; font-size: 13px; opacity: 0.7;">${membership.designation}</p>` : ''}
             </div>
             
-            <div style="display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; opacity: 0.8;">
-              <div>
-                <p style="margin: 0;">Valid From</p>
-                <p style="margin: 3px 0 0 0; font-weight: bold; opacity: 1;">${membershipValidFrom}</p>
-              </div>
-              <div style="text-align: right;">
-                <p style="margin: 0;">Valid Until</p>
-                <p style="margin: 3px 0 0 0; font-weight: bold; opacity: 1;">${membershipValidUntil}</p>
-              </div>
-            </div>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+              <tr>
+                <td style="padding: 0; font-size: 12px; opacity: 0.8;">
+                  <p style="margin: 0;">Valid From</p>
+                  <p style="margin: 3px 0 0 0; font-weight: bold; opacity: 1;">${membershipValidFrom}</p>
+                </td>
+                <td style="padding: 0; text-align: right; font-size: 12px; opacity: 0.8;">
+                  <p style="margin: 0;">Valid Until</p>
+                  <p style="margin: 3px 0 0 0; font-weight: bold; opacity: 1;">${membershipValidUntil}</p>
+                </td>
+              </tr>
+            </table>
           </div>
           
           <!-- QR Code Section -->
           <div style="text-align: center; margin: 30px 0; padding: 20px; background: #f3f4f6; border-radius: 10px;">
             <h3 style="color: #1f2937; margin: 0 0 15px 0;">Your Membership QR Code</h3>
-            <img src="cid:membership-qr" alt="Membership QR Code" style="width: 180px; height: 180px; border: 4px solid white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+            <img src="data:image/png;base64,${qrCodeBase64}" alt="Membership QR Code" style="width: 180px; height: 180px; border: 4px solid white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
             <p style="color: #6b7280; font-size: 13px; margin: 15px 0 0 0;">
               Scan this QR code at any KEF event for instant verification
             </p>
@@ -708,6 +696,12 @@ export async function sendMembershipInvitationEmail(membership: {
         </div>
       </div>
     `;
+
+    // QR code attachment for download
+    const qrAttachment = {
+      filename: 'membership-qr.png',
+      content: qrCodeBuffer
+    };
 
     const userResult = await sendEmail(
       membership.email,

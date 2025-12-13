@@ -52,3 +52,12 @@
 [x] 384. December 13, 2025 - Workflow restarted and running successfully on port 5000
 [x] 385. December 13, 2025 - Screenshot verified - Kerala Startup Fest 2026 popup displaying correctly with Register Now button
 [x] 386. December 13, 2025 - IMPORT MIGRATION COMPLETE - ALL SYSTEMS OPERATIONAL
+[x] 387. December 13, 2025 - SWITCHED EMAIL FROM NODEMAILER TO RESEND API
+[x] 388. December 13, 2025 - Problem: Nodemailer with Gmail SMTP doesn't work on Render (SMTP ports blocked)
+[x] 389. December 13, 2025 - Solution: Updated server/email.ts to use Resend HTTP API instead
+[x] 390. December 13, 2025 - Installed resend npm package
+[x] 391. December 13, 2025 - Added RESEND_API_KEY secret (need to add same key to Render environment)
+[x] 392. December 13, 2025 - Email uses "onboarding@resend.dev" as sender (for production, verify your own domain at resend.com)
+[x] 393. December 13, 2025 - All email functions updated: bootcamp registration, membership application, contact form, membership invitation
+[x] 394. December 13, 2025 - QR code in emails now uses base64 data URL instead of CID attachment (more compatible)
+[x] 395. December 13, 2025 - IMPORTANT FOR RENDER: Add RESEND_API_KEY environment variable with same key
