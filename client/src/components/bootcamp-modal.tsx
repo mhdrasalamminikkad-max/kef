@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
-import bootcampImage from "@assets/kef_bootcamp.png";
+import bootcampImage from "@assets/Screenshot_2025-12-13_153812_1765622089862.png";
 
 interface PopupSettings {
   id: number;
