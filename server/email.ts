@@ -25,7 +25,7 @@ function createTransporter() {
 }
 
 // Send email using nodemailer
-async function sendEmail(to: string, subject: string, htmlBody: string) {
+async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: Array<{filename: string; content: Buffer; cid: string}>) {
   console.log('=== SENDING EMAIL ===');
   console.log('To:', to);
   console.log('Subject:', subject);
@@ -38,7 +38,8 @@ async function sendEmail(to: string, subject: string, htmlBody: string) {
       from: `Kerala Economic Forum <${EMAIL_USER}>`,
       to: to,
       subject: subject,
-      html: htmlBody
+      html: htmlBody,
+      attachments: attachments
     });
 
     console.log('=== EMAIL SENT SUCCESSFULLY ===');
@@ -443,14 +444,14 @@ export async function sendContactFormEmail(contact: {
   }
 }
 
-// Generate QR code as base64 data URL
-async function generateMembershipQRCode(memberData: {
+// Generate QR code as Buffer for email attachment
+async function generateMembershipQRCodeBuffer(memberData: {
   id: string;
   fullName: string;
   email: string;
   phone: string;
   membershipType: string;
-}): Promise<string> {
+}): Promise<Buffer> {
   const qrData = JSON.stringify({
     memberId: memberData.id,
     name: memberData.fullName,
@@ -461,7 +462,7 @@ async function generateMembershipQRCode(memberData: {
     verified: true
   });
   
-  const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+  const qrCodeBuffer = await QRCode.toBuffer(qrData, {
     width: 200,
     margin: 2,
     color: {
@@ -470,7 +471,7 @@ async function generateMembershipQRCode(memberData: {
     }
   });
   
-  return qrCodeDataUrl;
+  return qrCodeBuffer;
 }
 
 // Get membership type details
@@ -541,14 +542,21 @@ export async function sendMembershipInvitationEmail(membership: {
   paymentAmount?: string | null;
 }) {
   try {
-    // Generate QR code with member details
-    const qrCodeDataUrl = await generateMembershipQRCode({
+    // Generate QR code as buffer for inline attachment
+    const qrCodeBuffer = await generateMembershipQRCodeBuffer({
       id: membership.id,
       fullName: membership.fullName,
       email: membership.email,
       phone: membership.phone,
       membershipType: membership.membershipType
     });
+    
+    // QR code attachment for email
+    const qrAttachment = {
+      filename: 'membership-qr.png',
+      content: qrCodeBuffer,
+      cid: 'membership-qr'
+    };
     
     const membershipDetails = getMembershipTypeDetails(membership.membershipType);
     const benefitsList = membershipDetails.benefits.map(b => 
@@ -620,7 +628,7 @@ export async function sendMembershipInvitationEmail(membership: {
           <!-- QR Code Section -->
           <div style="text-align: center; margin: 30px 0; padding: 20px; background: #f3f4f6; border-radius: 10px;">
             <h3 style="color: #1f2937; margin: 0 0 15px 0;">Your Membership QR Code</h3>
-            <img src="${qrCodeDataUrl}" alt="Membership QR Code" style="width: 180px; height: 180px; border: 4px solid white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+            <img src="cid:membership-qr" alt="Membership QR Code" style="width: 180px; height: 180px; border: 4px solid white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
             <p style="color: #6b7280; font-size: 13px; margin: 15px 0 0 0;">
               Scan this QR code at any KEF event for instant verification
             </p>
@@ -704,14 +712,16 @@ export async function sendMembershipInvitationEmail(membership: {
     const userResult = await sendEmail(
       membership.email,
       `Welcome to Kerala Economic Forum - Your Membership is Active!`,
-      userEmailHtml
+      userEmailHtml,
+      [qrAttachment]
     );
 
     // Send a copy to KEF admin email
     const adminCopyResult = await sendEmail(
       'keralaeconomicforum@gmail.com',
       `Membership Approved: ${membership.fullName} - ${membershipDetails.name}`,
-      userEmailHtml
+      userEmailHtml,
+      [qrAttachment]
     );
 
     console.log('Membership invitation email sent to:', membership.email);
