@@ -32,3 +32,6 @@
 [x] 364. December 13, 2025 - Workflow restarted successfully - application running on port 5000
 [x] 365. December 13, 2025 - Screenshot verified - Startup Boot Camp popup displaying correctly
 [x] 366. December 13, 2025 - IMPORT MIGRATION COMPLETE - PROJECT READY FOR USE
+[x] 367. December 13, 2025 - Installed tsx package (was missing after environment reset)
+[x] 368. December 13, 2025 - Workflow restarted successfully - application running on port 5000
+[x] 369. December 13, 2025 - Import migration complete
