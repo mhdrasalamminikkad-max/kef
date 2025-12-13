@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
+import { useToast } from "@/hooks/use-toast";
 import bootcampImage from "@assets/Screenshot_2025-12-13_153812_1765622089862.png";
+
+// Set this to false to show "Coming Soon" instead of registration
+const REGISTRATION_OPEN = false;
 
 interface PopupSettings {
   id: number;
@@ -25,6 +28,7 @@ export function BootcampModal() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const preloadedImageRef = useRef<string | null>(null);
   const { dismissModal, shouldShowModal, setModalOpen, isRegistered, registrationIds, isLoaded: registrationLoaded } = useRegistrationStatus();
+  const { toast } = useToast();
 
   const { data: settings, isLoading, isError } = useQuery<PopupSettings>({
     queryKey: ["/api/popup-settings"],
@@ -162,14 +166,30 @@ export function BootcampModal() {
               />
             </div>
             
-            <Link href={buttonLink} className="w-full mt-3 sm:mt-4" onClick={handleClose}>
+            {REGISTRATION_OPEN ? (
+              <a href={buttonLink} className="w-full mt-3 sm:mt-4" onClick={handleClose}>
+                <Button 
+                  className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-sm sm:text-base py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg"
+                  data-testid="button-modal-register"
+                >
+                  {buttonText}
+                </Button>
+              </a>
+            ) : (
               <Button 
-                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-bold text-sm sm:text-base py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg"
-                data-testid="button-modal-register"
+                className="w-full mt-3 sm:mt-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-sm sm:text-base py-4 sm:py-6 rounded-lg sm:rounded-xl shadow-lg"
+                onClick={() => {
+                  toast({
+                    title: "Registration Coming Soon!",
+                    description: "Stay tuned! Registration will open shortly.",
+                  });
+                }}
+                data-testid="button-modal-coming-soon"
               >
-                {buttonText}
+                <Clock className="w-5 h-5 mr-2" />
+                Coming Soon
               </Button>
-            </Link>
+            )}
           </motion.div>
         </motion.div>
       )}
