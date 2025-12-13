@@ -8,8 +8,8 @@ import { useRegistrationStatus } from "@/hooks/use-registration-status";
 import { useToast } from "@/hooks/use-toast";
 import bootcampImage from "@assets/Screenshot_2025-12-13_153812_1765622089862.png";
 
-// Set this to false to show "Coming Soon" instead of registration
-const REGISTRATION_OPEN = false;
+// Set this to true to enable popup registration (redirects to external link)
+const REGISTRATION_OPEN = true;
 
 interface PopupSettings {
   id: number;

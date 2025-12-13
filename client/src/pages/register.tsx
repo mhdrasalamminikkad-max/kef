@@ -3,7 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Smartphone } from "lucide-react";
+import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Smartphone, Clock } from "lucide-react";
+
+// Set this to false to show "Coming Soon" instead of registration form
+const BOOTCAMP_REGISTRATION_OPEN = false;
 import paymentQrCode from "@assets/payment-qr-code.png";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -676,6 +679,60 @@ export default function Register() {
           </AnimatePresence>
         </motion.div>
 
+        {!BOOTCAMP_REGISTRATION_OPEN ? (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.3,
+              type: "spring",
+              stiffness: 100,
+              damping: 15
+            }}
+          >
+            <Card className="backdrop-blur-sm bg-white/95 overflow-visible shadow-xl">
+              <CardContent className="py-12 md:py-16">
+                <div className="text-center space-y-6">
+                  <motion.div
+                    animate={{ 
+                      rotate: [0, 10, -10, 10, 0],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      duration: 3, 
+                      repeat: Infinity, 
+                      repeatDelay: 2 
+                    }}
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg"
+                  >
+                    <Clock className="w-10 h-10 text-white" />
+                  </motion.div>
+                  
+                  <div className="space-y-2">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+                      Registration Coming Soon!
+                    </h2>
+                    <p className="text-gray-600 max-w-md mx-auto">
+                      Stay tuned! Registration for Startup Boot Camp will open shortly. 
+                      Follow us for updates on when you can secure your spot.
+                    </p>
+                  </div>
+                  
+                  <div className="pt-4">
+                    <Link href="/">
+                      <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8" data-testid="button-back-home-coming-soon">
+                        <Home className="w-4 h-4 mr-2" />
+                        Back to Home
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ) : (
+        <>
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1153,7 +1210,6 @@ export default function Register() {
           </Card>
         </motion.div>
 
-        {/* PAYMENT INFORMATION SECTION */}
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1357,6 +1413,8 @@ export default function Register() {
             </CardContent>
           </Card>
         </motion.div>
+        </>
+        )}
       </div>
     </div>
   );

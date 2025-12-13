@@ -33,7 +33,6 @@
 [x] 365. December 13, 2025 - Screenshot verified - Startup Boot Camp popup displaying correctly
 [x] 366. December 13, 2025 - IMPORT MIGRATION COMPLETE - PROJECT READY FOR USE
 [x] 367. December 13, 2025 - Updated popup to show "Coming Soon" instead of registration button
-[x] 368. December 13, 2025 - Users clicking the button now see a toast notification about registration opening soon
-[x] 367. December 13, 2025 - Installed tsx package (was missing after environment reset)
-[x] 368. December 13, 2025 - Workflow restarted successfully - application running on port 5000
-[x] 369. December 13, 2025 - Import migration complete
+[x] 368. December 13, 2025 - POPUP: Registration enabled - redirects to https://keralastartupfest.com
+[x] 369. December 13, 2025 - BOOT CAMP: Registration page (/register) now shows "Coming Soon" message
+[x] 370. December 13, 2025 - To toggle: Edit REGISTRATION_OPEN in bootcamp-modal.tsx (popup) and BOOTCAMP_REGISTRATION_OPEN in register.tsx (boot camp page)
