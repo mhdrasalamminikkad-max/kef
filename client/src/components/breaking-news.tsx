@@ -1,8 +1,9 @@
-import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRegistrationStatus } from "@/hooks/use-registration-status";
+
+const REGISTRATION_URL = "https://keralastartupfest.com";
 
 export function BreakingNews() {
   const { isRegistered, isLoaded } = useRegistrationStatus();
@@ -11,8 +12,8 @@ export function BreakingNews() {
     return null;
   }
 
-  const newsText = "Startup Boot Camp - 3-Day Residential Experience | December 26-28, 2025 | Caliph Life School, Kozhikode | Open to ages 15-39";
-  const mobileNewsText = "Startup Boot Camp | Dec 26-28, 2025 | Kozhikode";
+  const newsText = "Kerala Startup Fest 2026 - First of Its Kind in the State | January 7-8, 2026 | Kozhikode Beach | Register Now!";
+  const mobileNewsText = "Kerala Startup Fest | Jan 7-8, 2026 | Kozhikode";
 
   return (
     <motion.div
@@ -25,7 +26,7 @@ export function BreakingNews() {
       <div className="max-w-7xl mx-auto px-3 md:px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2 md:gap-4">
           <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-            <Link href="/register">
+            <a href={REGISTRATION_URL} target="_blank" rel="noopener noreferrer">
               <Button 
                 size="sm" 
                 className="bg-yellow-400 text-black hover:bg-yellow-300 font-semibold shrink-0 text-xs md:text-sm"
@@ -33,7 +34,7 @@ export function BreakingNews() {
               >
                 Register
               </Button>
-            </Link>
+            </a>
             
             <div className="flex items-center gap-2 overflow-hidden flex-1">
               <span className="bg-red-500 text-white text-[10px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 rounded shrink-0 flex items-center gap-1">
@@ -55,7 +56,7 @@ export function BreakingNews() {
             </div>
           </div>
           
-          <Link href="/register" className="shrink-0 hidden sm:block">
+          <a href={REGISTRATION_URL} target="_blank" rel="noopener noreferrer" className="shrink-0 hidden sm:block">
             <Button 
               variant="ghost" 
               size="sm" 
@@ -65,7 +66,7 @@ export function BreakingNews() {
               Learn More
               <ArrowRight className="w-3 h-3 ml-1" />
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
     </motion.div>

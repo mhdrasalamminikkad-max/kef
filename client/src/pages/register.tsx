@@ -5,8 +5,8 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserPlus, Calendar, MapPin, Sparkles, ArrowLeft, Check, CreditCard, Upload, Users, Plus, Rocket, Star, Zap, Camera, Image, Home, Shield, Loader2, Smartphone, Clock } from "lucide-react";
 
-// Set this to false to show "Coming Soon" instead of registration form
-const BOOTCAMP_REGISTRATION_OPEN = false;
+// Set to external URL to redirect, or false to show "Coming Soon", or true for normal registration
+const BOOTCAMP_REDIRECT_URL = "https://keralastartupfest.com";
 import paymentQrCode from "@assets/payment-qr-code.png";
 import { insertBootcampSchema, type InsertBootcamp } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -679,7 +679,7 @@ export default function Register() {
           </AnimatePresence>
         </motion.div>
 
-        {!BOOTCAMP_REGISTRATION_OPEN ? (
+        {BOOTCAMP_REDIRECT_URL ? (
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -704,28 +704,36 @@ export default function Register() {
                       repeat: Infinity, 
                       repeatDelay: 2 
                     }}
-                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg"
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg"
                   >
-                    <Clock className="w-10 h-10 text-white" />
+                    <Rocket className="w-10 h-10 text-white" />
                   </motion.div>
                   
                   <div className="space-y-2">
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
-                      Registration Coming Soon!
+                      Register for Kerala Startup Fest
                     </h2>
                     <p className="text-gray-600 max-w-md mx-auto">
-                      Stay tuned! Registration for Startup Boot Camp will open shortly. 
-                      Follow us for updates on when you can secure your spot.
+                      Join us at Kerala Startup Fest 2026! Click below to complete your registration 
+                      on our official registration portal.
                     </p>
                   </div>
                   
-                  <div className="pt-4">
-                    <Link href="/">
-                      <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8" data-testid="button-back-home-coming-soon">
-                        <Home className="w-4 h-4 mr-2" />
-                        Back to Home
+                  <div className="pt-4 space-y-3">
+                    <a href={BOOTCAMP_REDIRECT_URL} target="_blank" rel="noopener noreferrer">
+                      <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8" data-testid="button-register-external">
+                        <Rocket className="w-4 h-4 mr-2" />
+                        Register Now
                       </Button>
-                    </Link>
+                    </a>
+                    <div>
+                      <Link href="/">
+                        <Button variant="ghost" className="text-gray-600" data-testid="button-back-home-redirect">
+                          <Home className="w-4 h-4 mr-2" />
+                          Back to Home
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </CardContent>
