@@ -5,8 +5,19 @@ import QRCode from 'qrcode';
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization of Resend - only create when needed and API key exists
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('RESEND_API_KEY not configured - email functionality disabled');
+    return null;
+  }
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
 // From email - use Resend's default for testing, or your verified domain
 // For production, verify your domain at resend.com and use your own email
@@ -17,6 +28,12 @@ async function sendEmail(to: string, subject: string, htmlBody: string, attachme
   console.log('=== SENDING EMAIL VIA RESEND ===');
   console.log('To:', to);
   console.log('Subject:', subject);
+  
+  const resend = getResendClient();
+  if (!resend) {
+    console.warn('Email not sent - RESEND_API_KEY not configured');
+    return { success: false, error: 'Email service not configured - RESEND_API_KEY missing' };
+  }
   
   try {
     // Convert attachments for Resend format
