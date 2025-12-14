@@ -19,9 +19,8 @@ function getResendClient(): Resend | null {
   return resendClient;
 }
 
-// From email - use Resend's default for testing, or your verified domain
-// For production, verify your domain at resend.com and use your own email
-const FROM_EMAIL = 'Kerala Economic Forum <onboarding@resend.dev>';
+// From email - using verified domain keralaeconomicforum.com
+const FROM_EMAIL = 'Kerala Economic Forum <info@keralaeconomicforum.com>';
 
 // Send email using Resend API
 async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: Array<{filename: string; content: Buffer; cid?: string}>) {
