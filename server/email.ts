@@ -444,6 +444,7 @@ export async function sendContactFormEmail(contact: {
 }
 
 // Generate QR code as Buffer for email attachment
+// QR code contains a URL to the verification page
 async function generateMembershipQRCodeBuffer(memberData: {
   id: string;
   fullName: string;
@@ -451,17 +452,10 @@ async function generateMembershipQRCodeBuffer(memberData: {
   phone: string;
   membershipType: string;
 }): Promise<Buffer> {
-  const qrData = JSON.stringify({
-    memberId: memberData.id,
-    name: memberData.fullName,
-    email: memberData.email,
-    phone: memberData.phone,
-    type: memberData.membershipType,
-    org: 'Kerala Economic Forum',
-    verified: true
-  });
+  // Use the production URL for the verification page
+  const verificationUrl = `https://keralaeconomicforum.com/verify/${memberData.id}`;
   
-  const qrCodeBuffer = await QRCode.toBuffer(qrData, {
+  const qrCodeBuffer = await QRCode.toBuffer(verificationUrl, {
     width: 200,
     margin: 2,
     color: {

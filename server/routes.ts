@@ -927,24 +927,46 @@ export async function registerRoutes(
   app.get("/api/verify/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const registration = await storage.getBootcampById(id);
       
-      if (!registration) {
-        return res.status(404).json({ error: "Registration not found" });
+      // First check bootcamp registrations
+      const registration = await storage.getBootcampById(id);
+      if (registration) {
+        return res.json({
+          type: 'bootcamp',
+          id: registration.id,
+          fullName: registration.fullName,
+          email: registration.email,
+          phone: registration.phone,
+          organization: registration.organization,
+          district: registration.district,
+          photo: registration.photo,
+          paymentProof: registration.paymentProof,
+          status: registration.status,
+          createdAt: registration.createdAt,
+        });
       }
       
-      // Return only minimal fields needed for on-site verification
-      // Masks sensitive data like full address, phone, email, expectations
-      res.json({
-        id: registration.id,
-        fullName: registration.fullName,
-        organization: registration.organization,
-        district: registration.district,
-        photo: registration.photo,
-        paymentProof: registration.paymentProof,
-        status: registration.status,
-        createdAt: registration.createdAt,
-      });
+      // Then check membership applications
+      const membership = await storage.getMembershipById(id);
+      if (membership) {
+        return res.json({
+          type: 'membership',
+          id: membership.id,
+          fullName: membership.fullName,
+          email: membership.email,
+          phone: membership.phone,
+          organization: membership.organization,
+          designation: membership.designation,
+          membershipType: membership.membershipType,
+          interests: membership.interests,
+          paymentAmount: membership.paymentAmount,
+          paymentScreenshot: membership.paymentScreenshot,
+          status: membership.status,
+          createdAt: membership.createdAt,
+        });
+      }
+      
+      return res.status(404).json({ error: "Registration not found" });
     } catch (error) {
       console.error("Error fetching verification:", error);
       res.status(500).json({ error: "Failed to fetch verification" });
