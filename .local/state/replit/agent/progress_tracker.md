@@ -65,8 +65,8 @@
 [x] 397. December 14, 2025 - Fixed Resend API initialization to use lazy loading
 [x] 398. December 14, 2025 - Application now starts without RESEND_API_KEY (email disabled but app works)
 [x] 399. December 14, 2025 - Workflow restarted successfully - application running on port 5000
-[x] 400. December 14, 2025 - IMPORTANT FOR RENDER: Add RESEND_API_KEY environment variable to enable email functionality
-[x] 401. December 14, 2025 - IMPORT MIGRATION COMPLETE - ALL SYSTEMS OPERATIONAL
-[x] 402. December 14, 2025 - RESEND API KEY: re_PHepr46L_EfEgswAHMbstfwpQpvAcKrpy
-[x] 403. December 14, 2025 - User verified custom domain at Resend for professional email sending
-[x] 404. December 14, 2025 - IMPORTANT: Add same RESEND_API_KEY to Render environment variables
+[x] 400. December 14, 2025 - RESEND API KEY hardcoded in server/email.ts (user requested)
+[x] 401. December 14, 2025 - Verified domain: keralaeconomicforum.com
+[x] 402. December 14, 2025 - Email sender: Kerala Economic Forum <info@keralaeconomicforum.com>
+[x] 403. December 14, 2025 - Application running successfully on port 5000
+[x] 404. December 14, 2025 - IMPORT MIGRATION COMPLETE - ALL SYSTEMS OPERATIONAL

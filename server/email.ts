@@ -5,16 +5,15 @@ import QRCode from 'qrcode';
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 
-// Lazy initialization of Resend - only create when needed and API key exists
+// Hardcoded Resend API key
+const RESEND_API_KEY = 're_PHepr46L_EfEgswAHMbstfwpQpvAcKrpy';
+
+// Lazy initialization of Resend
 let resendClient: Resend | null = null;
 
-function getResendClient(): Resend | null {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not configured - email functionality disabled');
-    return null;
-  }
+function getResendClient(): Resend {
   if (!resendClient) {
-    resendClient = new Resend(process.env.RESEND_API_KEY);
+    resendClient = new Resend(RESEND_API_KEY);
   }
   return resendClient;
 }
@@ -29,10 +28,6 @@ async function sendEmail(to: string, subject: string, htmlBody: string, attachme
   console.log('Subject:', subject);
   
   const resend = getResendClient();
-  if (!resend) {
-    console.warn('Email not sent - RESEND_API_KEY not configured');
-    return { success: false, error: 'Email service not configured - RESEND_API_KEY missing' };
-  }
   
   try {
     // Convert attachments for Resend format
