@@ -37,9 +37,9 @@ import { apiRequest } from "@/lib/queryClient";
 import { Floating3DShapes } from "@/components/animations";
 
 const membershipPricing: Record<string, number> = {
-  student: 999,
-  individual: 9999,
-  corporate: 19999,
+  student: 4999,
+  individual: 4999,
+  corporate: 9999,
   institutional: 9999,
 };
 
