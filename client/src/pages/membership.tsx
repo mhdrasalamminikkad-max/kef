@@ -378,22 +378,22 @@ export default function Membership() {
         </div>
       </Section>
 
-      {/* MEMBERSHIP APPLICATION FORM */}
-      <Section>
-        <SectionHeader 
-          title="Apply for Membership" 
-          subtitle="Fill out the form below to join Kerala Economic Forum"
-        />
-        <div className="max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <Card className="overflow-visible">
-              <CardContent className="p-6 sm:p-8">
-                {isSubmitted ? (
+      <section className="py-12 md:py-20 bg-background" id="apply-membership">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader 
+            title="Apply for Membership" 
+            subtitle="Fill out the form below to join Kerala Economic Forum"
+          />
+          <div className="max-w-2xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="overflow-visible">
+                <CardContent className="p-6 sm:p-8">
+                  {isSubmitted ? (
                   <div className="space-y-8">
                     <div className="text-center py-8 border-b pb-8">
                       <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
