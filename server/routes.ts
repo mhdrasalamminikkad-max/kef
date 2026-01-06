@@ -655,6 +655,158 @@ export async function registerRoutes(
     }
   });
 
+  // PDF Export for Membership Applications
+  app.get("/api/admin/membership/export-pdf", requireAdmin, async (req, res) => {
+    try {
+      const applications = await storage.getMembershipApplications();
+      
+      const doc = new PDFDocument({ 
+        margin: 40,
+        size: 'A4',
+        bufferPages: true
+      });
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="membership-applications.pdf"');
+      
+      doc.pipe(res);
+      
+      // Header
+      doc.fontSize(24).font('Helvetica-Bold').fillColor('#1a365d')
+         .text('KERALA ECONOMIC FORUM', { align: 'center' });
+      doc.fontSize(14).font('Helvetica').fillColor('#4a5568')
+         .text('Membership Application Report', { align: 'center' });
+      doc.moveDown(0.5);
+      doc.fontSize(10).fillColor('#718096')
+         .text(`Generated on: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`, { align: 'center' });
+      doc.fontSize(10)
+         .text(`Total Applications: ${applications.length}`, { align: 'center' });
+      doc.moveDown(1);
+      
+      // Horizontal line
+      doc.strokeColor('#e2e8f0').lineWidth(1)
+         .moveTo(40, doc.y).lineTo(555, doc.y).stroke();
+      doc.moveDown(1);
+      
+      if (applications.length === 0) {
+        doc.fontSize(14).fillColor('#a0aec0')
+           .text('No applications found.', { align: 'center' });
+      } else {
+        applications.forEach((app, index) => {
+          if (doc.y > 650) {
+            doc.addPage();
+          }
+          
+          doc.fontSize(14).font('Helvetica-Bold').fillColor('#2d3748')
+             .text(`Application #${index + 1}`, { underline: true });
+          doc.moveDown(0.3);
+          
+          const statusColor = app.status === 'approved' ? '#38a169' : 
+                             app.status === 'rejected' ? '#e53e3e' : '#dd6b20';
+          doc.fontSize(10).font('Helvetica-Bold').fillColor(statusColor)
+             .text(`Status: ${app.status?.toUpperCase() || 'PENDING'}`);
+          doc.moveDown(0.5);
+          
+          const addField = (label: string, value: string | null | undefined) => {
+            if (doc.y > 750) {
+              doc.addPage();
+            }
+            doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+               .text(`${label}: `, { continued: true });
+            doc.font('Helvetica').fillColor('#1a202c')
+               .text(value || 'N/A');
+          };
+          
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
+             .text('Applicant Details');
+          doc.moveDown(0.3);
+          
+          addField('Full Name', app.fullName);
+          addField('Email', app.email);
+          addField('Phone', app.phone);
+          addField('Organization', app.organization);
+          addField('Designation', app.designation);
+          addField('Membership Type', app.membershipType);
+          addField('Interests', app.interests);
+          doc.moveDown(0.3);
+          
+          doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+             .text('Message:');
+          doc.font('Helvetica').fillColor('#1a202c')
+             .text(app.message || 'N/A', { width: 500 });
+          doc.moveDown(0.5);
+
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#2b6cb0')
+             .text('Payment Information');
+          doc.moveDown(0.3);
+          addField('Amount', app.paymentAmount);
+          doc.moveDown(0.5);
+          
+          doc.fontSize(10).font('Helvetica-Bold').fillColor('#4a5568')
+             .text('Submitted On: ', { continued: true });
+          doc.font('Helvetica').fillColor('#1a202c')
+             .text(app.createdAt ? new Date(app.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'N/A');
+          
+          if (index < applications.length - 1) {
+            doc.moveDown(0.8);
+            doc.strokeColor('#cbd5e0').lineWidth(0.5)
+               .moveTo(40, doc.y).lineTo(555, doc.y).stroke();
+            doc.moveDown(0.8);
+          }
+        });
+      }
+      
+      const pages = doc.bufferedPageRange();
+      for (let i = 0; i < pages.count; i++) {
+        doc.switchToPage(i);
+        doc.fontSize(8).fillColor('#a0aec0')
+           .text(
+             `Page ${i + 1} of ${pages.count} | Kerala Economic Forum - Membership Applications`,
+             40, 780,
+             { align: 'center', width: 515 }
+           );
+      }
+      
+      doc.end();
+    } catch (error) {
+      console.error("Error generating Membership PDF:", error);
+      res.status(500).json({ error: "Failed to generate PDF" });
+    }
+  });
+
+  // CSV Export for Membership Applications
+  app.get("/api/admin/membership/export-csv", requireAdmin, async (req, res) => {
+    try {
+      const applications = await storage.getMembershipApplications();
+      
+      const headers = ["Full Name", "Email", "Phone", "Organization", "Designation", "Membership Type", "Interests", "Amount", "Status", "Date"];
+      const rows = applications.map(app => [
+        app.fullName,
+        app.email,
+        app.phone,
+        app.organization || "N/A",
+        app.designation || "N/A",
+        app.membershipType,
+        app.interests,
+        app.paymentAmount || "N/A",
+        app.status,
+        app.createdAt ? new Date(app.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : "N/A"
+      ]);
+      
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      ].join("\n");
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="membership-applications.csv"');
+      res.send(csvContent);
+    } catch (error) {
+      console.error("Error generating Membership CSV:", error);
+      res.status(500).json({ error: "Failed to generate CSV" });
+    }
+  });
+
   app.delete("/api/admin/membership/:id", requireAdmin, async (req, res) => {
     try {
       const { id } = req.params;
