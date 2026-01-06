@@ -808,11 +808,23 @@ export default function AdminDashboard() {
 
           <TabsContent value="membership">
             <Card>
-              <CardHeader>
-                <CardTitle>Membership Applications</CardTitle>
-                <CardDescription>
-                  View and manage all membership applications
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between gap-2">
+                <div>
+                  <CardTitle>Membership Applications</CardTitle>
+                  <CardDescription>
+                    View and manage all membership applications
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => window.open("/api/admin/membership/export-pdf", "_blank")}>
+                    <FileDown className="mr-2 h-4 w-4" />
+                    PDF
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open("/api/admin/membership/export-csv", "_blank")}>
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Excel
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {membershipQuery.isLoading ? (
