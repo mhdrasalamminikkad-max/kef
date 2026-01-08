@@ -411,7 +411,7 @@ export default function MembershipApply() {
                                     {currentPrice.discounted.toLocaleString("en-IN")}
                                   </span>
                                   <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
-                                    50% OFF
+                                    KEF SPECIAL OFFER
                                   </Badge>
                                 </div>
                               </div>
