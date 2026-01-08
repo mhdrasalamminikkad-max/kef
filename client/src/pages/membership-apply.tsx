@@ -12,7 +12,7 @@ import {
   Copy, 
   Smartphone 
 } from "lucide-react";
-import qrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427_1765297402185.png";
+import qrCodeImage from "@assets/image_1767872637566.png";
 import { Section, SectionHeader } from "@/components/section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
