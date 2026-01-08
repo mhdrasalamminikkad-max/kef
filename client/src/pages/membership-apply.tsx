@@ -434,25 +434,6 @@ export default function MembershipApply() {
                               <p className="text-sm font-semibold truncate">{PAYEE_NAME}</p>
                             </div>
                           </div>
-
-                          <div className="space-y-3">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase text-center tracking-widest">Open in UPI App</p>
-                            <div className="flex flex-wrap justify-center gap-2">
-                              {upiApps.map((app) => (
-                                <Button
-                                  key={app.id}
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-9 px-4 rounded-full"
-                                  onClick={() => openUpiApp(app.scheme, app.name)}
-                                >
-                                  <Smartphone className="w-3.5 h-3.5 mr-2" />
-                                  {app.name}
-                                </Button>
-                              ))}
-                            </div>
-                          </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
