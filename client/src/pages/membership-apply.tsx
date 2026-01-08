@@ -26,11 +26,11 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Floating3DShapes } from "@/components/animations";
 
-const membershipPricing: Record<string, number> = {
-  student: 999,
-  individual: 4999,
-  corporate: 9999,
-  institutional: 9999,
+const membershipPricing: Record<string, { original: number; discounted: number }> = {
+  student: { original: 1500, discounted: 750 },
+  individual: { original: 3000, discounted: 1500 },
+  corporate: { original: 10000, discounted: 5000 },
+  institutional: { original: 7500, discounted: 3750 },
 };
 
 const membershipTypeOptions = [
@@ -137,7 +137,7 @@ export default function MembershipApply() {
   };
 
   const openUpiApp = (appScheme: string, appName: string) => {
-    const amount = currentPrice.toFixed(2);
+    const amount = currentPrice.discounted.toFixed(2);
     const txnId = `KEF${Date.now()}`;
     const params = new URLSearchParams({
       pa: UPI_ID,
@@ -157,7 +157,7 @@ export default function MembershipApply() {
     });
   };
 
-  const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : 0;
+  const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : { original: 0, discounted: 0 };
 
   const submitMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -211,7 +211,7 @@ export default function MembershipApply() {
 
   const handleInputChange = (field: string, value: string) => {
     if (field === "membershipType") {
-      const price = membershipPricing[value] || 0;
+      const price = membershipPricing[value]?.discounted || 0;
       setFormData(prev => ({ ...prev, [field]: value, paymentAmount: price.toString() }));
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
@@ -401,11 +401,19 @@ export default function MembershipApply() {
                           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
                             <div className="text-center sm:text-left">
                               <p className="text-sm text-muted-foreground mb-1">Membership Fee</p>
-                              <div className="flex items-center gap-1">
-                                <IndianRupee className="w-6 h-6 text-foreground font-bold" />
-                                <span className="text-3xl font-bold text-foreground">
-                                  {currentPrice.toLocaleString("en-IN")}
+                              <div className="flex flex-col">
+                                <span className="text-sm line-through text-muted-foreground">
+                                  ₹{currentPrice.original.toLocaleString("en-IN")}
                                 </span>
+                                <div className="flex items-center gap-1">
+                                  <IndianRupee className="w-6 h-6 text-primary font-bold" />
+                                  <span className="text-3xl font-bold text-foreground">
+                                    {currentPrice.discounted.toLocaleString("en-IN")}
+                                  </span>
+                                  <Badge variant="outline" className="ml-2 bg-green-50 text-green-700 border-green-200">
+                                    50% OFF
+                                  </Badge>
+                                </div>
                               </div>
                             </div>
                             <div className="bg-white p-2 rounded-lg shadow-sm border">
