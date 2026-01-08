@@ -58,7 +58,7 @@ const upiApps = [
   { id: "other", name: "Other UPI", color: "bg-gray-600", scheme: "upi://pay" },
 ];
 
-const UPI_ID = "caliphworldfoundation.9605399676.ibz@icici";
+const UPI_ID = "pos.5346277@indus";
 const PAYEE_NAME = "Kerala Economic Forum";
 
 export default function MembershipApply() {
