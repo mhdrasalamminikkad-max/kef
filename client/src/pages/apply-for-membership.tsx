@@ -60,6 +60,8 @@ const upiApps = [
   { id: "bhim", name: "BHIM", scheme: "bhim" },
 ];
 
+const UPI_ID = "pos.5346277@indus";
+
 export function ApplyForMembership() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -394,61 +396,24 @@ export function ApplyForMembership() {
                           <p className="text-xs text-muted-foreground mt-2">Scan with any UPI app</p>
                         </div>
 
-                        {/* UPI Apps Selection */}
-                        <div className="space-y-3">
-                          <p className="text-sm font-semibold text-foreground">Or Pay Using UPI App:</p>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {upiApps.map((app) => (
-                              <Button
-                                key={app.id}
-                                type="button"
-                                variant="outline"
-                                className="flex items-center gap-2"
-                                onClick={() => openUpiApp(app.scheme, app.name)}
-                                data-testid={`button-upi-${app.id}`}
-                              >
-                                <Smartphone className="w-4 h-4" />
-                                <span className="text-xs">{app.name}</span>
-                              </Button>
-                            ))}
-                          </div>
-                          <p className="text-xs text-muted-foreground text-center">
-                            Click to open app with payment details pre-filled
-                          </p>
-                        </div>
-
-                        {/* Bank Transfer Details */}
+                        {/* UPI ID Direct Payment */}
                         <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Or Pay via Bank Transfer:</p>
-                          <div className="text-xs space-y-1 text-muted-foreground">
-                            <p className="font-medium text-foreground">CALIPH WORLD FOUNDATION</p>
-                            <p>ICICI BANK - MUKKAM BRANCH</p>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p>A/C: 265405000474</p>
+                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Pay Using UPI ID:</p>
+                          <div className="text-sm space-y-2 text-muted-foreground">
+                            <div className="flex items-center gap-2 justify-center p-2 bg-white dark:bg-slate-800 rounded border">
+                              <p className="font-mono font-semibold text-foreground text-base">{UPI_ID}</p>
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6"
-                                onClick={() => copyToClipboard("265405000474", "Account Number")}
-                                data-testid="button-copy-account"
+                                className="h-8 w-8"
+                                onClick={() => copyToClipboard(UPI_ID, "UPI ID")}
+                                data-testid="button-copy-upi"
                               >
-                                <Copy className="h-3 w-3" />
+                                <Copy className="h-4 w-4" />
                               </Button>
                             </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p>IFSC: ICIC0002654</p>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => copyToClipboard("ICIC0002654", "IFSC Code")}
-                                data-testid="button-copy-ifsc"
-                              >
-                                <Copy className="h-3 w-3" />
-                              </Button>
-                            </div>
+                            <p className="text-xs text-center">Enter UPI ID in your payment app</p>
                           </div>
                         </div>
 
