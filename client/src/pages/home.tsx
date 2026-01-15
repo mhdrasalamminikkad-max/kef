@@ -257,6 +257,19 @@ export default function Home() {
                     </Button>
                   </Link>
                 </MagneticButton>
+                
+                <MagneticButton strength={0.2}>
+                  <Link href="/apply-for-membership">
+                    <Button 
+                      size="lg" 
+                      className="w-full sm:w-auto btn-angular bg-red-500 hover:bg-red-600 text-white font-semibold shadow-lg shadow-red-500/30 text-sm md:text-base" 
+                      data-testid="button-apply-membership-hero"
+                    >
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Apply for Membership
+                    </Button>
+                  </Link>
+                </MagneticButton>
               </motion.div>
 
               <motion.p

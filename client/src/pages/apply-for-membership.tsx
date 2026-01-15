@@ -1,19 +1,10 @@
 import { useState, useRef } from "react";
-import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { 
-  Users, 
-  GraduationCap, 
-  Building2,
-  TrendingUp,
-  Award,
   CheckCircle2,
-  Briefcase,
   CheckCircle,
   Sparkles,
   UserPlus,
-  Rocket,
-  ArrowRight,
   Loader2,
   Upload,
   X,
@@ -28,13 +19,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Floating3DShapes } from "@/components/animations";
 
 const membershipPricing: Record<string, number> = {
   student: 999,
@@ -43,82 +32,39 @@ const membershipPricing: Record<string, number> = {
   institutional: 9999,
 };
 
-const membershipBenefits = [
-  "Access to all events",
-  "Mentorship & advisory",
-  "Funding support",
-  "Networking circles",
-  "Startup resources",
-  "Campus opportunities",
-  "Recognition badges"
-];
-
-const membershipTypes = [
-  {
-    icon: Briefcase,
-    title: "Entrepreneur Membership",
-    description: "For startup founders, business owners, and aspiring entrepreneurs looking to connect, learn, and grow within Kerala's entrepreneurial ecosystem.",
-    gradient: "red"
-  },
-  {
-    icon: GraduationCap,
-    title: "Student Membership",
-    description: "For students passionate about entrepreneurship, looking for mentorship, networking, and opportunities to start their entrepreneurial journey.",
-    gradient: "cyan"
-  },
-  {
-    icon: Building2,
-    title: "Business Membership",
-    description: "For established businesses wanting to connect with startups, support the ecosystem, and find collaboration opportunities.",
-    gradient: "yellow"
-  },
-  {
-    icon: TrendingUp,
-    title: "Investor Membership",
-    description: "For angel investors, VCs, and investment professionals looking to discover and support promising startups in Kerala.",
-    gradient: "red"
-  },
-  {
-    icon: Award,
-    title: "Institutional Membership",
-    description: "For colleges, universities, incubators, and organizations wanting to partner with KEF for campus programs and ecosystem building.",
-    gradient: "cyan"
-  }
-];
-
 const membershipTypeOptions = [
-  { value: "individual", label: "Entrepreneur / Individual" },
-  { value: "student", label: "Student" },
-  { value: "corporate", label: "Business / Corporate" },
-  { value: "institutional", label: "Institution / Organization" },
+  { value: "student", label: "Student (₹999)" },
+  { value: "individual", label: "Entrepreneur / Individual (₹4,999)" },
+  { value: "corporate", label: "Business / Corporate (₹9,999)" },
+  { value: "institutional", label: "Institution / Organization (₹9,999)" },
 ];
 
 const interestOptions = [
-  "Networking & Events",
-  "Mentorship",
-  "Funding Support",
-  "Startup Resources",
-  "Campus Programs",
-  "Business Partnerships",
-  "Investment Opportunities",
+  "Technology & Innovation",
+  "Startup Ecosystem",
+  "International Trade",
+  "Supply Chain",
+  "Education",
+  "Manufacturing",
+  "Healthcare",
+  "Agriculture",
+  "Finance & Banking",
+  "Policy & Governance",
+  "Other",
 ];
 
 const upiApps = [
-  { id: "gpay", name: "Google Pay", color: "bg-blue-500", scheme: "gpay://upi/pay" },
-  { id: "paytm", name: "Paytm", color: "bg-sky-500", scheme: "paytmmp://pay" },
-  { id: "bhim", name: "BHIM UPI", color: "bg-green-600", scheme: "upi://pay" },
-  { id: "amazonpay", name: "Amazon Pay", color: "bg-orange-500", scheme: "upi://pay" },
-  { id: "other", name: "Other UPI", color: "bg-gray-600", scheme: "upi://pay" },
+  { id: "gpay", name: "Google Pay", scheme: "googleplay" },
+  { id: "phonepe", name: "PhonePe", scheme: "phonepe" },
+  { id: "paytm", name: "Paytm", scheme: "paytmqr" },
+  { id: "bhim", name: "BHIM", scheme: "bhim" },
 ];
 
-const UPI_ID = "caliphworldfoundation.9605399676.ibz@icici";
-const PAYEE_NAME = "Kerala Economic Forum";
-
-export default function Membership() {
+export function ApplyForMembership() {
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -135,287 +81,83 @@ export default function Membership() {
     paymentDate: ""
   });
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-    });
+  const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : 0;
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-      
-      if (!validTypes.includes(file.type)) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload an image (JPEG, PNG, GIF, WebP).",
-          variant: "destructive",
-        });
-        return;
-      }
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: "Please upload a file smaller than 5MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setUploadedFile(file);
-      const base64 = await convertFileToBase64(file);
-      setFormData(prev => ({ ...prev, paymentScreenshot: base64 }));
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Maximum file size is 5MB" });
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData(prev => ({
+        ...prev,
+        paymentScreenshot: reader.result as string
+      }));
+      setUploadedFile(file);
+    };
+    reader.readAsDataURL(file);
   };
 
   const clearFile = () => {
     setUploadedFile(null);
     setFormData(prev => ({ ...prev, paymentScreenshot: "" }));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    toast({
-      title: "Copied!",
-      description: `${label} copied to clipboard`,
-    });
+    toast({ title: "Copied!", description: `${label} copied to clipboard` });
   };
 
-  const openUpiApp = (appScheme: string, appName: string) => {
-    const amount = currentPrice.toFixed(2);
-    const txnId = `KEF${Date.now()}`;
-    const params = new URLSearchParams({
-      pa: UPI_ID,
-      pn: PAYEE_NAME,
-      am: amount,
-      cu: "INR",
-      tr: txnId,
-      tn: `KEF Membership - ${formData.membershipType}`
-    });
-    
-    const deepLink = `${appScheme}?${params.toString()}`;
-    window.location.href = deepLink;
-    
-    toast({
-      title: `Opening ${appName}`,
-      description: "Complete payment in the app, then upload screenshot here",
-    });
+  const openUpiApp = (scheme: string, appName: string) => {
+    const upiString = `upi://pay?pa=caliphworldfoundation.9605399676.ibz@icici&pn=KEF&am=${currentPrice}&tr=KEF-${Date.now()}&tn=KEF%20Membership`;
+    window.location.href = upiString;
   };
-
-  const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : 0;
 
   const submitMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      const response = await apiRequest("POST", "/api/membership", data);
-      return response.json();
+    mutationFn: async () => {
+      const response = await apiRequest({
+        method: "POST",
+        url: "/api/membership",
+        body: formData
+      });
+      return response;
     },
     onSuccess: () => {
       setIsSubmitted(true);
-      toast({
-        title: "Application Submitted!",
-        description: "Thank you for applying. We'll review your application and get back to you soon.",
-      });
+      toast({ title: "Success", description: "Application submitted successfully!" });
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Submission Failed",
-        description: error.message || "Please try again later.",
-        variant: "destructive",
-      });
-    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message });
+    }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.membershipType || !formData.interests) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
+    
+    if (!formData.utrNumber || !formData.paymentScreenshot) {
+      toast({ title: "Required Fields Missing", description: "Please enter UTR number and upload payment screenshot" });
       return;
     }
-    if (!formData.utrNumber || formData.utrNumber.length < 6) {
-      toast({
-        title: "Transaction ID Required",
-        description: "Please enter a valid UTR/Transaction ID from your payment.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!formData.paymentScreenshot) {
-      toast({
-        title: "Payment Screenshot Required",
-        description: "Please upload your payment screenshot.",
-        variant: "destructive",
-      });
-      return;
-    }
-    submitMutation.mutate(formData);
-  };
 
-  const handleInputChange = (field: string, value: string) => {
-    if (field === "membershipType") {
-      const price = membershipPricing[value] || 0;
-      setFormData(prev => ({ ...prev, [field]: value, paymentAmount: price.toString() }));
-    } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    }
+    submitMutation.mutate();
   };
 
   return (
-    <>
-      {/* HERO - Glassmorphism */}
-      <section className="relative overflow-hidden min-h-[400px] lg:min-h-[450px] flex items-center">
-        <div className="absolute inset-0 hero-gradient-animated" />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute inset-0 geometric-grid" />
-        <Floating3DShapes />
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 -left-20 w-60 h-60 bg-cyan-400/10 rounded-full blur-3xl" />
-          <div className="absolute top-10 right-10 w-20 h-20 border border-white/10 rotate-45" />
-          <div className="absolute bottom-20 left-10 w-16 h-16 border border-white/10 rotate-12" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 w-full text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Badge className="glass-panel text-white border-white/20 mb-6 py-1.5 px-4">
-              <Sparkles className="w-3 h-3 mr-2" />
-              Join the Movement
-            </Badge>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="font-bold text-white leading-tight tracking-tight text-3xl sm:text-4xl lg:text-5xl mb-4 hero-text-shadow"
-            data-testid="text-membership-title"
-          >
-            Become a Member of Kerala Economic Forum
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg text-white/90 max-w-2xl mx-auto"
-            data-testid="text-membership-subtitle"
-          >
-            Join the movement and become part of Kerala's most vibrant entrepreneurial network.
-          </motion.p>
-        </div>
-      </section>
-
-      {/* MEMBERSHIP BENEFITS */}
-      <Section>
-        <SectionHeader title="Membership Benefits" />
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {membershipBenefits.map((benefit, index) => (
-              <motion.div
-                key={benefit}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="h-full hover-elevate overflow-visible">
-                  <CardContent className="p-4 flex items-center gap-3">
-                    <div className="w-8 h-8 rotate-45 bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="w-4 h-4 text-cyan-500 -rotate-45" />
-                    </div>
-                    <span className="text-foreground font-medium" data-testid={`text-benefit-${index}`}>{benefit}</span>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* MEMBERSHIP TYPES */}
-      <Section background="muted">
-        <SectionHeader title="Membership Types" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {membershipTypes.map((type, index) => (
-            <motion.div
-              key={type.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Card className="h-full hover-elevate overflow-visible">
-                <CardContent className="p-6">
-                  <div className={`w-14 h-14 rotate-45 flex items-center justify-center mb-4 ${
-                    type.gradient === 'red' ? 'bg-red-500' :
-                    type.gradient === 'yellow' ? 'bg-yellow-400' :
-                    'bg-cyan-500'
-                  }`}>
-                    <type.icon className={`w-7 h-7 -rotate-45 ${type.gradient === 'yellow' ? 'text-black' : 'text-white'}`} />
-                  </div>
-                  <h3 className="font-semibold text-lg text-foreground mb-3" data-testid={`text-type-title-${index}`}>
-                    {type.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground" data-testid={`text-type-desc-${index}`}>
-                    {type.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
-      {/* CTA TO APPLICATION PAGE */}
-      <Section>
-        <div className="max-w-2xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6"
-          >
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Ready to Join?
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Start your membership application today and join the Kerala Economic Forum community
-              </p>
-            </div>
-            <Link href="/apply-for-membership">
-              <Button 
-                size="lg" 
-                className="bg-red-500 hover:bg-red-600 text-white px-8 py-6 text-lg"
-              >
-                <UserPlus className="w-5 h-5 mr-2" />
-                Apply for Membership
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* REMOVED APPLICATION FORM - NOW ON SEPARATE PAGE */}
-      {/* 
+    <div className="min-h-screen pt-20 pb-10">
       <Section>
         <SectionHeader 
           title="Apply for Membership" 
-          subtitle="Fill out the form below to join Kerala Economic Forum"
+          subtitle="Join Kerala Economic Forum and unlock exclusive benefits"
         />
         <div className="max-w-2xl mx-auto">
           <motion.div
@@ -798,8 +540,45 @@ export default function Membership() {
                                 className="flex flex-col items-center gap-2 py-4 cursor-pointer"
                                 onClick={() => fileInputRef.current?.click()}
                               >
+                                <Upload className="w-8 h-8 text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground text-center">
+                                  Click to upload payment screenshot
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  JPG, PNG, GIF, WebP (Max 5MB)
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-red-500 hover:bg-red-600 text-white py-6"
+                      disabled={submitMutation.isPending}
+                      data-testid="button-submit-membership"
+                    >
+                      {submitMutation.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Submit Application
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </Section>
-    </>
+    </div>
   );
 }
