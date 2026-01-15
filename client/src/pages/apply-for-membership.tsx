@@ -25,18 +25,18 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-const membershipPricing: Record<string, number> = {
-  student: 999,
-  individual: 4999,
-  corporate: 9999,
-  institutional: 9999,
+const membershipPricing: Record<string, { normal: number; special: number }> = {
+  student: { normal: 1500, special: 750 },
+  individual: { normal: 3000, special: 1500 },
+  corporate: { normal: 10000, special: 5000 },
+  institutional: { normal: 7500, special: 3750 },
 };
 
 const membershipTypeOptions = [
-  { value: "student", label: "Student (₹999)" },
-  { value: "individual", label: "Entrepreneur / Individual (₹4,999)" },
-  { value: "corporate", label: "Business / Corporate (₹9,999)" },
-  { value: "institutional", label: "Institution / Organization (₹9,999)" },
+  { value: "student", label: "Student (₹750/month)" },
+  { value: "individual", label: "Entrepreneur / Individual (₹1,500/month)" },
+  { value: "corporate", label: "Business / Corporate (₹5,000/month)" },
+  { value: "institutional", label: "Institution / Organization (₹3,750/month)" },
 ];
 
 const interestOptions = [
@@ -81,7 +81,9 @@ export function ApplyForMembership() {
     paymentDate: ""
   });
 
-  const currentPrice = formData.membershipType ? membershipPricing[formData.membershipType] : 0;
+  const priceData = formData.membershipType ? membershipPricing[formData.membershipType] : null;
+  const currentPrice = priceData?.special || 0;
+  const normalPrice = priceData?.normal || 0;
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -352,22 +354,32 @@ export function ApplyForMembership() {
                           <h3 className="text-lg font-semibold">Payment Details</h3>
                         </div>
                         
-                        <div className="bg-gradient-to-r from-red-500/10 to-yellow-500/10 rounded-lg p-4 mb-4 border border-red-200 dark:border-red-800">
-                          <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Membership Fee:</span>
-                            <div className="flex items-center gap-1">
-                              <IndianRupee className="w-5 h-5 text-green-600" />
-                              <span className="text-2xl font-bold text-green-600" data-testid="text-membership-price">
-                                {currentPrice.toLocaleString('en-IN')}
+                        <div className="bg-gradient-to-r from-red-500/10 to-yellow-500/10 rounded-lg p-6 mb-4 border border-red-200 dark:border-red-800">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-muted-foreground">Normal Price:</span>
+                              <span className="text-lg line-through text-muted-foreground">
+                                ₹{normalPrice.toLocaleString('en-IN')}
                               </span>
                             </div>
+                            <div className="flex items-center justify-between pt-2 border-t border-red-200 dark:border-red-800">
+                              <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">KEF Special Offer:</p>
+                                <div className="inline-block bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                                  Limited Time Offer!
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <IndianRupee className="w-6 h-6 text-green-600" />
+                                <span className="text-3xl font-bold text-green-600" data-testid="text-membership-price">
+                                  {currentPrice.toLocaleString('en-IN')}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs text-green-600 font-semibold pt-2">
+                              You Save: ₹{(normalPrice - currentPrice).toLocaleString('en-IN')} ({Math.round((normalPrice - currentPrice) / normalPrice * 100)}% OFF)
+                            </p>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {formData.membershipType === 'student' && 'Student Membership'}
-                            {formData.membershipType === 'individual' && 'Entrepreneur / Individual Membership'}
-                            {formData.membershipType === 'corporate' && 'Business / Corporate Membership'}
-                            {formData.membershipType === 'institutional' && 'Institution / Organization Membership'}
-                          </p>
                         </div>
 
                         {/* QR Code Section */}
