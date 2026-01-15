@@ -216,12 +216,39 @@ export default function AdminDashboard() {
       const response = await apiRequest("PATCH", `/api/admin/bootcamp/${id}`, { status });
       return response.json();
     },
+    onMutate: async ({ id, status }: { id: string; status: string }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["/api/admin/bootcamp"] });
+      
+      // Get previous data
+      const previousData = queryClient.getQueryData<Bootcamp[]>(["/api/admin/bootcamp"]);
+      
+      // Optimistically update the cache
+      queryClient.setQueryData<Bootcamp[]>(["/api/admin/bootcamp"], (old: Bootcamp[] | undefined) => {
+        if (!old) return old;
+        return old.map((bootcamp: Bootcamp) =>
+          bootcamp.id === id ? { ...bootcamp, status } : bootcamp
+        );
+      });
+      
+      return { previousData };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/bootcamp"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({
         title: "Status Updated",
         description: "Bootcamp registration status has been updated",
+      });
+    },
+    onError: (error: unknown, variables: { id: string; status: string }, context: { previousData: Bootcamp[] | undefined } | undefined) => {
+      // Revert to previous data on error
+      if (context?.previousData) {
+        queryClient.setQueryData(["/api/admin/bootcamp"], context.previousData);
+      }
+      toast({
+        title: "Error",
+        description: "Failed to update bootcamp status",
+        variant: "destructive",
       });
     },
   });
@@ -231,12 +258,39 @@ export default function AdminDashboard() {
       const response = await apiRequest("PATCH", `/api/admin/membership/${id}`, { status });
       return response.json();
     },
+    onMutate: async ({ id, status }: { id: string; status: string }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["/api/admin/membership"] });
+      
+      // Get previous data
+      const previousData = queryClient.getQueryData<Membership[]>(["/api/admin/membership"]);
+      
+      // Optimistically update the cache
+      queryClient.setQueryData<Membership[]>(["/api/admin/membership"], (old: Membership[] | undefined) => {
+        if (!old) return old;
+        return old.map((membership: Membership) =>
+          membership.id === id ? { ...membership, status } : membership
+        );
+      });
+      
+      return { previousData };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/membership"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({
         title: "Status Updated",
         description: "Membership application status has been updated",
+      });
+    },
+    onError: (error: unknown, variables: { id: string; status: string }, context: { previousData: Membership[] | undefined } | undefined) => {
+      // Revert to previous data on error
+      if (context?.previousData) {
+        queryClient.setQueryData(["/api/admin/membership"], context.previousData);
+      }
+      toast({
+        title: "Error",
+        description: "Failed to update membership status",
+        variant: "destructive",
       });
     },
   });
@@ -468,7 +522,7 @@ export default function AdminDashboard() {
   const handleProgramSubmit = () => {
     const submitData = {
       ...programForm,
-      features: programForm.features.split(",").map(f => f.trim()).filter(f => f.length > 0),
+      features: programForm.features.split(",").map((f: string) => f.trim()).filter((f: string) => f.length > 0),
     };
     if (programDialog.mode === "add") {
       createProgram.mutate(submitData);
@@ -522,11 +576,11 @@ export default function AdminDashboard() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "approved":
-        return <Badge className="bg-green-500/20 text-green-600 dark:text-green-400">Approved</Badge>;
+        return <div className="inline-flex items-center rounded-md border border-green-200 bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">Approved</div>;
       case "rejected":
-        return <Badge className="bg-red-500/20 text-red-600 dark:text-red-400">Rejected</Badge>;
+        return <div className="inline-flex items-center rounded-md border border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700">Rejected</div>;
       default:
-        return <Badge className="bg-yellow-500/20 text-yellow-600 dark:text-yellow-400">Pending</Badge>;
+        return <div className="inline-flex items-center rounded-md border border-yellow-200 bg-yellow-50 px-2.5 py-0.5 text-xs font-semibold text-yellow-700">Pending</div>;
     }
   };
 
