@@ -2,10 +2,11 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "@shared/schema";
 
-// Priority: EXTERNAL_DATABASE_URL (Render/external) > RAILWAY_DATABASE_URL > DATABASE_URL (Replit built-in)
+// Priority: EXTERNAL_DATABASE_URL (Render/external) > RAILWAY_DATABASE_URL > DATABASE_URL (Replit built-in) > Hardcoded fallback
 const databaseUrl = process.env.EXTERNAL_DATABASE_URL 
   || process.env.RAILWAY_DATABASE_URL 
-  || process.env.DATABASE_URL;
+  || process.env.DATABASE_URL
+  || "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a.singapore-postgres.render.com/kef";
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL or RAILWAY_DATABASE_URL environment variable is not set");
