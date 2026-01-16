@@ -234,6 +234,7 @@ export default function AdminDashboard() {
       return { previousData };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/bootcamp"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({
         title: "Status Updated",
@@ -276,6 +277,7 @@ export default function AdminDashboard() {
       return { previousData };
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/membership"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/dashboard"] });
       toast({
         title: "Status Updated",
