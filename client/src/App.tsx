@@ -16,6 +16,7 @@ import About from "@/pages/about";
 import Programs from "@/pages/programs";
 import ProgramDetail from "@/pages/program-detail";
 import Membership from "@/pages/membership";
+import { ApplyForMembership } from "@/pages/apply-for-membership";
 import Partners from "@/pages/partners";
 import Contact from "@/pages/contact";
 import Register from "@/pages/register";
@@ -48,6 +49,7 @@ function Router() {
               <Route path="/programs" component={Programs} />
               <Route path="/programs/:id" component={ProgramDetail} />
               <Route path="/membership" component={Membership} />
+              <Route path="/apply-for-membership" component={ApplyForMembership} />
               <Route path="/partners" component={Partners} />
               <Route path="/contact" component={Contact} />
               <Route path="/register" component={Register} />
