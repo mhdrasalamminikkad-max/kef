@@ -32,10 +32,10 @@ const membershipPricing: Record<string, { normal: number; special: number }> = {
 };
 
 const membershipTypeOptions = [
-  { value: "student", label: "Student (₹750/month)" },
-  { value: "individual", label: "Entrepreneur / Individual (₹1,500/month)" },
-  { value: "corporate", label: "Business / Corporate (₹5,000/month)" },
-  { value: "institutional", label: "Institution / Organization (₹3,750/month)" },
+  { value: "student", label: "Student (₹750)" },
+  { value: "individual", label: "Entrepreneur / Individual (₹1,500)" },
+  { value: "corporate", label: "Business / Corporate (₹5,000)" },
+  { value: "institutional", label: "Institution / Organization (₹3,750)" },
 ];
 
 const interestOptions = [
