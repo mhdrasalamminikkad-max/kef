@@ -128,12 +128,8 @@ export function ApplyForMembership() {
 
   const submitMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest({
-        method: "POST",
-        url: "/api/membership",
-        body: formData
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/membership", formData);
+      return response.json();
     },
     onSuccess: () => {
       setIsSubmitted(true);
