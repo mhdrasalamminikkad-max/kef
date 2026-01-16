@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "@shared/schema";
 
-// Priority: EXTERNAL_DATABASE_URL (Render/external) > RAILWAY_DATABASE_URL > DATABASE_URL (Replit built-in) > Hardcoded fallback
+// P// Priority: EXTERNAL_DATABASE_URL (Render/external) > RAILWAY_DATABASE_URL > DATABASE_URL (Replit built-in) > Hardcoded fallback
 const databaseUrl = process.env.EXTERNAL_DATABASE_URL 
   || process.env.RAILWAY_DATABASE_URL 
   || process.env.DATABASE_URL

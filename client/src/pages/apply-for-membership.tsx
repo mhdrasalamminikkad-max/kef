@@ -10,8 +10,7 @@ import {
   X,
   IndianRupee,
   CreditCard,
-  Copy,
-  Smartphone
+  Copy
 } from "lucide-react";
 import qrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427_1765297402185.png";
 import { Section, SectionHeader } from "@/components/section";
@@ -189,20 +188,23 @@ export function ApplyForMembership() {
                     {/* Payment Section */}
                     <div className="text-center">
                       <h3 className="text-lg font-semibold text-foreground mb-4">Complete Membership Payment</h3>
-                      <p className="text-sm text-muted-foreground mb-6">Pay using UPI or Bank Transfer</p>
+                      <p className="text-sm text-muted-foreground mb-6">Pay using UPI ID or QR Code</p>
                       
                       <div className="flex flex-col items-center gap-6">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border text-center">
+                          <p className="text-sm font-semibold text-foreground mb-3">Scan QR Code to Pay</p>
+                          <img 
+                            src={qrCodeImage} 
+                            alt="Payment QR Code" 
+                            className="w-48 h-48 mx-auto rounded-lg border"
+                            data-testid="img-qr-code-success"
+                          />
+                          <p className="text-xs text-muted-foreground mt-2">Scan with any UPI app</p>
+                        </div>
+
                         <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800 text-left max-w-sm">
-                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">Pay Using:</p>
-                          <p className="text-xs text-muted-foreground mb-2">UPI ID:</p>
-                          <p className="text-sm font-mono font-semibold break-all mb-4">caliphworldfoundation.9605399676.ibz@icici</p>
-                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">Bank Transfer:</p>
-                          <div className="text-xs space-y-1 text-muted-foreground">
-                            <p>CALIPH WORLD FOUNDATION</p>
-                            <p>ICICI BANK - MUKKAM BRANCH</p>
-                            <p>A/C: 265405000474</p>
-                            <p>IFSC: ICIC0002654</p>
-                          </div>
+                          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2">Or Pay Using UPI ID:</p>
+                          <p className="text-sm font-mono font-semibold break-all mb-4">{UPI_ID}</p>
                         </div>
                       </div>
                     </div>

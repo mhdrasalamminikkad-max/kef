@@ -19,8 +19,7 @@ import {
   X,
   IndianRupee,
   CreditCard,
-  Copy,
-  Smartphone
+  Copy
 } from "lucide-react";
 import qrCodeImage from "@assets/IMG_3535_1764520833105_1764610343427_1765297402185.png";
 import { Section, SectionHeader } from "@/components/section";
@@ -103,16 +102,8 @@ const interestOptions = [
   "Investment Opportunities",
 ];
 
-const upiApps = [
-  { id: "gpay", name: "Google Pay", color: "bg-blue-500", scheme: "gpay://upi/pay" },
-  { id: "paytm", name: "Paytm", color: "bg-sky-500", scheme: "paytmmp://pay" },
-  { id: "bhim", name: "BHIM UPI", color: "bg-green-600", scheme: "upi://pay" },
-  { id: "amazonpay", name: "Amazon Pay", color: "bg-orange-500", scheme: "upi://pay" },
-  { id: "other", name: "Other UPI", color: "bg-gray-600", scheme: "upi://pay" },
-];
-
-const UPI_ID = "caliphworldfoundation.9605399676.ibz@icici";
-const PAYEE_NAME = "Kerala Economic Forum";
+const UPI_ID = "pos.5346277@indus";
+const PAYEE_NAME = "Caliph World Foundation";
 
 export default function Membership() {
   const { toast } = useToast();
@@ -186,27 +177,6 @@ export default function Membership() {
     toast({
       title: "Copied!",
       description: `${label} copied to clipboard`,
-    });
-  };
-
-  const openUpiApp = (appScheme: string, appName: string) => {
-    const amount = currentPrice.toFixed(2);
-    const txnId = `KEF${Date.now()}`;
-    const params = new URLSearchParams({
-      pa: UPI_ID,
-      pn: PAYEE_NAME,
-      am: amount,
-      cu: "INR",
-      tr: txnId,
-      tn: `KEF Membership - ${formData.membershipType}`
-    });
-    
-    const deepLink = `${appScheme}?${params.toString()}`;
-    window.location.href = deepLink;
-    
-    toast({
-      title: `Opening ${appName}`,
-      description: "Complete payment in the app, then upload screenshot here",
     });
   };
 
@@ -608,7 +578,7 @@ export default function Membership() {
                         </div>
 
                         {/* QR Code Section */}
-                        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border text-center">
+                        <div className="bg-white dark:bg-slate-900 rounded-lg p-4 border text-center mb-4">
                           <p className="text-sm font-semibold text-foreground mb-3">Scan QR Code to Pay</p>
                           <img 
                             src={qrCodeImage} 
@@ -619,63 +589,8 @@ export default function Membership() {
                           <p className="text-xs text-muted-foreground mt-2">Scan with any UPI app</p>
                         </div>
 
-                        {/* UPI Apps Selection */}
-                        <div className="space-y-3">
-                          <p className="text-sm font-semibold text-foreground">Or Pay Using UPI App:</p>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {upiApps.map((app) => (
-                              <Button
-                                key={app.id}
-                                type="button"
-                                variant="outline"
-                                className="flex items-center gap-2"
-                                onClick={() => openUpiApp(app.scheme, app.name)}
-                                data-testid={`button-upi-${app.id}`}
-                              >
-                                <Smartphone className="w-4 h-4" />
-                                <span className="text-xs">{app.name}</span>
-                              </Button>
-                            ))}
-                          </div>
-                          <p className="text-xs text-muted-foreground text-center">
-                            Click to open app with payment details pre-filled
-                          </p>
-                        </div>
-
-                        {/* Bank Transfer Details */}
+                        {/* UPI ID Direct Payment */}
                         <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mb-3">Or Pay via Bank Transfer:</p>
-                          <div className="text-xs space-y-1 text-muted-foreground">
-                            <p className="font-medium text-foreground">CALIPH WORLD FOUNDATION</p>
-                            <p>ICICI BANK - MUKKAM BRANCH</p>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p>A/C: 265405000474</p>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => copyToClipboard("265405000474", "Account Number")}
-                                data-testid="button-copy-account"
-                              >
-                                <Copy className="h-3 w-3" />
-                              </Button>
-                            </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <p>IFSC: ICIC0002654</p>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => copyToClipboard("ICIC0002654", "IFSC Code")}
-                                data-testid="button-copy-ifsc"
-                              >
-                                <Copy className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
 
                         {/* Verification Warning */}
                         <div className="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-3 border border-amber-200 dark:border-amber-800">
