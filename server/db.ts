@@ -2,8 +2,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "@shared/schema";
 
-// Hardcoded database URL using Render internal url format
-const databaseUrl = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a/kef";
+// Hardcoded Supabase database URL (Password must be URL-encoded)
+const databaseUrl = "postgresql://postgres.byvqyxvmepgtrlcnxjbz:rasal786786%40%40%40%40%40%40@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres";
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is not configured");

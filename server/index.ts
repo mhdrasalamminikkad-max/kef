@@ -10,8 +10,8 @@ import { createServer } from "http";
 import path from "path";
 import { readdir, readFile } from "fs/promises";
 
-// Connect using the Internal Render URL, since the App and DB are on Render.
-const DATABASE_URL = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a/kef";
+// Hardcoded Supabase database URL (Password must be URL-encoded)
+const DATABASE_URL = "postgresql://postgres.byvqyxvmepgtrlcnxjbz:rasal786786%40%40%40%40%40%40@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres";
 
 const app = express();
 const httpServer = createServer(app);
