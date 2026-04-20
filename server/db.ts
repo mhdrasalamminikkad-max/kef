@@ -2,8 +2,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "@shared/schema";
 
-// Hardcoded database URL
-const databaseUrl = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a.singapore-postgres.render.com/kef";
+// Hardcoded database URL using Render internal url format
+const databaseUrl = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a/kef";
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is not configured");

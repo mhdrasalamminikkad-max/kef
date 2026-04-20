@@ -10,8 +10,8 @@ import { createServer } from "http";
 import path from "path";
 import { readdir, readFile } from "fs/promises";
 
-// Hardcoded database URL
-const DATABASE_URL = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a.singapore-postgres.render.com/kef";
+// Connect using the Internal Render URL, since the App and DB are on Render.
+const DATABASE_URL = "postgresql://kef_user:JSiN80Bww3WKOxt9x9LNNAoOlFibV7Z0@dpg-d4spbfkcjiac739oj9rg-a/kef";
 
 const app = express();
 const httpServer = createServer(app);
