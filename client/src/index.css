@@ -401,19 +401,7 @@
     background-size: 20px 20px;
   }
 
-  /* Marquee animation for breaking news */
-  @keyframes marquee {
-    0% {
-      transform: translateX(0%);
-    }
-    100% {
-      transform: translateX(-33.333%);
-    }
-  }
 
-  .animate-marquee {
-    animation: marquee 25s linear infinite;
-  }
 
   /* Mobile-specific styles */
   .safe-area-bottom {
