@@ -1,0 +1,13 @@
+--- START DB CHECK V2 ---
+Found 10 programs in the database:
+Title: "Business Conclaves" | Status: upcoming | ID: 3cfc17be-b682-400c-8bc1-6771a9f177e3
+Title: "Founder Circles" | Status: upcoming | ID: 1b110a03-9f11-44df-bcfb-9a382fe25586
+Title: "Advisory Clinics" | Status: upcoming | ID: c867cd16-40c4-49bf-a177-44d884fa026f
+Title: "Campus Innovation Labs" | Status: upcoming | ID: e317f7ca-1380-4fb3-bc84-fa12b0887931
+Title: "KEF Student Entrepreneurs Forum" | Status: upcoming | ID: 5f27b583-cf74-42ca-894f-55ad81fec77b
+Title: "Head Talks 1.3" | Status: live | ID: dd545585-f290-47a8-869d-33cea45426f3
+Title: "Head Talk 1.2" | Status: past | ID: 3147abbb-62a7-475d-b8b9-1bbd38a74e33
+Title: "Head Talk 1.1 " | Status: past | ID: 56f13586-dda2-4100-97da-d734cf0e578d
+Title: "Startup Boot Camp" | Status: upcoming | ID: 2973af7a-6c6b-4683-89c9-72cafd05eb8a
+Title: "Kerala Startup Fest" | Status: past | ID: 426b18bf-f718-4d36-bd3c-19848f654eb3
+--- END DB CHECK V2 ---

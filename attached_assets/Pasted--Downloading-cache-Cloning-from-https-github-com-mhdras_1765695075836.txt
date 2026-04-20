@@ -1,0 +1,82 @@
+=> Downloading cache...
+==> Cloning from https://github.com/mhdrasalamminikkad-max/kef
+==> Checking out commit 7d6b60788f00b2c9e949f933a269667ba74b3373 in branch main
+==> Downloaded 252MB in 2s. Extraction took 8s.
+==> Requesting Node.js version >=20.x
+==> Using Node.js version 25.2.1 via /opt/render/project/src/package.json
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Running build command 'npm install; npm run build'...
+added 11 packages, and audited 682 packages in 2s
+73 packages are looking for funding
+  run `npm fund` for details
+10 vulnerabilities (3 low, 5 moderate, 2 high)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+> rest-express@1.0.0 build
+> tsx script/build.ts
+building client...
+vite v5.4.20 building for production...
+transforming...
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 2508 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                                                        2.63 kB │ gzip:   1.00 kB
+../dist/public/assets/Screenshot_2025-12-13_153812_1765622089862-CyiEY70P.png  220.36 kB
+../dist/public/assets/kef_bootcamp-CNOtdEJ9.png                                240.72 kB
+../dist/public/assets/index-zjKtJq_e.css                                       146.72 kB │ gzip:  22.23 kB
+../dist/public/assets/index-DRbBjDTQ.js                                        896.22 kB │ gzip: 255.81 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 6.16s
+building server...
+  dist/index.cjs  1.2mb ⚠️
+⚡ Done in 221ms
+==> Uploading build...
+==> Uploaded in 10.2s. Compression took 4.2s
+==> Build successful 🎉
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.cjs
+/opt/render/project/src/node_modules/resend/dist/index.cjs:786
+			if (!this.key) throw new Error("Missing API key. Pass it to the constructor `new Resend(\"re_123\")`");
+			               ^
+Error: Missing API key. Pass it to the constructor `new Resend("re_123")`
+    at new Resend (/opt/render/project/src/node_modules/resend/dist/index.cjs:786:25)
+    at Object.<anonymous> (/opt/render/project/src/dist/index.cjs:94:115648)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+Node.js v25.2.1
+==> Exited with status 1
+==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.cjs
+/opt/render/project/src/node_modules/resend/dist/index.cjs:786
+			if (!this.key) throw new Error("Missing API key. Pass it to the constructor `new Resend(\"re_123\")`");
+			               ^
+Error: Missing API key. Pass it to the constructor `new Resend("re_123")`
+    at new Resend (/opt/render/project/src/node_modules/resend/dist/index.cjs:786:25)
+    at Object.<anonymous> (/opt/render/project/src/dist/index.cjs:94:115648)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+Node.js v25.2.1

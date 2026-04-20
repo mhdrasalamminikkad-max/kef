@@ -1,0 +1,19 @@
+--- START DB CHECK ---
+Error querying database:
+{
+  "length": 113,
+  "name": "error",
+  "severity": "ERROR",
+  "code": "42703",
+  "position": "196",
+  "file": "parse_relation.c",
+  "line": "3822",
+  "routine": "errorMissingColumn"
+}
+column "register_url" does not exist
+error: column "register_url" does not exist
+    at C:\Users\mhdra\Videos\kef-2\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async <anonymous> (C:\Users\mhdra\Videos\kef-2\node_modules\src\node-postgres\session.ts:104:19)
+    at async main (C:\Users\mhdra\Videos\kef-2\query_programs_to_file.ts:16:29)
+--- END DB CHECK ---
