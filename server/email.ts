@@ -837,57 +837,91 @@ export async function sendProgramRegistrationEmail(registration: {
     `;
 
     const userEmailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(135deg, #dc2626, #f59e0b); padding: 20px; border-radius: 10px 10px 0 0;">
-          <h1 style="color: white; margin: 0; text-align: center;">Registration Confirmed!</h1>
-        </div>
+      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 650px; margin: 0 auto; padding: 0; background-color: #f8fafc; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
         
-        <div style="background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb;">
-          <h2 style="color: #1f2937; margin-top: 0;">Dear ${registration.fullName},</h2>
-          
-          <p style="color: #374151; line-height: 1.6;">
-            Thank you for registering for the <strong>${registration.programName || 'Program'}</strong> organized by Kerala Economic Forum!
-          </p>
-          
-          <p style="color: #374151; line-height: 1.6;">
-            We have received your registration successfully. Our team will review your information and get back to you shortly with further details.
-          </p>
-          
-          <div style="background: #dcfce7; border: 1px solid #16a34a; border-radius: 8px; padding: 15px; margin: 20px 0;">
-            <h3 style="color: #16a34a; margin: 0 0 10px 0;">Your Registration Details:</h3>
-            <p style="color: #374151; margin: 5px 0;"><strong>Name:</strong> ${registration.fullName}</p>
-            <p style="color: #374151; margin: 5px 0;"><strong>Email:</strong> ${registration.email}</p>
-            <p style="color: #374151; margin: 5px 0;"><strong>Phone:</strong> ${registration.countryCode || '+91'} ${registration.phone}</p>
-            <p style="color: #374151; margin: 5px 0;"><strong>Registered on:</strong> ${new Date(registration.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
+        <!-- Header Banner -->
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #dc2626 100%); padding: 40px 30px; text-align: center; color: white;">
+          <div style="display: inline-block; background: rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.3);">
+            Registration Received
           </div>
-          
-          <p style="color: #374151; line-height: 1.6;">
-            If you have any questions, feel free to reach out to us at <a href="mailto:keralaecomicforumhelp@gmail.com" style="color: #dc2626;">keralaecomicforumhelp@gmail.com</a>
-          </p>
-          
-          <p style="color: #374151; line-height: 1.6;">
-            Best regards,<br/>
-            <strong>Kerala Economic Forum Team</strong>
-          </p>
+          <h1 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Kerala Economic Forum</h1>
+          <p style="margin: 0; font-size: 16px; color: #f1f5f9; opacity: 0.9;">${registration.programName || 'Program Registration'}</p>
         </div>
-        
-        <div style="background: #1f2937; padding: 15px; border-radius: 0 0 10px 10px; text-align: center;">
-          <p style="color: #9ca3af; margin: 0; font-size: 12px;">
-            Kerala Economic Forum - Empowering Entrepreneurs
+
+        <div style="padding: 32px 28px; background: white;">
+          
+          <!-- Status Banner -->
+          <div style="background: #fefce8; border: 1.5px solid #fef08a; border-radius: 12px; padding: 16px 20px; text-align: center; margin-bottom: 28px;">
+            <p style="margin: 0; color: #854d0e; font-size: 16px; font-weight: 700;">
+              ⏳ Registration Under Review
+            </p>
+            <p style="margin: 4px 0 0 0; color: #a16207; font-size: 13px;">
+              Thank you! Your payment details and registration are currently being verified by our team.
+            </p>
+          </div>
+
+          <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-top: 0;">
+            Dear <strong>${registration.fullName}</strong>,
           </p>
+          <p style="color: #475569; font-size: 14px; line-height: 1.6;">
+            Thank you for registering for <strong>${registration.programName || 'our upcoming program'}</strong> organized by the Kerala Economic Forum! Below are your submitted registration details:
+          </p>
+
+          <!-- DETAILS CARD -->
+          <div style="margin: 28px 0; background: #f8fafc; border-radius: 16px; padding: 24px; color: #1e293b; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+            <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+              <p style="margin: 0; font-size: 11px; text-transform: uppercase; color: #dc2626; font-weight: bold; letter-spacing: 1px;">Selected Event</p>
+              <h3 style="margin: 4px 0 0 0; font-size: 18px; color: #0f172a;">${registration.programName || 'KEF Program'}</h3>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #64748b; font-size: 13px; width: 35%;">Participant Name:</td>
+                <td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: bold;">${registration.fullName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Email Address:</td>
+                <td style="padding: 8px 0; color: #334155; font-size: 14px;">${registration.email}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Phone Number:</td>
+                <td style="padding: 8px 0; color: #334155; font-size: 14px;">${registration.countryCode || '+91'} ${registration.phone}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #64748b; font-size: 13px;">Submitted On:</td>
+                <td style="padding: 8px 0; color: #334155; font-size: 14px;">${new Date(registration.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; color: #1e40af; font-size: 13px; line-height: 1.5;">
+              <strong>ℹ️ What Happens Next?</strong><br/>
+              Our team will verify your payment details. Upon successful verification, you will receive a follow-up email containing your <strong>Official VIP Entry Ticket with QR Code Pass</strong> for entry to the venue.
+            </p>
+          </div>
+
+          <div style="border-top: 1px solid #e2e8f0; margin-top: 28px; padding-top: 20px; text-align: center;">
+            <p style="color: #475569; font-size: 14px; margin: 0;">Need Help? Contact us at:</p>
+            <p style="margin: 6px 0 0 0;"><a href="mailto:keralaecomicforumhelp@gmail.com" style="color: #dc2626; font-weight: bold; text-decoration: none;">keralaecomicforumhelp@gmail.com</a></p>
+          </div>
+        </div>
+
+        <div style="background: #0f172a; padding: 16px; text-align: center; color: #94a3b8; font-size: 12px;">
+          © ${new Date().getFullYear()} Kerala Economic Forum. All rights reserved.
         </div>
       </div>
     `;
 
     const adminResult = await sendEmail(
       ADMIN_EMAIL,
-      `New Program Registration: ${registration.fullName}`,
+      `New Program Registration: ${registration.fullName} - ${registration.programName || 'KEF Event'}`,
       adminEmailHtml
     );
 
     const userResult = await sendEmail(
       registration.email,
-      `Registration Confirmed - Kerala Economic Forum Program`,
+      `Registration Confirmed: ${registration.programName || 'Kerala Economic Forum Program'}`,
       userEmailHtml
     );
 

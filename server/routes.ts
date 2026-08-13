@@ -1385,14 +1385,22 @@ export async function registerRoutes(
       res.status(201).json(registration);
 
       // Trigger email notifications asynchronously in background
-      setImmediate(() => {
-        console.log('[EMAIL] Triggering program registration email to:', result.data.email);
-        sendProgramRegistrationEmail({
-          ...result.data,
-          attendeeType: result.data.attendeeType || "first-time",
-          affiliation: result.data.affiliation || "not-affiliated",
-          createdAt: registration.createdAt
-        }).catch(err => console.error("[EMAIL ERROR] Failed to send program registration email:", err));
+      setImmediate(async () => {
+        try {
+          const targetProgram = await storage.getProgramById(result.data.programId);
+          const programTitle = targetProgram?.title || "Kerala Economic Forum Program";
+          console.log('[EMAIL] Triggering program registration email to:', result.data.email, 'Program:', programTitle);
+
+          await sendProgramRegistrationEmail({
+            ...result.data,
+            programName: programTitle,
+            attendeeType: result.data.attendeeType || "first-time",
+            affiliation: result.data.affiliation || "not-affiliated",
+            createdAt: registration.createdAt
+          });
+        } catch (err) {
+          console.error("[EMAIL ERROR] Failed to send program registration email:", err);
+        }
       });
 
     } catch (error: any) {
