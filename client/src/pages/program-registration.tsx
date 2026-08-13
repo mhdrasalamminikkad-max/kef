@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Section } from "@/components/section";
 import { ArrowRight, Upload, AlertTriangle, CheckCircle2, Image as ImageIcon, Loader2, QrCode } from "lucide-react";
 import type { Program } from "@shared/schema";
+import qrData from "@/assets-qr-base64.json";
 
 interface ProgramRegistrationPageProps {
   programId?: string;
@@ -48,8 +49,10 @@ export default function ProgramRegistrationPage({ programId }: ProgramRegistrati
     queryKey: ["/api/programs"],
   });
 
-  // Include all programs (excluding Head Talks 1.3 which uses external registration)
-  const livePrograms = allPrograms?.filter((p: Program) => p.title !== 'Head Talks 1.3') || [];
+  // Filter ONLY live programs (or selected URL program), excluding Head Talks 1.3 (external registration)
+  const livePrograms = allPrograms?.filter((p: Program) => 
+    (p.programStatus === 'live' || p.id === selectedProgramId) && p.title !== 'Head Talks 1.3'
+  ) || [];
 
   // Fetch selected program details
   const programQuery = useQuery({
@@ -362,12 +365,14 @@ export default function ProgramRegistrationPage({ programId }: ProgramRegistrati
                     {/* QR Code Container */}
                     <div className="bg-white p-4 rounded-xl shadow-md border flex flex-col items-center justify-center text-center">
                       <img
-                        src="/uploads/indusind-qr-code.png"
+                        src={qrData?.qrDataUrl || "/uploads/indusind-qr-code.png"}
                         alt="KEF IndusInd Bank Payment QR Code"
-                        className="w-full max-w-[280px] h-auto object-contain rounded-xl shadow-md border p-1 bg-white"
+                        loading="eager"
+                        decoding="sync"
+                        className="w-52 h-52 object-contain rounded-xl shadow-md border p-2 bg-white"
                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                           // Fallback QR code if asset fails to load
-                          (e.target as HTMLImageElement).src = "/attached_assets/indusind-qr-code.png";
+                          (e.target as HTMLImageElement).src = "/uploads/indusind-qr-code.png";
                         }}
                       />
                       <span className="text-xs font-semibold mt-2 text-muted-foreground flex items-center gap-1">
