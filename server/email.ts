@@ -19,10 +19,12 @@ function getResendClient(): Resend {
   return resendClient;
 }
 
-// From email - using verified domain keralaeconomicforum.com
-const FROM_EMAIL = 'Kerala Economic Forum <info@keralaeconomicforum.com>';
+// Primary and fallback sender domains based on Resend verified DNS records
+const PRIMARY_FROM_EMAIL = 'Kerala Economic Forum <info@keralaeconomicforum.com>';
+const SUBDOMAIN_FROM_EMAIL = 'Kerala Economic Forum <info@send.keralaeconomicforum.com>';
+const FALLBACK_FROM_EMAIL = 'Kerala Economic Forum <onboarding@resend.dev>';
 
-// Send email using Resend API
+// Send email using Resend API with domain fallback
 async function sendEmail(to: string, subject: string, htmlBody: string, attachments?: Array<{filename: string; content: Buffer; cid?: string}>) {
   console.log('=== SENDING EMAIL VIA RESEND ===');
   console.log('To:', to);
@@ -30,29 +32,39 @@ async function sendEmail(to: string, subject: string, htmlBody: string, attachme
   
   const resend = getResendClient();
   
-  try {
-    // Convert attachments for Resend format
-    const resendAttachments = attachments?.map(att => ({
-      filename: att.filename,
-      content: att.content
-    }));
+  const resendAttachments = attachments?.map(att => ({
+    filename: att.filename,
+    content: att.content
+  }));
 
-    const result = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [to],
-      subject: subject,
-      html: htmlBody,
-      attachments: resendAttachments
-    });
+  const fromAddresses = [PRIMARY_FROM_EMAIL, SUBDOMAIN_FROM_EMAIL, FALLBACK_FROM_EMAIL];
 
-    console.log('=== EMAIL SENT SUCCESSFULLY ===');
-    console.log('Result:', result);
-    return { success: true, result };
-  } catch (error: any) {
-    console.error('=== EMAIL SEND FAILED ===');
-    console.error('Error:', error);
-    return { success: false, error };
+  for (const fromAddress of fromAddresses) {
+    try {
+      console.log('[RESEND] Attempting send from:', fromAddress);
+      const result = await resend.emails.send({
+        from: fromAddress,
+        to: [to],
+        subject: subject,
+        html: htmlBody,
+        attachments: resendAttachments
+      });
+
+      if (result.error) {
+        console.warn(`[RESEND WARNING] Failed sending from ${fromAddress}:`, result.error);
+        continue;
+      }
+
+      console.log('=== EMAIL SENT SUCCESSFULLY ===');
+      console.log('Result:', result);
+      return { success: true, result };
+    } catch (error: any) {
+      console.warn(`[RESEND ATTEMPT FAILED] From ${fromAddress}:`, error?.message || error);
+    }
   }
+
+  console.error('=== ALL RESEND SENDER DOMAIN ATTEMPTS FAILED ===');
+  return { success: false, error: "Failed to send email across all configured sender domains" };
 }
 
 export async function sendBootcampRegistrationEmail(registration: {
