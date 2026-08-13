@@ -1389,6 +1389,8 @@ export async function registerRoutes(
         console.log('[EMAIL] Triggering program registration email to:', result.data.email);
         sendProgramRegistrationEmail({
           ...result.data,
+          attendeeType: result.data.attendeeType || "first-time",
+          affiliation: result.data.affiliation || "not-affiliated",
           createdAt: registration.createdAt
         }).catch(err => console.error("[EMAIL ERROR] Failed to send program registration email:", err));
       });

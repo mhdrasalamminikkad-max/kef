@@ -1448,6 +1448,7 @@ export class DatabaseStorage implements IStorage {
       return {
         id: "default",
         isEnabled: true,
+        badgeText: "LIMITED TIME OFFER",
         newsText: "🎉 50% Discount on KEF Membership | Join Now!",
         hasButton: true,
         buttonText: "Join Now",
