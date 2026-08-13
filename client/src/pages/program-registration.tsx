@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Section } from "@/components/section";
 import { ArrowRight, Upload, AlertTriangle, CheckCircle2, Image as ImageIcon, Loader2, QrCode } from "lucide-react";
 import type { Program } from "@shared/schema";
-import qrData from "@/assets-qr-base64.json";
+import { qrDataUrl } from "@/lib/qr-data";
 
 interface ProgramRegistrationPageProps {
   programId?: string;
@@ -365,7 +365,7 @@ export default function ProgramRegistrationPage({ programId }: ProgramRegistrati
                     {/* QR Code Container */}
                     <div className="bg-white p-4 rounded-xl shadow-md border flex flex-col items-center justify-center text-center">
                       <img
-                        src={qrData?.qrDataUrl || "/uploads/indusind-qr-code.png"}
+                        src={qrDataUrl || "/uploads/indusind-qr-code.png"}
                         alt="KEF IndusInd Bank Payment QR Code"
                         loading="eager"
                         decoding="sync"
