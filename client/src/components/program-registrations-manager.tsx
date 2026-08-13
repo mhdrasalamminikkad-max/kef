@@ -105,10 +105,21 @@ export function ProgramRegistrationsManager({
       );
       return response.json();
     },
+    onMutate: async ({ registrationId, status }: { registrationId: string; status: "approved" | "rejected" }) => {
+      await queryClient.cancelQueries({ queryKey: ["/api/admin/program-registrations", selectedProgramId] });
+      const previousRegistrations = queryClient.getQueryData<ProgramRegistration[]>(["/api/admin/program-registrations", selectedProgramId]);
+      if (previousRegistrations) {
+        queryClient.setQueryData<ProgramRegistration[]>(
+          ["/api/admin/program-registrations", selectedProgramId],
+          previousRegistrations.map((reg) => (reg.id === registrationId ? { ...reg, status } : reg))
+        );
+      }
+      return { previousRegistrations };
+    },
     onSuccess: (_: unknown, variables: { registrationId: string; status: "approved" | "rejected" }) => {
       toast({
         title: variables.status === "approved" ? "Registration Approved" : "Registration Denied",
-        description: `Status updated to ${variables.status}. Email notification dispatched to participant.`,
+        description: `Status updated to ${variables.status}. Email notification sent to participant.`,
       });
       queryClient.invalidateQueries({
         queryKey: ["/api/admin/program-registrations", selectedProgramId],

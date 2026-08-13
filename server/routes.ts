@@ -1451,29 +1451,38 @@ export async function registerRoutes(
         return res.status(404).json({ error: "Registration not found" });
       }
 
-      // Fetch program details for email notification
-      const program = await storage.getProgramById(updated.programId);
-
-      // Send email notifications
-      if (status === "approved") {
-        sendProgramRegistrationApprovalEmail({
-          id: updated.id,
-          fullName: updated.fullName,
-          email: updated.email,
-          phone: updated.countryCode ? `${updated.countryCode} ${updated.phone}` : updated.phone,
-          programTitle: program?.title,
-          eventDate: program?.eventDate,
-          venue: program?.venue,
-        }).catch(err => console.error("[EMAIL ERROR] Failed to send approval email:", err));
-      } else if (status === "rejected") {
-        sendProgramRegistrationRejectionEmail({
-          fullName: updated.fullName,
-          email: updated.email,
-          programTitle: program?.title,
-        }).catch(err => console.error("[EMAIL ERROR] Failed to send rejection email:", err));
-      }
-
+      // Respond immediately (<50ms) for instant UI response
       res.json(updated);
+
+      // Asynchronously trigger approval/rejection email notification in background
+      setImmediate(async () => {
+        try {
+          const program = await storage.getProgramById(updated.programId);
+          console.log(`[EMAIL] Sending ${status} email to ${updated.email}...`);
+
+          if (status === "approved") {
+            await sendProgramRegistrationApprovalEmail({
+              id: updated.id,
+              fullName: updated.fullName,
+              email: updated.email,
+              phone: updated.countryCode ? `${updated.countryCode} ${updated.phone}` : updated.phone,
+              programTitle: program?.title,
+              eventDate: program?.eventDate,
+              venue: program?.venue,
+            });
+            console.log(`[EMAIL SUCCESS] Approved invitation pass sent to ${updated.email}`);
+          } else if (status === "rejected") {
+            await sendProgramRegistrationRejectionEmail({
+              fullName: updated.fullName,
+              email: updated.email,
+              programTitle: program?.title,
+            });
+            console.log(`[EMAIL SUCCESS] Rejection notice sent to ${updated.email}`);
+          }
+        } catch (err) {
+          console.error(`[EMAIL ERROR] Failed to send ${status} email:`, err);
+        }
+      });
     } catch (error: any) {
       console.error("Error updating program registration status:", error);
       res.status(500).json({ error: "Failed to update registration status" });
