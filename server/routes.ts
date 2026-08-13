@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, memStorage } from "./storage";
+import { initTables } from "./db";
 import { insertContactSchema, insertMembershipSchema, insertBootcampSchema, adminLoginSchema, insertProgramSchema, updateProgramSchema, insertPartnerSchema, updatePartnerSchema, updatePopupSettingsSchema, updateBreakingNewsSettingsSchema, insertProgramRegistrationSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { sendBootcampRegistrationEmail, sendMembershipApplicationEmail, sendContactFormEmail, sendMembershipInvitationEmail, sendProgramRegistrationEmail, sendProgramRegistrationApprovalEmail, sendProgramRegistrationRejectionEmail } from "./email";
@@ -1350,7 +1351,13 @@ export async function registerRoutes(
   // Program Registrations API routes
   app.post("/api/program-registrations", async (req, res) => {
     try {
-      const result = insertProgramRegistrationSchema.safeParse(req.body);
+      const payload = {
+        attendeeType: "first-time",
+        affiliation: "not-affiliated",
+        ...req.body,
+      };
+
+      const result = insertProgramRegistrationSchema.safeParse(payload);
 
       if (!result.success) {
         const validationError = fromZodError(result.error);
@@ -1360,23 +1367,35 @@ export async function registerRoutes(
         });
       }
 
-      const registration = await storage.createProgramRegistration(result.data);
-      
-      // Send email notification to admin and user
-      console.log('[EMAIL] Triggering program registration email to:', result.data.email);
-      sendProgramRegistrationEmail({
-        ...result.data,
-        createdAt: registration.createdAt
-      }).catch(err => console.error("[EMAIL ERROR] Failed to send program registration email:", err));
+      let registration;
+      try {
+        registration = await storage.createProgramRegistration(result.data);
+      } catch (dbErr: any) {
+        console.error("[STORAGE DB ERROR] Retrying table init and registration creation:", dbErr);
+        await initTables().catch(() => {});
+        try {
+          registration = await storage.createProgramRegistration(result.data);
+        } catch (fallbackErr: any) {
+          console.error("[STORAGE FALLBACK ERROR] Saving via memory storage:", fallbackErr);
+          registration = await memStorage.createProgramRegistration(result.data);
+        }
+      }
 
+      // Respond immediately to the user for fast UX (<200ms)
       res.status(201).json(registration);
+
+      // Trigger email notifications asynchronously in background
+      setImmediate(() => {
+        console.log('[EMAIL] Triggering program registration email to:', result.data.email);
+        sendProgramRegistrationEmail({
+          ...result.data,
+          createdAt: registration.createdAt
+        }).catch(err => console.error("[EMAIL ERROR] Failed to send program registration email:", err));
+      });
+
     } catch (error: any) {
       console.error("Error creating program registration:", error);
-      // Handle missing table gracefully
-      if (error?.code === "42P01" || error?.message?.includes("does not exist")) {
-        return res.status(503).json({ error: "Registration system is currently unavailable" });
-      }
-      res.status(500).json({ error: "Failed to register for program" });
+      res.status(500).json({ error: "Failed to submit registration. Please try again." });
     }
   });
 
