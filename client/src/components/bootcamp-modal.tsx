@@ -103,12 +103,18 @@ export function BootcampModal() {
 
             {/* Poster image */}
             {bannerImage && (
-              <div className="rounded-xl overflow-hidden shadow-2xl">
+              <div className="rounded-xl overflow-hidden shadow-2xl bg-gray-900/50 flex items-center justify-center">
                 <img
                   src={bannerImage}
-                  alt={settings?.title || "Event Announcement"}
+                  alt={settings?.title || "Coffee With Mathew"}
                   className="w-full h-auto object-contain"
                   style={{ maxHeight: "calc(82vh - 70px)" }}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== window.location.origin + "/assets/coffee_with_mathew.jpg") {
+                      target.src = "/assets/coffee_with_mathew.jpg";
+                    }
+                  }}
                   data-testid="img-bootcamp-poster"
                 />
               </div>

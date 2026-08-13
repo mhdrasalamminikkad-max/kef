@@ -165,8 +165,8 @@ export class MemStorage implements IStorage {
     this.popupSettingsData = {
       id: randomUUID(),
       isEnabled: false,
-      title: "KEF Leadership Lab – Talk Series | Episode 1.1 - Understanding GenZ At Work",
-      bannerImage: "/uploads/kef-leadership-lab-banner.jpg",
+      title: "Coffee With Mathew Joseph (Founder, COO, FreshToHome)",
+      bannerImage: "/assets/coffee_with_mathew.jpg",
       buttonText: "BOOK YOUR SPOT NOW!",
       buttonLink: "https://keralaeconomicforum.com/programs/33f0ed49-6f1a-41be-bd7d-a45e89125a6c/register",
       delaySeconds: "2",
@@ -1386,8 +1386,8 @@ export class DatabaseStorage implements IStorage {
       if (result.length === 0) {
         const defaultSettings = await db.insert(popupSettings).values({
           isEnabled: true,
-          title: "Startup Boot Camp",
-          bannerImage: "/assets/kef a_1764492076701.png",
+          title: "Coffee With Mathew",
+          bannerImage: "/assets/coffee_with_mathew.jpg",
           buttonText: "Register Now",
           buttonLink: "/register",
           delaySeconds: "1",
@@ -1395,7 +1395,15 @@ export class DatabaseStorage implements IStorage {
         }).returning();
         return defaultSettings[0];
       }
-      return result[0];
+      const current = result[0];
+      if (!current.bannerImage || current.bannerImage.includes("kef a_") || current.bannerImage.includes("leadership-lab")) {
+        const updated = await db.update(popupSettings)
+          .set({ bannerImage: "/assets/coffee_with_mathew.jpg", title: "Coffee With Mathew" })
+          .where(eq(popupSettings.id, current.id))
+          .returning();
+        return updated[0];
+      }
+      return current;
     } catch (error) {
       console.warn("[DB] Failed to get popup settings, returning null:", error);
       return null;
@@ -1408,8 +1416,8 @@ export class DatabaseStorage implements IStorage {
       if (!existing) {
         const created = await db.insert(popupSettings).values({
           isEnabled: settings.isEnabled ?? true,
-          title: settings.title ?? "Startup Boot Camp",
-          bannerImage: settings.bannerImage ?? "/assets/kef a_1764492076701.png",
+          title: settings.title ?? "Coffee With Mathew",
+          bannerImage: settings.bannerImage ?? "/assets/coffee_with_mathew.jpg",
           buttonText: settings.buttonText ?? "Register Now",
           buttonLink: settings.buttonLink ?? "/register",
           delaySeconds: settings.delaySeconds ?? "1",
