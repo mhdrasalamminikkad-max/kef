@@ -366,7 +366,7 @@ export default function ProgramRegistrationPage({ programId }: ProgramRegistrati
                       <img
                         src="/uploads/indusind-qr-code.png"
                         alt="KEF IndusInd Bank Payment QR Code"
-                        className="w-48 h-auto max-h-64 object-contain rounded-lg border p-1"
+                        className="w-full max-w-[280px] h-auto object-contain rounded-xl shadow-md border p-1"
                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                           // Fallback QR code if asset fails to load
                           (e.target as HTMLImageElement).src = "/attached_assets/indusind-qr-code.png";
