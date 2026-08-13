@@ -37,7 +37,14 @@ async function sendEmail(to: string, subject: string, htmlBody: string, attachme
     content: att.content
   }));
 
-  const fromAddresses = [PRIMARY_FROM_EMAIL, SUBDOMAIN_FROM_EMAIL, FALLBACK_FROM_EMAIL];
+  const fromAddresses = [
+    'Kerala Economic Forum <info@send.keralaeconomicforum.com>',
+    'info@send.keralaeconomicforum.com',
+    'Kerala Economic Forum <info@keralaeconomicforum.com>',
+    'info@keralaeconomicforum.com',
+    'Kerala Economic Forum <onboarding@resend.dev>',
+    'onboarding@resend.dev'
+  ];
 
   for (const fromAddress of fromAddresses) {
     try {
