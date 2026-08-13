@@ -849,17 +849,6 @@ export async function sendProgramRegistrationEmail(registration: {
         </div>
 
         <div style="padding: 32px 28px; background: white;">
-          
-          <!-- Status Banner -->
-          <div style="background: #fefce8; border: 1.5px solid #fef08a; border-radius: 12px; padding: 16px 20px; text-align: center; margin-bottom: 28px;">
-            <p style="margin: 0; color: #854d0e; font-size: 16px; font-weight: 700;">
-              ⏳ Registration Under Review
-            </p>
-            <p style="margin: 4px 0 0 0; color: #a16207; font-size: 13px;">
-              Thank you! Your payment details and registration are currently being verified by our team.
-            </p>
-          </div>
-
           <p style="color: #334155; font-size: 16px; line-height: 1.6; margin-top: 0;">
             Dear <strong>${registration.fullName}</strong>,
           </p>
@@ -892,13 +881,6 @@ export async function sendProgramRegistrationEmail(registration: {
                 <td style="padding: 8px 0; color: #334155; font-size: 14px;">${new Date(registration.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
               </tr>
             </table>
-          </div>
-
-          <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-            <p style="margin: 0; color: #1e40af; font-size: 13px; line-height: 1.5;">
-              <strong>ℹ️ What Happens Next?</strong><br/>
-              Our team will verify your payment details. Upon successful verification, you will receive a follow-up email containing your <strong>Official VIP Entry Ticket with QR Code Pass</strong> for entry to the venue.
-            </p>
           </div>
 
           <div style="border-top: 1px solid #e2e8f0; margin-top: 28px; padding-top: 20px; text-align: center;">
