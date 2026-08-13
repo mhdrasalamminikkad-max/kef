@@ -43,6 +43,11 @@ export default function ProgramRegistrationPage({ programId }: ProgramRegistrati
     }
   }, [programId]);
 
+  // Fetch all programs
+  const { data: allPrograms } = useQuery<Program[]>({
+    queryKey: ["/api/programs"],
+  });
+
   // Filter active/registerable programs, excluding Head Talks 1.3 (has external registration)
   const livePrograms = allPrograms?.filter((p: Program) => 
     (p.programStatus === 'live' || p.isActive || p.id === selectedProgramId) && p.title !== 'Head Talks 1.3'
