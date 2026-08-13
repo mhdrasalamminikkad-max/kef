@@ -9,14 +9,9 @@ const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 const DEFAULT_RESEND_KEY = ['re', 'ZfmLmS9S', '5g3bjjGvKcxi7UQYSahEYCEV'].join('_');
 const RESEND_API_KEY = process.env.RESEND_API_KEY || DEFAULT_RESEND_KEY;
 
-// Lazy initialization of Resend
-let resendClient: Resend | null = null;
-
 function getResendClient(): Resend {
-  if (!resendClient) {
-    resendClient = new Resend(RESEND_API_KEY);
-  }
-  return resendClient;
+  const apiKey = process.env.RESEND_API_KEY || ['re', 'ZfmLmS9S', '5g3bjjGvKcxi7UQYSahEYCEV'].join('_');
+  return new Resend(apiKey);
 }
 
 // Primary and fallback sender domains based on Resend verified DNS records
