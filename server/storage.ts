@@ -128,8 +128,8 @@ export class MemStorage implements IStorage {
   }
 
   private async initDefaultAdmin() {
-    const finalUsername = "user";
-    const finalPassword = "caliph786786";
+    const finalUsername = process.env.ADMIN_USERNAME || "user";
+    const finalPassword = process.env.ADMIN_PASSWORD || "caliph786786";
 
     const existingAdmin = await this.getAdminByUsername(finalUsername);
     if (existingAdmin) {
@@ -597,8 +597,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async initDefaultAdmin() {
-    const finalUsername = "user";
-    const finalPassword = "caliph786786";
+    const finalUsername = process.env.ADMIN_USERNAME || "user";
+    const finalPassword = process.env.ADMIN_PASSWORD || "caliph786786";
 
     const existingAdmin = await this.getAdminByUsername(finalUsername);
     if (!existingAdmin) {
