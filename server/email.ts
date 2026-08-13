@@ -5,12 +5,9 @@ import QRCode from 'qrcode';
 // All registration emails will be sent to this address
 const ADMIN_EMAIL = 'keralaecomicforumhelp@gmail.com';
 
-// Resend API key from environment variable with fallback
-const DEFAULT_RESEND_KEY = ['re', 'ZfmLmS9S', '5g3bjjGvKcxi7UQYSahEYCEV'].join('_');
-const RESEND_API_KEY = process.env.RESEND_API_KEY || DEFAULT_RESEND_KEY;
-
+// Resend API key strictly from environment variable
 function getResendClient(): Resend {
-  const apiKey = process.env.RESEND_API_KEY || ['re', 'ZfmLmS9S', '5g3bjjGvKcxi7UQYSahEYCEV'].join('_');
+  const apiKey = process.env.RESEND_API_KEY || '';
   return new Resend(apiKey);
 }
 
